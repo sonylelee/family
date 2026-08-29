@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>소니드 공부방 · 문제풀이 & 오답노트</title>
 <style>
   :root{
@@ -42,6 +43,7 @@
     --shadow:0 2px 4px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
   }
   *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%; text-size-adjust:100%}
   body{margin:0; background:var(--bg); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",Roboto,"Noto Sans KR",sans-serif;
     line-height:1.5; -webkit-font-smoothing:antialiased;}
@@ -166,6 +168,30 @@
   .keypad button.blank{visibility:hidden;box-shadow:none;border:none;background:transparent}
   .pinforgot{margin-top:16px;background:none;border:none;color:var(--text-3);text-decoration:underline;font-size:.82rem;font-weight:600}
 
+  .levelbar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);margin-bottom:8px}
+  .lvhead{display:flex;justify-content:space-between;font-weight:800;font-size:.85rem;margin-bottom:6px}
+  .lvhead #xpLabel{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
+  .xptrack{height:10px;background:var(--surface-2);border-radius:20px;overflow:hidden}
+  .xptrack i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--brand));border-radius:20px;transition:width .4s}
+  .unitbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:15px 16px;font-weight:700;font-size:.98rem;color:var(--text);box-shadow:var(--shadow);margin-bottom:10px;text-align:left}
+  .unitbtn:hover{border-color:var(--brand)}
+  .unitbtn.rec{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+  .unitbtn .ucnt{font-size:.75rem;color:var(--text-3);font-weight:600;white-space:nowrap}
+  .ebslink{display:block;text-align:center;background:#0a7d3b;color:#fff;border-radius:12px;padding:13px;font-weight:800;text-decoration:none;margin-top:8px}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px}
+  .calgrid .cwd{text-align:center;font-size:.72rem;color:var(--text-3);font-weight:700;padding:4px 0}
+  .cday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--surface-2);font-size:.9rem;font-weight:700;color:var(--text-3)}
+  .cday.on{background:var(--accent-soft);color:var(--accent)}
+  .cday.today{outline:2px solid var(--brand);outline-offset:-2px}
+  .calstreak{text-align:center;font-weight:800;color:var(--accent);margin-top:16px;font-size:1rem}
+  .stcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px}
+  .stcard .stname{font-weight:800;margin-bottom:8px}
+  .stcard .stmeta{font-size:.82rem;color:var(--text-3)}
+  .stcard .strow{display:flex;gap:16px;font-size:.84rem;color:var(--text-2);margin-bottom:8px}
+  .stcard .strow b{color:var(--brand);font-size:1rem}
+  .stcard .strate{height:8px;background:var(--surface-2);border-radius:20px;overflow:hidden}
+  .stcard .strate i{display:block;height:100%;background:var(--good);border-radius:20px}
+
   /* interview */
   .ivcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
   .ivq{font-size:1.35rem;font-weight:800;line-height:1.4;text-wrap:balance;margin-bottom:6px}
@@ -216,7 +242,9 @@
       <button class="backbtn" id="subjBack">← 트랙 다시 고르기</button>
       <div class="weekbanner" id="weekBanner"></div>
       <div class="dailystat" id="dailyStat"><span class="em">🔥</span><span>오늘 <b id="dToday">0</b>문제 · 정답 <b id="dCorrect">0</b></span></div>
-      <button class="practice" id="practiceToggle">🧪 연습 모드 <span class="pstate">꺼짐</span></button>
+      <div class="levelbar"><div class="lvhead"><span id="lvLabel">Lv.1 🌱</span><span id="xpLabel">0/100 XP</span></div><div class="xptrack"><i id="xpFill"></i></div></div>
+      <div class="row2" style="margin-top:0"><button class="bigbtn ghost" id="btnCal" style="margin-top:0">📅 출석</button><button class="bigbtn ghost" id="btnStatus" style="margin-top:0">📊 상태</button></div>
+      <button class="practice" id="practiceToggle" style="margin-top:12px">🧪 연습 모드 <span class="pstate">꺼짐</span></button>
       <div class="section-t" id="subjTitle">과목을 골라요</div>
       <div class="subjects" id="subjectPick"></div>
       <button class="noteopen" id="openNote">📒 오답노트 <span class="cnt" id="noteCnt">0</span></button>
@@ -253,6 +281,7 @@
       <button class="bigbtn ghost" id="rHome">🏠 홈으로</button>
       <button class="bigbtn" id="rRetry">↺ 다시 풀기</button>
     </div>
+    <a class="ebslink hidden" id="rEbs" target="_blank" rel="noopener" href="#" style="margin-top:12px">▶️ EBS 강좌 보러가기</a>
     <button class="noteopen" id="rNote">📒 오답노트 보기 <span class="cnt" id="rNoteCnt">0</span></button>
   </div>
 
@@ -305,6 +334,26 @@
       <div class="keypad" id="keypad"></div>
       <button class="pinforgot hidden" id="pinForgot">🔑 비밀번호를 잊었어요 (부모)</button>
     </div>
+  </div>
+
+  <!-- UNITS -->
+  <div id="units" class="hidden">
+    <div class="qtop"><button class="back" id="unitsBack" aria-label="뒤로">←</button><div class="qcount" id="unitsTitle" style="flex:1">단원 고르기</div></div>
+    <div id="unitsList"></div>
+    <a class="ebslink" id="unitsEbs" target="_blank" rel="noopener" href="#">▶️ EBS</a>
+  </div>
+
+  <!-- CALENDAR -->
+  <div id="cal" class="hidden">
+    <div class="qtop"><button class="back" id="calBack" aria-label="뒤로">←</button><div class="qcount" id="calTitle" style="flex:1">출석 달력</div></div>
+    <div class="calgrid" id="calGrid"></div>
+    <div class="calstreak" id="calStreak"></div>
+  </div>
+
+  <!-- STATUS -->
+  <div id="status" class="hidden">
+    <div class="qtop"><button class="back" id="statusBack" aria-label="뒤로">←</button><div class="qcount" id="statusTitle" style="flex:1">과목별 상태</div></div>
+    <div id="statusList"></div>
   </div>
 </div>
 
@@ -533,7 +582,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -585,10 +634,10 @@
     TRACKS[track].subjects.forEach(s=>{ const b=document.createElement("button"); b.className="subj"+(track==="intl"?" intl":"");
       let sub = s.k==="interview" ? "말하기 연습" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
       b.innerHTML='<span class="semo">'+s.emo+'</span><span class="sname">'+s.n+'</span><span class="scount">'+sub+'</span>';
-      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else startQuiz(s.k); });
+      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
       box.appendChild(b); });
     $("noteCnt").textContent=getWrongs().length;
-    renderPractice();
+    renderPractice(); renderLevel();
     homeStep("subject"); setCrumb(); show("home");
   }
   $("subjBack").addEventListener("click",gotoTrack);
@@ -602,6 +651,7 @@
   });
 
   function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function shuffleChoices(item){ const idx=item.c.map((_,i)=>i); for(let i=idx.length-1;i>0;i--){ const j=rnd(i+1); [idx[i],idx[j]]=[idx[j],idx[i]]; } return Object.assign({},item,{c:idx.map(i=>item.c[i]), a:idx.indexOf(item.a)}); }
 
   function startQuiz(subj){
     subject=subj; retryMode=false; grade=child.g;
@@ -613,12 +663,12 @@
       if(!pool.length) pool=getPool(subj,grade).slice();
     } else { pool=getPool(subj,grade).slice(); }
     if(!pool.length){ alert("이 과목은 아직 문제 준비 중이에요."); return; }
-    quizList = shuffle(pool).map(q=>Object.assign({},q,{subj,grade,retry:0}));
+    quizList = shuffle(pool).map(q=>shuffleChoices(Object.assign({},q,{subj,grade,retry:0})));
     qi=0; score=0; renderQ(); show("quiz");
   }
   function startRetryFromNote(){
     const w=getWrongs(); if(!w.length) return; retryMode=true;
-    quizList = shuffle(w).map(x=> (x.gen && GEN[x.gen]) ? Object.assign(GEN[x.gen](),{gen:x.gen,u:x.u,subj:x.subj,grade:x.grade,retry:0}) : Object.assign({},x,{retry:0}) );
+    quizList = shuffle(w).map(x=> shuffleChoices((x.gen && GEN[x.gen]) ? Object.assign(GEN[x.gen](),{gen:x.gen,u:x.u,subj:x.subj,grade:x.grade,retry:0}) : Object.assign({},x,{retry:0})) );
     qi=0; score=0; renderQ(); show("quiz");
   }
   function makeSimilar(item){
@@ -639,13 +689,13 @@
   }
   function choose(idx,btn){
     if(answered) return; answered=true; const item=quizList[qi]; const correct=idx===item.a;
-    if(!practiceMode) bumpDaily(correct);
+    if(!practiceMode){ bumpDaily(correct); markToday(); addXP(correct?10:3); bumpStat(item.subj,correct); }
     $("choices").querySelectorAll(".choice").forEach((b,i)=>{ b.disabled=true; if(i===item.a) b.classList.add("correct"); });
     if(correct){ score++; }
     else{
       btn.classList.add("wrong");
       if(!practiceMode){ const w=getWrongs(); if(!w.some(x=>x.q===item.q)){ w.push({q:item.q,c:item.c,a:item.a,e:item.e,gen:item.gen,u:item.u,subj:item.subj,grade:item.grade}); saveWrongs(w); } }
-      if((item.retry||0)<1 && quizList.length<24){ quizList.push(makeSimilar(item)); }
+      if((item.retry||0)<1 && quizList.length<24){ quizList.push(shuffleChoices(makeSimilar(item))); }
     }
     const fb=$("feedback"); fb.className="feedback "+(correct?"ok":"no");
     if(correct){ fb.innerHTML='<div class="fh">🎉 정답이에요!</div><div class="exp">'+escapeHtml(item.e)+'</div>'; }
@@ -664,7 +714,9 @@
     else if(pct>=0.4){emo="💪";msg="좋아요, 오답노트로 복습해요!";} else{emo="📒";msg="괜찮아요! 오답노트 보면 금방 늘어요";}
     $("rEmoji").textContent=emo; $("rMsg").textContent=msg;
     $("rSub").textContent=(total-score>0)?"틀린 문제는 오답노트에 담고 비슷한 문제로 다시 냈어요 📒":"오답이 없어요! 최고!";
-    const dd=getDaily(); $("rToday").innerHTML="오늘 "+child.name+"이(가) 푼 문제: <b>"+dd.solved+"개</b> · 정답 <b>"+dd.correct+"개</b> 🔥";
+    const dd=getDaily(); const lv=levelOf(getXP());
+    $("rToday").innerHTML="오늘 <b>"+dd.solved+"개</b> · 정답 <b>"+dd.correct+"개</b> · <b>Lv."+lv+" "+lvEmoji(lv)+"</b> 🔥";
+    const re=$("rEbs"); if(!retryMode && (score/total)<0.6){ const eb=ebsInfo(); re.href=eb.url; re.textContent="▶️ 어려웠나요? "+eb.label+" 보러가기"; re.classList.remove("hidden"); } else re.classList.add("hidden");
     $("rNoteCnt").textContent=getWrongs().length; show("result");
   }
   $("rHome").addEventListener("click",gotoSubject);
@@ -717,12 +769,71 @@
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
+  // ---------- XP / 출석 / 통계 / 단원 / EBS ----------
+  function getXP(){ return LS.get("study_xp_"+child.name,0); }
+  function addXP(n){ LS.set("study_xp_"+child.name, getXP()+n); }
+  function levelOf(xp){ return 1+Math.floor(xp/100); }
+  function lvEmoji(lv){ return lv>=10?"👑":lv>=6?"🚀":lv>=3?"⭐":"🌱"; }
+  function getDays(){ return LS.get("study_days_"+child.name,[]); }
+  function markToday(){ const d=getDays(); const t=todayStr(); if(!d.includes(t)){ d.push(t); LS.set("study_days_"+child.name,d); } }
+  function getStats(){ return LS.get("study_stats_"+child.name,{}); }
+  function bumpStat(subj,ok){ const s=getStats(); if(!s[subj]) s[subj]={solved:0,correct:0}; s[subj].solved++; if(ok)s[subj].correct++; LS.set("study_stats_"+child.name,s); }
+  function renderLevel(){ const xp=getXP(), lv=levelOf(xp), into=xp%100; $("lvLabel").textContent="Lv."+lv+" "+lvEmoji(lv); $("xpLabel").textContent=into+"/100 XP"; $("xpFill").style.width=into+"%"; }
+  function ebsInfo(){ return child.g===8 ? {url:"https://mid.ebs.co.kr/", label:"EBS 중학"} : {url:"https://primary.ebs.co.kr/", label:"EBS 초등"}; }
+
+  let unitsSubj=null;
+  function openUnits(subj){ unitsSubj=subj; renderUnits(); show("units"); }
+  function renderUnits(){
+    const subj=unitsSubj; const units=UNITS[subj][child.g]||[];
+    $("unitsTitle").textContent=(SUBJ_KO[subj]||"")+" · 단원 고르기";
+    let html='<button class="unitbtn rec" data-u="today">🎯 오늘 진도 (추천) <span class="ucnt">자동</span></button><button class="unitbtn" data-u="all">🔀 전체 섞어서 풀기 <span class="ucnt">모든 단원</span></button>';
+    units.forEach((u,i)=>{ const cnt=getPool(subj,child.g).filter(p=>p.u===i+1).length; if(!cnt) return; html+='<button class="unitbtn" data-u="'+(i+1)+'">'+(i+1)+'. '+escapeHtml(u)+' <span class="ucnt">'+cnt+'문제</span></button>'; });
+    $("unitsList").innerHTML=html;
+    $("unitsList").querySelectorAll(".unitbtn").forEach(b=>b.addEventListener("click",()=>{ const u=b.dataset.u; if(u==="today") startQuiz(subj); else if(u==="all") startQuizAll(subj); else startQuizUnit(subj,+u); }));
+    const eb=ebsInfo(); $("unitsEbs").href=eb.url; $("unitsEbs").textContent="▶️ 어려우면 "+eb.label+" 보러가기";
+  }
+  function startQuizUnit(subj,u){ subject=subj; retryMode=false; const pool=getPool(subj,child.g).filter(p=>p.u===u); if(!pool.length){ alert("문제 준비 중이에요."); return; } quizList=shuffle(pool).map(q=>shuffleChoices(Object.assign({},q,{subj,grade:child.g,retry:0}))); qi=0; score=0; renderQ(); show("quiz"); }
+  function startQuizAll(subj){ subject=subj; retryMode=false; const pool=getPool(subj,child.g).slice(); if(!pool.length){ alert("문제 준비 중이에요."); return; } quizList=shuffle(pool).map(q=>shuffleChoices(Object.assign({},q,{subj,grade:child.g,retry:0}))); qi=0; score=0; renderQ(); show("quiz"); }
+  $("unitsBack").addEventListener("click",gotoSubject);
+
+  function openCal(){ renderCal(); show("cal"); }
+  function renderCal(){
+    const days=getDays(); const now=new Date(); const y=now.getFullYear(), m=now.getMonth();
+    $("calTitle").textContent=child.name+" · "+(m+1)+"월 출석";
+    const first=new Date(y,m,1).getDay(); const dim=new Date(y,m+1,0).getDate();
+    let html=""; ["일","월","화","수","목","금","토"].forEach(w=>html+='<div class="cwd">'+w+'</div>');
+    for(let i=0;i<first;i++) html+='<div></div>';
+    for(let d=1;d<=dim;d++){ const ds=y+"-"+(m+1)+"-"+d; const on=days.indexOf(ds)>=0; const today=(d===now.getDate()); html+='<div class="cday'+(on?" on":"")+(today?" today":"")+'">'+(on?"🌟":d)+'</div>'; }
+    $("calGrid").innerHTML=html;
+    let streak=0; const cur=new Date(y,m,now.getDate());
+    while(true){ const ds=cur.getFullYear()+"-"+(cur.getMonth()+1)+"-"+cur.getDate(); if(days.indexOf(ds)>=0){ streak++; cur.setDate(cur.getDate()-1); } else break; }
+    const thisMonth=days.filter(x=>x.indexOf(y+"-"+(m+1)+"-")===0).length;
+    $("calStreak").textContent="🔥 연속 출석 "+streak+"일 · 이번 달 "+thisMonth+"일 공부했어요!";
+  }
+  $("calBack").addEventListener("click",gotoSubject);
+
+  function openStatus(){ renderStatus(); show("status"); }
+  function renderStatus(){
+    $("statusTitle").textContent=child.name+" · "+TRACKS[track].label+" 상태";
+    const stats=getStats(); const wrongs=getWrongs(); let html="";
+    TRACKS[track].subjects.forEach(s=>{
+      if(s.k==="interview"){ html+='<div class="stcard"><div class="stname">🗣️ 영어 면담</div><div class="stmeta">말하기 연습 (점수 기록 없음)</div></div>'; return; }
+      const st=stats[s.k]||{solved:0,correct:0}; const wc=wrongs.filter(w=>w.subj===s.k).length; const rate=st.solved?Math.round(st.correct/st.solved*100):0;
+      html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="strow"><span>푼 문제 <b>'+st.solved+'</b></span><span>정답률 <b>'+rate+'%</b></span><span>오답 <b>'+wc+'</b></span></div><div class="strate"><i style="width:'+rate+'%"></i></div></div>';
+    });
+    $("statusList").innerHTML=html;
+  }
+  $("statusBack").addEventListener("click",gotoSubject);
+  $("btnCal").addEventListener("click",openCal);
+  $("btnStatus").addEventListener("click",openStatus);
+
   // ---------- PIN ----------
   const PINK={ child:n=>"study_pin_child_"+n, parent:"study_pin_parent" };
-  function getChildPin(n){ return LS.get(PINK.child(n),""); }
-  function setChildPin(n,p){ LS.set(PINK.child(n),p); }
-  function getParentPin(){ return LS.get(PINK.parent,"9092"); }
-  function setParentPin(p){ LS.set(PINK.parent,p); }
+  const memPin={ child:{}, parent:"" };
+  function getChildPin(n){ return memPin.child[n] || LS.get(PINK.child(n),""); }
+  function setChildPin(n,p){ memPin.child[n]=p; LS.set(PINK.child(n),p); }
+  function getParentPin(){ return memPin.parent || LS.get(PINK.parent,"9092"); }
+  function setParentPin(p){ memPin.parent=p; LS.set(PINK.parent,p); }
   let pinCtx=null;
   function openPin(o){ pinCtx=Object.assign({buffer:"",err:""},o); renderPin(); show("pin"); }
   function renderPin(){
