@@ -7,6 +7,7 @@
     --accent:#ff9a52; --accent-soft:#fff0e3;
     --good:#22a35a; --good-soft:#dff3e7;
     --bad:#e5533c; --bad-soft:#fce3de;
+    --intl:#7a5cd6; --intl-soft:#ece5fb;
     --shadow:0 2px 4px rgba(30,50,80,.05),0 10px 26px rgba(30,50,80,.08);
     --radius:18px;
   }
@@ -18,6 +19,7 @@
       --accent:#ffab6b; --accent-soft:#33241a;
       --good:#4cc27f; --good-soft:#16311f;
       --bad:#f27661; --bad-soft:#3a1e18;
+      --intl:#a78bec; --intl-soft:#241a3a;
       --shadow:0 2px 4px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
     }
   }
@@ -27,6 +29,7 @@
     --brand:#2f7fd6; --brand-2:#1e63ad; --brand-soft:#e2eefb;
     --accent:#ff9a52; --accent-soft:#fff0e3;
     --good:#22a35a; --good-soft:#dff3e7; --bad:#e5533c; --bad-soft:#fce3de;
+    --intl:#7a5cd6; --intl-soft:#ece5fb;
     --shadow:0 2px 4px rgba(30,50,80,.05),0 10px 26px rgba(30,50,80,.08);
   }
   :root[data-theme="dark"]{
@@ -35,6 +38,7 @@
     --brand:#5aa2e6; --brand-2:#7cb6ee; --brand-soft:#1c2c3e;
     --accent:#ffab6b; --accent-soft:#33241a;
     --good:#4cc27f; --good-soft:#16311f; --bad:#f27661; --bad-soft:#3a1e18;
+    --intl:#a78bec; --intl-soft:#241a3a;
     --shadow:0 2px 4px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
   }
   *{box-sizing:border-box}
@@ -48,33 +52,47 @@
   .appbar{display:flex; align-items:center; gap:12px; margin-bottom:14px}
   .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(145deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:var(--shadow)}
   .appbar h1{font-size:1.25rem;margin:0;font-weight:800;letter-spacing:-.02em}
-  .appbar .who{margin-left:auto;font-size:.82rem;color:var(--text-2);background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-weight:600}
+  .crumb{margin-left:auto;font-size:.8rem;color:var(--text-2);background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-weight:700;max-width:60%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  .weekbanner{background:var(--brand-soft);border:1px solid var(--brand);color:var(--brand);border-radius:12px;padding:11px 14px;font-weight:700;font-size:.86rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-  .dailystat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:.9rem;color:var(--text-2);box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+  .weekbanner{background:var(--brand-soft);border:1px solid var(--brand);color:var(--brand);border-radius:12px;padding:11px 14px;font-weight:700;font-size:.86rem;margin-bottom:10px}
+  .weekbanner.intl{background:var(--intl-soft);border-color:var(--intl);color:var(--intl)}
+  .dailystat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:.9rem;color:var(--text-2);box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;margin-bottom:6px}
   .dailystat .em{font-size:1.3rem}
   .dailystat b{color:var(--brand);font-variant-numeric:tabular-nums;font-size:1.05rem}
 
   .section-t{font-size:.78rem;font-weight:800;letter-spacing:.03em;color:var(--text-3);text-transform:uppercase;margin:20px 4px 10px}
+  .backbtn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-weight:700;color:var(--text-2);font-size:.86rem;margin-bottom:6px}
 
-  .pickrow{display:flex;gap:10px;flex-wrap:wrap}
-  .pick{flex:1;min-width:120px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:14px;font-size:1rem;font-weight:700;color:var(--text);transition:.15s;text-align:center}
-  .pick .emo{font-size:1.5rem;display:block;margin-bottom:2px}
-  .pick .gr{display:block;font-size:.74rem;color:var(--text-3);font-weight:600;margin-top:2px}
-  .pick.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
-  .pick.on .gr{color:var(--brand)}
-  .pick:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .kids{display:flex;flex-direction:column;gap:10px}
+  .kid{display:flex;align-items:center;gap:14px;background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);transition:.15s;text-align:left;width:100%}
+  .kid:hover{border-color:var(--brand);transform:translateY(-2px)}
+  .kid .kemo{font-size:2rem}
+  .kid .kname{font-weight:800;font-size:1.15rem}
+  .kid .kmeta{font-size:.78rem;color:var(--text-3);font-weight:600;margin-top:2px}
+  .kid .karr{margin-left:auto;color:var(--text-3);font-size:1.3rem}
+
+  .tracks{display:flex;flex-direction:column;gap:12px}
+  .track{display:flex;align-items:center;gap:16px;border-radius:18px;padding:20px;box-shadow:var(--shadow);transition:.15s;text-align:left;width:100%;border:2px solid var(--border);background:var(--surface)}
+  .track:hover{transform:translateY(-2px)}
+  .track.kr:hover{border-color:var(--brand)} .track.intl:hover{border-color:var(--intl)}
+  .track .temo{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex:0 0 auto}
+  .track.kr .temo{background:var(--brand-soft)} .track.intl .temo{background:var(--intl-soft)}
+  .track .tname{font-weight:800;font-size:1.1rem}
+  .track .tdesc{font-size:.8rem;color:var(--text-2);margin-top:2px}
+  .track .tarr{margin-left:auto;color:var(--text-3);font-size:1.3rem}
 
   .subjects{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
   .subj{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 8px;text-align:center;box-shadow:var(--shadow);transition:.15s}
   .subj:hover{transform:translateY(-3px);border-color:var(--brand)}
   .subj .semo{font-size:2rem;display:block;margin-bottom:6px}
-  .subj .sname{font-weight:800;font-size:1rem}
+  .subj .sname{font-weight:800;font-size:.98rem}
   .subj .scount{font-size:.7rem;color:var(--brand);margin-top:4px;display:block;font-weight:600;line-height:1.3}
+  .subj.intl:hover{border-color:var(--intl)} .subj.intl .scount{color:var(--intl)}
 
   .bigbtn{display:block;width:100%;border:none;border-radius:14px;background:var(--brand);color:#fff;font-size:1.05rem;font-weight:800;padding:16px;box-shadow:var(--shadow);transition:.15s;margin-top:16px}
   .bigbtn:hover{background:var(--brand-2)}
   .bigbtn.ghost{background:var(--surface);color:var(--brand);border:2px solid var(--border)}
+  .bigbtn.intl{background:var(--intl)} .bigbtn.intl:hover{filter:brightness(.92)}
 
   .noteopen{display:flex;align-items:center;gap:10px;width:100%;background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent);border-radius:14px;padding:13px 16px;font-weight:800;font-size:.95rem;margin-top:12px}
   .noteopen .cnt{margin-left:auto;background:var(--accent);color:#fff;border-radius:20px;padding:1px 10px;font-size:.8rem}
@@ -88,6 +106,7 @@
   .qcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
   .qtag{display:inline-block;font-size:.72rem;font-weight:800;color:var(--brand);background:var(--brand-soft);padding:3px 11px;border-radius:20px;margin-bottom:12px}
   .qtag.retry{color:var(--accent);background:var(--accent-soft)}
+  .qtag.intl{color:var(--intl);background:var(--intl-soft)}
   .qtext{font-size:1.25rem;font-weight:700;line-height:1.45;margin-bottom:18px;text-wrap:balance;white-space:pre-wrap}
   .choices{display:flex;flex-direction:column;gap:10px}
   .choice{display:flex;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:14px 16px;font-size:1.05rem;font-weight:600;color:var(--text);text-align:left;transition:.12s}
@@ -126,44 +145,79 @@
 
   .row2{display:flex;gap:10px;margin-top:14px}
   .row2 .bigbtn{margin-top:0}
+
+  .practice{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:2px solid var(--border);border-radius:20px;padding:8px 15px;font-weight:700;font-size:.82rem;color:var(--text-2);margin-bottom:4px}
+  .practice.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .practice .pstate{font-weight:800}
+  .pbadge{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);border-radius:10px;padding:7px 10px;font-size:.78rem;font-weight:800;margin-bottom:12px;text-align:center}
+  .wbdel{float:right;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text-3);width:28px;height:28px;font-weight:800;cursor:pointer;margin-left:8px}
+  .wbdel:hover{border-color:var(--bad);color:var(--bad)}
+
+  /* interview */
+  .ivcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+  .ivq{font-size:1.35rem;font-weight:800;line-height:1.4;text-wrap:balance;margin-bottom:6px}
+  .ivqko{font-size:.85rem;color:var(--text-3);margin-bottom:16px}
+  .ivbtns{display:flex;gap:10px;flex-wrap:wrap}
+  .ivbtn{flex:1;min-width:120px;border:2px solid var(--border);background:var(--surface);color:var(--text);border-radius:12px;padding:12px;font-weight:700;font-size:.95rem;display:flex;align-items:center;justify-content:center;gap:6px}
+  .ivbtn.on{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+  .transcript{margin-top:14px;background:var(--surface-2);border:1px dashed var(--border);border-radius:12px;padding:14px;min-height:56px;font-size:1rem;color:var(--text)}
+  .transcript .ph{color:var(--text-3)}
+  .model{margin-top:14px;background:var(--intl-soft);border:1px solid var(--intl);border-radius:12px;padding:14px 16px}
+  .model .mh{font-weight:800;color:var(--intl);font-size:.8rem;margin-bottom:6px}
+  .model .mtxt{font-size:1rem;font-weight:600;line-height:1.5}
+  .model .mtip{font-size:.82rem;color:var(--text-2);margin-top:8px}
+  .ivnav{display:flex;gap:10px;margin-top:14px}
+  .ivnav button{flex:1;border-radius:12px;padding:14px;font-weight:800;border:2px solid var(--border);background:var(--surface);color:var(--text)}
+  .ivnav button.prim{background:var(--intl);color:#fff;border-color:transparent}
+  .note-inline{font-size:.78rem;color:var(--text-3);margin-top:10px}
 </style>
 
 <div class="wrap">
   <div class="appbar">
     <div class="logo">🎒</div>
     <h1>소니드 공부방</h1>
-    <button class="who" id="whoChip">태희</button>
+    <div class="crumb" id="crumb">시작</div>
   </div>
 
-  <!-- HOME -->
+  <!-- HOME (3 steps) -->
   <div id="home">
-    <div class="weekbanner" id="weekBanner">📅 진도 계산 중…</div>
-    <div class="dailystat" id="dailyStat"><span class="em">🔥</span><span>오늘 <b id="dToday">0</b>문제 풀었어요 · 정답 <b id="dCorrect">0</b></span></div>
-
-    <div class="section-t">누가 공부할까요?</div>
-    <div class="pickrow" id="childPick">
-      <button class="pick on" data-child="태희"><span class="emo">👧</span>태희<span class="gr">5학년 2학기</span></button>
-      <button class="pick" data-child="태정"><span class="emo">🧒</span>태정<span class="gr">4학년 2학기</span></button>
+    <!-- step 1: child -->
+    <div id="vChild">
+      <div class="section-t">누가 공부할까요?</div>
+      <div class="kids" id="kidPick"></div>
     </div>
 
-    <div class="section-t">과목을 골라요 <span style="text-transform:none;font-weight:600;color:var(--text-3)">· 오늘 진도까지</span></div>
-    <div class="subjects" id="subjectPick">
-      <button class="subj" data-subj="math"><span class="semo">🔢</span><span class="sname">수학</span><span class="scount" data-c="math">–</span></button>
-      <button class="subj" data-subj="korean"><span class="semo">📖</span><span class="sname">국어</span><span class="scount" data-c="korean">–</span></button>
-      <button class="subj" data-subj="english"><span class="semo">🔤</span><span class="sname">영어</span><span class="scount" data-c="english">–</span></button>
+    <!-- step 2: track -->
+    <div id="vTrack" class="hidden">
+      <button class="backbtn" id="trackBack">← 아이 다시 고르기</button>
+      <div class="section-t">무엇을 공부할까요?</div>
+      <div class="tracks">
+        <button class="track kr" data-track="kr"><div class="temo">🇰🇷</div><div><div class="tname">한국 학교 공부</div><div class="tdesc" id="krDesc">지금 학교 진도 · 수학·국어·영어</div></div><div class="tarr">›</div></button>
+        <button class="track intl" data-track="intl"><div class="temo">🌍</div><div><div class="tname">국제학교 준비</div><div class="tdesc" id="intlDesc">영어로 · 입학시험 대비</div></div><div class="tarr">›</div></button>
+      </div>
     </div>
 
-    <button class="noteopen" id="openNote">📒 오답노트 <span class="cnt" id="noteCnt">0</span></button>
+    <!-- step 3: subject -->
+    <div id="vSubject" class="hidden">
+      <button class="backbtn" id="subjBack">← 트랙 다시 고르기</button>
+      <div class="weekbanner" id="weekBanner"></div>
+      <div class="dailystat" id="dailyStat"><span class="em">🔥</span><span>오늘 <b id="dToday">0</b>문제 · 정답 <b id="dCorrect">0</b></span></div>
+      <button class="practice" id="practiceToggle">🧪 연습 모드 <span class="pstate">꺼짐</span></button>
+      <div class="section-t" id="subjTitle">과목을 골라요</div>
+      <div class="subjects" id="subjectPick"></div>
+      <button class="noteopen" id="openNote">📒 오답노트 <span class="cnt" id="noteCnt">0</span></button>
+    </div>
   </div>
 
   <!-- QUIZ -->
   <div id="quiz" class="hidden">
     <div class="qtop">
-      <button class="back" id="quizBack" aria-label="홈으로">←</button>
+      <button class="back" id="quizBack" aria-label="뒤로">←</button>
       <div class="progress"><i id="progBar"></i></div>
       <span class="qcount" id="qCount">1/8</span>
     </div>
     <div class="qcard">
+      <div class="pbadge hidden" id="practiceBadge">🧪 연습 모드 · 기록 안 함</div>
       <span class="qtag" id="qTag">수학</span>
       <div class="qtext" id="qText">문제</div>
       <div class="choices" id="choices"></div>
@@ -191,7 +245,7 @@
   <!-- WRONGBOOK -->
   <div id="wrongbook" class="hidden">
     <div class="qtop">
-      <button class="back" id="wbBack" aria-label="홈으로">←</button>
+      <button class="back" id="wbBack" aria-label="뒤로">←</button>
       <div class="qcount" style="flex:1">📒 <span id="wbWho">태희</span>의 오답노트</div>
     </div>
     <div id="wbList"></div>
@@ -200,24 +254,63 @@
       <button class="bigbtn" id="wbRetry">↺ 오답만 다시 풀기</button>
     </div>
   </div>
+
+  <!-- INTERVIEW -->
+  <div id="interview" class="hidden">
+    <div class="qtop">
+      <button class="back" id="ivBack" aria-label="뒤로">←</button>
+      <div class="qcount" style="flex:1">🗣️ 영어 면담 연습</div>
+      <span class="qcount" id="ivCount">1/8</span>
+    </div>
+    <div class="ivcard">
+      <div class="ivq" id="ivQ">Question</div>
+      <div class="ivqko" id="ivQko"></div>
+      <div class="ivbtns">
+        <button class="ivbtn" id="ivSpeak">🔊 들려주기</button>
+        <button class="ivbtn" id="ivMic">🎤 말하기</button>
+        <button class="ivbtn" id="ivReveal">💡 모범답안</button>
+      </div>
+      <div class="transcript" id="ivTrans"><span class="ph">🎤 "말하기"를 누르고 영어로 대답해보세요. 여기에 받아써져요.</span></div>
+      <div class="model hidden" id="ivModel"></div>
+      <div class="note-inline" id="ivNote"></div>
+    </div>
+    <div class="ivnav">
+      <button id="ivPrev">← 이전</button>
+      <button class="prim" id="ivNext">다음 질문 →</button>
+    </div>
+  </div>
 </div>
 
 <script>
 (function(){
   "use strict";
-  const CHILD_GRADE = { "태희":5, "태정":4 };
 
-  // 2학기 단원 순서(진도 추정용)
-  const UNITS = {
-    math:   { 4:["분수의 덧셈과 뺄셈","삼각형","소수","사각형","꺾은선그래프","다각형"],
-              5:["수의 범위와 어림","분수의 곱셈","합동과 대칭","소수의 곱셈","직육면체","평균과 가능성"] },
-    korean: { 4:["낱말의 뜻","맞춤법","높임 표현","이어 주는 말","비슷한말·반대말","흉내내는 말"],
-              5:["맞춤법","반대말","속담","높임 표현","반대말","관용 표현"] },
-    english:{ 4:["동물 낱말","색깔","인사","숫자","감사 표현","사물 낱말"],
-              5:["낱말","be동사","복수형","be동사","의문문","요일"] }
+  const CHILDREN = [
+    {name:"태운", emo:"👦", g:8,  kGrade:"중2 (2학기)",  intlG:"G8", intlNote:"TAS 대비"},
+    {name:"태희", emo:"👧", g:5,  kGrade:"초5 (2학기)", intlG:"G7", intlNote:"2027.8 입학시험"},
+    {name:"태정", emo:"🧒", g:4,  kGrade:"초4 (2학기)", intlG:"G6", intlNote:"2027.8 입학시험"}
+  ];
+  const findChild = n => CHILDREN.find(c=>c.name===n) || CHILDREN[1];
+
+  const TRACKS = {
+    kr:   { label:"한국 학교 공부", subjects:[{k:"math",emo:"🔢",n:"수학"},{k:"korean",emo:"📖",n:"국어"},{k:"english",emo:"🔤",n:"영어"}] },
+    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
   };
 
-  // 문제 은행 (u=단원순서, gen=비슷한문제 생성기)
+  const UNITS = {
+    math:   { 4:["분수의 덧셈과 뺄셈","삼각형","소수","사각형","꺾은선그래프","다각형"],
+              5:["수의 범위와 어림","분수의 곱셈","합동과 대칭","소수의 곱셈","직육면체","평균과 가능성"],
+              8:["중2 과정"] },
+    korean: { 4:["낱말의 뜻","맞춤법","높임 표현","이어 주는 말","비슷한말·반대말","흉내내는 말"],
+              5:["맞춤법","반대말","속담","높임 표현","반대말","관용 표현"],
+              8:["중2 과정"] },
+    english:{ 4:["동물 낱말","색깔","인사","숫자","감사 표현","사물 낱말"],
+              5:["낱말","be동사","복수형","be동사","의문문","요일"],
+              8:["중2 과정"] },
+    enmath: { 4:["국제학교 대비"],5:["국제학교 대비"],8:["국제학교 대비"] },
+    enread: { 4:["국제학교 대비"],5:["국제학교 대비"],8:["국제학교 대비"] }
+  };
+
   const BANK = {
     math: {
       4: [
@@ -238,6 +331,18 @@
         {u:5, q:"직육면체의 면은 모두 몇 개일까요?", c:["6개","8개","12개","4개"], a:0, e:"직육면체는 면 6, 모서리 12, 꼭짓점 8"},
         {u:6, q:"국어 80점, 수학 90점, 영어 85점의 평균은?", c:["85점","80점","90점","88점"], a:0, e:"(80+90+85)÷3 = 255÷3 = 85"},
         {u:6, q:"주사위 한 개를 던질 때 3이 나올 가능성은?", c:["1/6","1/3","1/2","0"], a:0, e:"1~6 중 3은 하나 → 1/6"}
+      ],
+      8: [
+        {u:1, q:"이등변삼각형의 꼭지각이 40°일 때, 한 밑각의 크기는?", c:["70°","40°","140°","20°"], a:0, e:"두 밑각이 같으므로 (180−40)÷2 = 70°"},
+        {u:1, q:"직각을 낀 두 변이 3, 4인 직각삼각형의 빗변의 길이는?", c:["5","7","6","12"], a:0, e:"피타고라스: 3²+4²=25=5²"},
+        {u:1, q:"빗변이 13, 한 변이 5인 직각삼각형의 나머지 변의 길이는?", c:["12","8","18","9"], a:0, e:"13²−5²=169−25=144=12²"},
+        {u:1, q:"평행사변형에서 항상 성립하는 것은?", c:["마주 보는 변의 길이가 같다","네 각이 모두 90°","네 변의 길이가 같다","대각선의 길이가 같다"], a:0, e:"평행사변형은 두 쌍의 마주 보는 변이 평행하고 길이가 같다"},
+        {u:1, q:"닮음비가 2:3인 두 도형의 넓이의 비는?", c:["4:9","2:3","8:27","6:9"], a:0, e:"넓이의 비 = 닮음비의 제곱 = 2²:3² = 4:9"},
+        {u:1, q:"주사위 두 개를 던져 눈의 합이 7이 되는 경우의 수는?", c:["6가지","5가지","7가지","11가지"], a:0, e:"(1,6)(2,5)(3,4)(4,3)(5,2)(6,1) → 6가지"},
+        {u:1, q:"동전 2개를 던질 때 모두 앞면이 나올 확률은?", c:["1/4","1/2","1/3","3/4"], a:0, e:"경우 4가지 중 (앞,앞) 1가지 → 1/4"},
+        {u:1, q:"삼각형의 외심에서 세 꼭짓점에 이르는 거리는?", c:["모두 같다","모두 다르다","두 개만 같다","0이다"], a:0, e:"외심은 외접원의 중심 → 세 꼭짓점까지 거리가 같다"},
+        {u:1, q:"삼각형 두 변의 중점을 이은 선분의 길이는 밑변의 몇 배?", c:["1/2배","2배","1배","1/3배"], a:0, e:"중점연결정리: 밑변의 1/2"},
+        {u:1, q:"삼각형의 세 중선이 만나는 점을 무엇이라 하나요?", c:["무게중심","외심","내심","수심"], a:0, e:"세 중선의 교점 = 무게중심"}
       ]
     },
     korean: {
@@ -256,6 +361,16 @@
         {u:4, q:"'밥'을 높여 부르는 말은?", c:["진지","맘마","끼니","간식"], a:0, e:"웃어른께는 '진지 드세요'"},
         {u:5, q:"'빠르다'의 반대말은?", c:["느리다","이르다","급하다","날쌔다"], a:0, e:"속도가 빠른 것의 반대는 느린 것"},
         {u:6, q:"관용어 '발이 넓다'의 뜻은?", c:["아는 사람이 많다","발이 크다","잘 걷는다","성격이 급하다"], a:0, e:"사귀는 사람이 많다는 뜻"}
+      ],
+      8: [
+        {u:1, q:"'매우'는 어떤 품사일까요?", c:["부사","형용사","동사","명사"], a:0, e:"다른 말을 꾸며 주는 부사"},
+        {u:1, q:"한자성어 '설상가상'의 뜻은?", c:["엎친 데 덮친 격","좋은 일이 겹침","고생 끝에 낙","미리 대비함"], a:0, e:"눈 위에 서리 → 안 좋은 일이 겹쳐 일어남"},
+        {u:1, q:"'나는 책을 읽었다'에서 '책을'의 문장 성분은?", c:["목적어","주어","서술어","보어"], a:0, e:"'무엇을'에 해당 → 목적어"},
+        {u:1, q:"맞춤법이 바른 것은?", c:["오랜만에","오랫만에","오랬만에","오랜 만에"], a:0, e:"'오랜만에'가 바른 표기"},
+        {u:1, q:"한자성어 '괄목상대'의 뜻은?", c:["실력이 크게 늚","서로 싸움","눈이 나빠짐","눈을 감음"], a:0, e:"눈을 비비고 다시 봄 → 실력이 놀랍게 향상됨"},
+        {u:1, q:"'먹히다'는 어떤 표현일까요?", c:["피동 표현","사동 표현","높임 표현","시제 표현"], a:0, e:"당하는 뜻을 나타내는 피동 표현"},
+        {u:1, q:"'고루하다'의 뜻으로 알맞은 것은?", c:["낡고 완고하다","즐겁고 새롭다","빠르고 급하다","조용하다"], a:0, e:"낡은 생각에 젖어 완고함"},
+        {u:1, q:"속담 '가는 말이 고와야 오는 말이 곱다'의 교훈은?", c:["내가 잘해야 남도 잘한다","말을 아껴라","서둘러라","돈을 아껴라"], a:0, e:"내가 잘 대해야 상대도 잘 대한다"}
       ]
     },
     english: {
@@ -274,33 +389,103 @@
         {u:4, q:"She ___ happy. 빈칸에 알맞은 것은?", c:["is","am","are","be"], a:0, e:"주어 She 에는 be동사 'is'"},
         {u:5, q:"나이를 물을 때: How ___ are you?", c:["old","many","much","tall"], a:0, e:"How old are you? 로 물어요"},
         {u:6, q:"'Monday' 다음 요일은?", c:["Tuesday","Sunday","Friday","March"], a:0, e:"월요일(Monday) 다음은 화요일(Tuesday)"}
+      ],
+      8: [
+        {u:1, q:"I have lived here ___ 2020.", c:["since","for","at","in"], a:0, e:"since + 시점(2020), for + 기간"},
+        {u:1, q:"The window was ___ by Tom. (수동태)", c:["broken","break","breaks","broke"], a:0, e:"수동태 be + 과거분사 → broken"},
+        {u:1, q:"She studies hard ___ pass the exam.", c:["to","for","that","so"], a:0, e:"~하기 위해: to부정사 (to pass)"},
+        {u:1, q:"This is the book ___ I bought yesterday.", c:["which","who","whom","whose"], a:0, e:"사물 선행사 → 관계대명사 which"},
+        {u:1, q:"Seoul is one of the ___ cities in Korea.", c:["biggest","big","bigger","more big"], a:0, e:"one of the + 최상급 → biggest"},
+        {u:1, q:"Do you know where ___ ? (간접의문문)", c:["he is","is he","does he","he does"], a:0, e:"간접의문문 어순: 주어+동사 → where he is"},
+        {u:1, q:"___ it was raining, we went out.", c:["Although","Because","So","And"], a:0, e:"비록 ~이지만: Although"},
+        {u:1, q:"I enjoy ___ soccer with my friends.", c:["playing","play","to play","played"], a:0, e:"enjoy + 동명사(-ing) → playing"}
+      ]
+    },
+    enmath: {
+      4: [
+        {u:1, q:"What is 3/5 + 1/5?", c:["4/5","4/10","3/25","2/5"], a:0, e:"Same denominator → add tops. 4/5"},
+        {u:1, q:"What is 0.3 + 0.4?", c:["0.7","0.07","7","0.12"], a:0, e:"0.3+0.4=0.7"},
+        {u:1, q:"Which number is the largest?", c:["9,990","9,099","8,999","9,090"], a:0, e:"자릿값 비교 → 9,990"},
+        {u:1, q:"A triangle with three 60° angles is a(n)…", c:["equilateral triangle","right triangle","obtuse triangle","isosceles triangle"], a:0, e:"정삼각형 = equilateral triangle"},
+        {u:1, q:"How many sides does a pentagon have?", c:["5","6","4","8"], a:0, e:"pentagon(오각형)=5"},
+        {u:1, q:"What is 6 × 7?", c:["42","36","48","13"], a:0, e:"6×7=42"}
+      ],
+      5: [
+        {u:1, q:"What is 1/2 × 1/4?", c:["1/8","2/6","1/6","4/2"], a:0, e:"(1×1)/(2×4)=1/8"},
+        {u:1, q:"Round 3.7 to the nearest whole number.", c:["4","3","3.5","40"], a:0, e:"7≥5 → round up → 4"},
+        {u:1, q:"What is 0.6 × 0.5?", c:["0.3","0.11","3","0.35"], a:0, e:"30 → 0.30 = 0.3"},
+        {u:1, q:"How many faces does a rectangular prism have?", c:["6","8","12","4"], a:0, e:"직육면체=6 faces"},
+        {u:1, q:"The average of 80, 90, and 85 is…", c:["85","80","90","88"], a:0, e:"(80+90+85)÷3=85"},
+        {u:1, q:"What is 2/3 × 6?", c:["4","9","2/18","12/3"], a:0, e:"12/3=4"}
+      ],
+      8: [
+        {u:1, q:"Solve: 2x + 3 = 11. x = ?", c:["4","7","3","5"], a:0, e:"2x=8 → x=4"},
+        {u:1, q:"What is 2³ × 2² ?", c:["32","64","16","8"], a:0, e:"2⁵=32"},
+        {u:1, q:"A right triangle has a 90° angle. If another angle is 30°, the third is…", c:["60°","30°","90°","45°"], a:0, e:"180−90−30=60"},
+        {u:1, q:"Simplify: 3(x + 2) = ?", c:["3x + 6","3x + 2","x + 6","3x"], a:0, e:"분배법칙: 3x+6"},
+        {u:1, q:"What is 15% of 200?", c:["30","15","20","45"], a:0, e:"200×0.15=30"},
+        {u:1, q:"The perimeter of a square with side 5 is…", c:["20","25","10","15"], a:0, e:"4×5=20"}
+      ]
+    },
+    enread: {
+      4: [
+        {u:1, q:"I ___ a book every night.", c:["read","reads","reading","readed"], a:0, e:"I 뒤에는 read"},
+        {u:1, q:"What is the opposite of 'big'?", c:["small","tall","long","fast"], a:0, e:"big ↔ small"},
+        {u:1, q:"one cat, two ___ .", c:["cats","cat","cates","cat's"], a:0, e:"복수형 cats"},
+        {u:1, q:"Which word is a color?", c:["yellow","apple","run","happy"], a:0, e:"yellow = 노랑"},
+        {u:1, q:"She ___ to school every day.", c:["goes","go","going","gone"], a:0, e:"She + goes"},
+        {u:1, q:"Read: 'Tom has a red ball.' What color is the ball?", c:["red","blue","green","yellow"], a:0, e:"red"}
+      ],
+      5: [
+        {u:1, q:"Yesterday I ___ to the park.", c:["went","go","goes","going"], a:0, e:"과거형 went"},
+        {u:1, q:"What is the opposite of 'begin'?", c:["end","start","open","run"], a:0, e:"begin ↔ end"},
+        {u:1, q:"They ___ playing soccer now.", c:["are","is","am","be"], a:0, e:"They + are"},
+        {u:1, q:"Which sentence is correct?", c:["He is my friend.","He are my friend.","He am my friend.","He be my friend."], a:0, e:"He + is"},
+        {u:1, q:"What does 'happy' mean?", c:["기쁜","슬픈","화난","피곤한"], a:0, e:"happy=기쁜"},
+        {u:1, q:"Read: 'Mia likes apples and bananas.' What does Mia like?", c:["fruit","cars","books","shoes"], a:0, e:"apples·bananas = fruit"}
+      ],
+      8: [
+        {u:1, q:"Choose the best word: The plan was a great ___.", c:["success","successful","succeed","successfully"], a:0, e:"명사 자리 → success"},
+        {u:1, q:"What is the opposite of 'ancient'?", c:["modern","old","past","history"], a:0, e:"ancient(고대) ↔ modern(현대)"},
+        {u:1, q:"Read: 'Despite the rain, they finished the game.' They finished the game…", c:["even though it rained","because of the rain","before the rain","without a game"], a:0, e:"despite=~에도 불구하고"},
+        {u:1, q:"Choose the correct: She is the girl ___ won the prize.", c:["who","which","what","whom"], a:0, e:"사람 주격 관계대명사 who"},
+        {u:1, q:"'generous' means…", c:["관대한, 잘 베푸는","이기적인","화난","조용한"], a:0, e:"generous = 너그러운"},
+        {u:1, q:"Pick the correctly spelled word:", c:["beautiful","beatiful","beutiful","beautifull"], a:0, e:"beautiful"}
       ]
     }
   };
-  const SUBJ_KO = {math:"수학", korean:"국어", english:"영어"};
+  const SUBJ_KO = {math:"수학", korean:"국어", english:"영어", enmath:"영어 수학", enread:"영어 읽기"};
 
-  // ---------- 비슷한 문제 생성기 ----------
+  const INTERVIEW = [
+    {q:"Can you introduce yourself?", ko:"자기소개를 해줄래요?", model:"Hi, my name is ___. I am ___ years old. I like ___. Nice to meet you.", tip:"이름·나이·좋아하는 것을 또박또박. 웃으며 인사!"},
+    {q:"What is your favorite subject? Why?", ko:"가장 좋아하는 과목과 이유는?", model:"My favorite subject is ___ because it is fun and I am good at it.", tip:"과목 + 이유 한 문장"},
+    {q:"What do you like to do in your free time?", ko:"여가 시간에 뭘 하나요?", model:"In my free time, I like to ___. It makes me happy.", tip:"취미 + 느낌"},
+    {q:"Tell me about your family.", ko:"가족을 소개해줄래요?", model:"There are ___ people in my family. I have ___. We like to ___ together.", tip:"가족 수 + 구성원 + 함께 하는 것"},
+    {q:"Why do you want to come to this school?", ko:"왜 이 학교에 오고 싶나요?", model:"I want to come to this school because I want to learn ___ and make new friends.", tip:"배우고 싶은 것 + 친구"},
+    {q:"What is your favorite book or movie?", ko:"좋아하는 책이나 영화는?", model:"My favorite ___ is ___. I like it because ___.", tip:"제목 + 좋아하는 이유"},
+    {q:"What do you want to be when you grow up?", ko:"커서 무엇이 되고 싶나요?", model:"When I grow up, I want to be a ___ because ___.", tip:"장래희망 + 이유"},
+    {q:"Do you have any questions for us?", ko:"우리에게 질문이 있나요?", model:"Yes. Can you tell me more about the clubs at this school?", tip:"질문 하나 준비하면 적극적으로 보여요!"}
+  ];
+
+  // ---------- generators ----------
   function rnd(n){ return Math.floor(Math.random()*n); }
   function gcd(a,b){ return b?gcd(b,a%b):a; }
   function fstr(n,d){ if(d===0) return ""+n; const g=gcd(Math.abs(n),Math.abs(d))||1; n/=g; d/=g; return d===1?(""+n):(n+"/"+d); }
   function pick4(correct, distractors){
-    const set=[correct];
+    const set=[String(correct)];
     for(const x of distractors){ if(set.length>=4) break; if(x!=null && !set.includes(String(x))) set.push(String(x)); }
     let k=2; while(set.length<4){ const c=String(k); if(!set.includes(c)) set.push(c); k++; }
     for(let i=set.length-1;i>0;i--){ const j=rnd(i+1); [set[i],set[j]]=[set[j],set[i]]; }
     return { c:set, a:set.indexOf(String(correct)) };
   }
   const GEN = {
-    fracAddSame(){ const ds=[4,5,6,8]; const d=ds[rnd(4)]; let a=1+rnd(d-2); let b=1+rnd(Math.max(1,d-1-a)); if(a+b>d){b=d-a;} if(b<1)b=1; const s=a+b;
-      const cor=fstr(s,d);
+    fracAddSame(){ const ds=[4,5,6,8]; const d=ds[rnd(4)]; let a=1+rnd(d-2); let b=1+rnd(Math.max(1,d-1-a)); if(a+b>d){b=d-a;} if(b<1)b=1; const s=a+b; const cor=fstr(s,d);
       return Object.assign({q:a+"/"+d+" + "+b+"/"+d+" = ?", e:"분모가 같으면 분자끼리 더해요: "+a+"+"+b+"="+s+" → "+cor}, pick4(cor,[fstr(s,2*d),fstr(a*b,d),fstr(s+1,d)])); },
-    fracSubSame(){ const ds=[4,5,6,8]; const d=ds[rnd(4)]; let a=2+rnd(d-1); if(a>d)a=d; let b=1+rnd(a-1); const diff=a-b;
-      const cor=fstr(diff,d);
+    fracSubSame(){ const ds=[4,5,6,8]; const d=ds[rnd(4)]; let a=2+rnd(d-1); if(a>d)a=d; let b=1+rnd(a-1); const diff=a-b; const cor=fstr(diff,d);
       return Object.assign({q:a+"/"+d+" - "+b+"/"+d+" = ?", e:"분모가 같으면 분자끼리 빼요: "+a+"-"+b+"="+diff+" → "+cor}, pick4(cor,[fstr(a+b,d),fstr(diff,2*d),fstr(diff+1,d)])); },
-    decAdd(){ const xi=1+rnd(8), yi=1+rnd(8); const t=xi+yi; const dstr=v=>{const w=Math.floor(v/10),f=v%10; return f?(w+"."+f):(""+w);};
-      const cor=dstr(t);
+    decAdd(){ const xi=1+rnd(8), yi=1+rnd(8); const t=xi+yi; const dstr=v=>{const w=Math.floor(v/10),f=v%10; return f?(w+"."+f):(""+w);}; const cor=dstr(t);
       return Object.assign({q:"0."+xi+" + 0."+yi+" = ?", e:"소수점을 맞춰 더하면 "+cor}, pick4(cor,[dstr(t+1), dstr(t>1?t-1:t+2), xi+"."+yi])); },
-    decMul(){ const ai=1+rnd(8), bi=1+rnd(8); const h=ai*bi; const val=(h/100); const cor=(+val.toFixed(2)).toString();
+    decMul(){ const ai=1+rnd(8), bi=1+rnd(8); const h=ai*bi; const cor=(+(h/100).toFixed(2)).toString();
       return Object.assign({q:"0."+ai+" × 0."+bi+" = ?", e:ai+"×"+bi+"="+h+", 소수 두 자리 → "+cor}, pick4(cor,[(+(h/10).toFixed(1)).toString(), ""+h, (+((h+1)/100).toFixed(2)).toString()])); },
     fracTimesInt(){ const bs=[2,3,4,5]; const b=bs[rnd(4)]; const a=1+rnd(b-1); const m=1+rnd(3); const k=b*m; const res=a*m;
       return Object.assign({q:a+"/"+b+" × "+k+" = ?", e:a+"/"+b+" × "+k+" = "+(a*k)+"/"+b+" = "+res}, pick4(""+res,[""+(a*k), fstr(a*k,b*2), ""+(res+1)])); },
@@ -310,142 +495,196 @@
       return Object.assign({q:x.toFixed(1)+"을 반올림하여 자연수로 나타내면?", e:"소수 첫째 자리 "+fd+"은 "+(fd>=5?"5 이상이라 올림":"5 미만이라 버림")+" → "+cor}, pick4(""+cor,[""+Math.floor(x),""+Math.ceil(x),""+(cor+1)])); }
   };
 
-  // ---------- 저장 ----------
+  // ---------- storage ----------
   const LS = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
-  let child = LS.get("study_child","태희"); if(!CHILD_GRADE[child]) child="태희";
-  let grade = CHILD_GRADE[child], subject="math";
-  let quizList=[], qi=0, score=0, answered=false, retryMode=false;
-
   const $ = id => document.getElementById(id);
-  function show(s){ ["home","quiz","result","wrongbook"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
-  function wrongKey(c){ return "study_wrong_"+(c||child); }
-  function getWrongs(c){ return LS.get(wrongKey(c),[]); }
-  function saveWrongs(l,c){ LS.set(wrongKey(c),l); }
 
-  // ---------- 진도(날짜) ----------
-  const SEM_START = new Date(2026,7,18); // 2026-08-18 (2학기 시작 추정)
-  const TOTAL_WEEKS = 18;
-  function curWeek(){ const now=new Date(); const w=Math.floor((now-SEM_START)/(7*86400000))+1; return Math.min(Math.max(w,1),TOTAL_WEEKS); }
-  function unlockedUnit(subj,g){ const units=UNITS[subj][g].length; const per=TOTAL_WEEKS/units; return Math.min(Math.max(Math.ceil(curWeek()/per),1),units); }
-  function unitName(subj,g){ return UNITS[subj][g][unlockedUnit(subj,g)-1]; }
+  let child = findChild(LS.get("study_child","태희"));
+  let track = "kr";
+  let subject="math", grade=child.g;
+  let quizList=[], qi=0, score=0, answered=false, retryMode=false;
+  let ivIndex=0, ivRecog=null, ivRecActive=false;
+  let practiceMode=false;
 
-  // ---------- 오늘 푼 개수 ----------
+  function show(s){ ["home","quiz","result","wrongbook","interview"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
+  function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
+
+  function getPool(subj,g){ const b=BANK[subj]; if(!b) return []; return b[g]||b[5]||b[4]||[]; }
+  function getUnitName(subj,g,u){ const U=UNITS[subj]; const arr=(U&&(U[g]||U[5]||U[4]))||[]; return arr[u-1]||arr[0]||""; }
+
+  function wrongKey(){ return "study_wrong_"+child.name+"_"+track; }
+  function getWrongs(){ return LS.get(wrongKey(),[]); }
+  function saveWrongs(l){ LS.set(wrongKey(),l); }
+
+  // 진도(초등 한국 공부만)
+  const SEM_START = new Date(2026,7,18); const TOTAL_WEEKS=18;
+  function curWeek(){ const w=Math.floor((new Date()-SEM_START)/(7*86400000))+1; return Math.min(Math.max(w,1),TOTAL_WEEKS); }
+  function isGated(){ return track==="kr" && (child.g===4||child.g===5); }
+  function unlockedUnit(subj){ const units=(UNITS[subj][child.g]||[]).length||1; const per=TOTAL_WEEKS/units; return Math.min(Math.max(Math.ceil(curWeek()/per),1),units); }
+
+  // 오늘 카운트
   function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
-  function getDaily(){ const d=LS.get("study_daily_"+child,{date:"",solved:0,correct:0}); if(d.date!==todayStr()) return {date:todayStr(),solved:0,correct:0}; return d; }
-  function bumpDaily(correct){ const d=getDaily(); d.solved++; if(correct)d.correct++; LS.set("study_daily_"+child,d); }
+  function getDaily(){ const d=LS.get("study_daily_"+child.name,{date:"",solved:0,correct:0}); return d.date===todayStr()?d:{date:todayStr(),solved:0,correct:0}; }
+  function bumpDaily(ok){ const d=getDaily(); d.solved++; if(ok)d.correct++; LS.set("study_daily_"+child.name,d); }
 
-  function refreshHome(){
-    grade=CHILD_GRADE[child];
-    $("whoChip").textContent=child;
-    document.querySelectorAll("#childPick .pick").forEach(b=>b.classList.toggle("on", b.dataset.child===child));
-    $("weekBanner").textContent = "📅 오늘은 2학기 "+curWeek()+"주차 · 지금까지 배운 데까지 문제를 내요 (예상)";
-    const dd=getDaily(); $("dToday").textContent=dd.solved; $("dCorrect").textContent=dd.correct;
-    document.querySelectorAll(".scount").forEach(el=>{ el.textContent = "지금 진도: "+unitName(el.dataset.c,grade); });
-    $("noteCnt").textContent=getWrongs().length;
+  // ---------- step 1: child ----------
+  function renderKids(){
+    const box=$("kidPick"); box.innerHTML="";
+    CHILDREN.forEach(c=>{ const b=document.createElement("button"); b.className="kid";
+      b.innerHTML='<span class="kemo">'+c.emo+'</span><span><span class="kname">'+c.name+'</span><span class="kmeta">'+c.kGrade+' · 국제학교 '+c.intlG+'</span></span><span class="karr">›</span>';
+      b.addEventListener("click",()=>{ child=c; LS.set("study_child",c.name); gotoTrack(); }); box.appendChild(b); });
   }
-  function setChild(c){ child=c; if(!CHILD_GRADE[child])child="태희"; LS.set("study_child",child); refreshHome(); }
-  document.querySelectorAll("#childPick .pick").forEach(b=>b.addEventListener("click",()=>setChild(b.dataset.child)));
-  document.querySelectorAll("#subjectPick .subj").forEach(b=>b.addEventListener("click",()=>startQuiz(b.dataset.subj)));
-  $("whoChip").addEventListener("click",()=>setChild(child==="태희"?"태정":"태희"));
+  function gotoChild(){ homeStep("child"); setCrumb(); show("home"); }
+  function gotoTrack(){
+    $("krDesc").textContent = (child.g===8?"중2 과정":child.kGrade)+" · 수학·국어·영어";
+    $("intlDesc").textContent = "영어로 · "+child.intlG+" "+child.intlNote;
+    homeStep("track"); setCrumb();
+  }
+  $("trackBack").addEventListener("click",gotoChild);
+  document.querySelectorAll("[data-track]").forEach(b=>b.addEventListener("click",()=>{ track=b.dataset.track; gotoSubject(); }));
+
+  // ---------- step 3: subject ----------
+  function gotoSubject(){
+    grade=child.g;
+    const wb=$("weekBanner"); wb.className="weekbanner"+(track==="intl"?" intl":"");
+    if(track==="intl"){ wb.textContent="🌍 "+child.name}
+    if(track==="intl"){ wb.textContent="🌍 "+child.name+" · 국제학교 "+child.intlG+" 준비 ("+child.intlNote+")"; }
+    else if(isGated()){ wb.textContent="📅 오늘은 2학기 "+curWeek()+"주차 · 배운 데까지 문제를 내요 (예상)"; }
+    else { wb.textContent="🇰🇷 "+child.name+" · "+(child.g===8?"중2":child.kGrade)+" 과정"; }
+    const dd=getDaily(); $("dToday").textContent=dd.solved; $("dCorrect").textContent=dd.correct;
+    $("subjTitle").textContent = TRACKS[track].label+" · 과목 고르기";
+    const box=$("subjectPick"); box.innerHTML="";
+    TRACKS[track].subjects.forEach(s=>{ const b=document.createElement("button"); b.className="subj"+(track==="intl"?" intl":"");
+      let sub = s.k==="interview" ? "말하기 연습" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
+      b.innerHTML='<span class="semo">'+s.emo+'</span><span class="sname">'+s.n+'</span><span class="scount">'+sub+'</span>';
+      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else startQuiz(s.k); });
+      box.appendChild(b); });
+    $("noteCnt").textContent=getWrongs().length;
+    renderPractice();
+    homeStep("subject"); setCrumb(); show("home");
+  }
+  $("subjBack").addEventListener("click",gotoTrack);
+  function renderPractice(){ const b=$("practiceToggle"); b.classList.toggle("on",practiceMode); b.querySelector(".pstate").textContent=practiceMode?"켜짐 (기록 안 함)":"꺼짐"; }
+  $("practiceToggle").addEventListener("click",()=>{ practiceMode=!practiceMode; renderPractice(); });
 
   function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
   function startQuiz(subj){
-    subject=subj; retryMode=false;
-    let lim=unlockedUnit(subj,grade);
-    let pool=(BANK[subj][grade]||[]).filter(p=>p.u<=lim);
-    while(pool.length<4 && lim<UNITS[subj][grade].length){ lim++; pool=(BANK[subj][grade]||[]).filter(p=>p.u<=lim); }
-    if(!pool.length) pool=(BANK[subj][grade]||[]).slice();
+    subject=subj; retryMode=false; grade=child.g;
+    let pool;
+    if(isGated()){
+      let lim=unlockedUnit(subj); pool=getPool(subj,grade).filter(p=>p.u<=lim);
+      const total=(UNITS[subj][grade]||[]).length;
+      while(pool.length<4 && lim<total){ lim++; pool=getPool(subj,grade).filter(p=>p.u<=lim); }
+      if(!pool.length) pool=getPool(subj,grade).slice();
+    } else { pool=getPool(subj,grade).slice(); }
+    if(!pool.length){ alert("이 과목은 아직 문제 준비 중이에요."); return; }
     quizList = shuffle(pool).map(q=>Object.assign({},q,{subj,grade,retry:0}));
     qi=0; score=0; renderQ(); show("quiz");
   }
   function startRetryFromNote(){
-    const w=getWrongs(); if(!w.length) return;
-    retryMode=true;
-    quizList = shuffle(w).map(x=> (x.gen && GEN[x.gen])
-      ? Object.assign(GEN[x.gen](), {gen:x.gen,u:x.u,subj:x.subj,grade:x.grade,retry:0})
-      : Object.assign({},x,{retry:0}) );
+    const w=getWrongs(); if(!w.length) return; retryMode=true;
+    quizList = shuffle(w).map(x=> (x.gen && GEN[x.gen]) ? Object.assign(GEN[x.gen](),{gen:x.gen,u:x.u,subj:x.subj,grade:x.grade,retry:0}) : Object.assign({},x,{retry:0}) );
     qi=0; score=0; renderQ(); show("quiz");
   }
   function makeSimilar(item){
-    if(item.gen && GEN[item.gen]){ return Object.assign(GEN[item.gen](), {gen:item.gen, u:item.u, subj:item.subj, grade:item.grade, retry:(item.retry||0)+1}); }
-    const sibs=(BANK[item.subj][item.grade]||[]).filter(p=>p.u===item.u && p.q!==item.q);
-    const base = sibs.length? sibs[rnd(sibs.length)] : item;
+    if(item.gen && GEN[item.gen]) return Object.assign(GEN[item.gen](),{gen:item.gen,u:item.u,subj:item.subj,grade:item.grade,retry:(item.retry||0)+1});
+    const sibs=getPool(item.subj,item.grade).filter(p=>p.u===item.u && p.q!==item.q);
+    const base=sibs.length?sibs[rnd(sibs.length)]:item;
     return Object.assign({},base,{subj:item.subj,grade:item.grade,retry:(item.retry||0)+1});
   }
   function renderQ(){
-    answered=false;
-    const item=quizList[qi];
-    const rt = item.retry>0;
-    const tag=$("qTag"); tag.className="qtag"+(rt?" retry":"");
-    tag.textContent = rt ? ("🔁 비슷한 문제 다시!") : ((SUBJ_KO[item.subj]||"")+" · "+(UNITS[item.subj][item.grade][item.u-1]||"")+(retryMode?" · 📒복습":""));
-    $("qText").textContent=item.q;
-    $("qCount").textContent=(qi+1)+"/"+quizList.length;
-    $("progBar").style.width=(qi/quizList.length*100)+"%";
-    const box=$("choices"); box.innerHTML="";
-    const keys=["가","나","다","라"];
+    answered=false; const item=quizList[qi]; const rt=item.retry>0; const intl=(item.subj==="enmath"||item.subj==="enread");
+    const tag=$("qTag"); tag.className="qtag"+(rt?" retry":(intl?" intl":""));
+    tag.textContent = rt ? "🔁 비슷한 문제 다시!" : ((SUBJ_KO[item.subj]||"")+" · "+(intl?("국제학교 "+child.intlG):getUnitName(item.subj,item.grade,item.u)));
+    $("qText").textContent=item.q; $("qCount").textContent=(qi+1)+"/"+quizList.length; $("progBar").style.width=(qi/quizList.length*100)+"%";
+    const box=$("choices"); box.innerHTML=""; const keys=["가","나","다","라"];
     item.c.forEach((ch,idx)=>{ const b=document.createElement("button"); b.className="choice"; b.innerHTML='<span class="key">'+keys[idx]+'</span><span>'+escapeHtml(ch)+'</span>'; b.addEventListener("click",()=>choose(idx,b)); box.appendChild(b); });
+    $("practiceBadge").classList.toggle("hidden",!practiceMode);
     $("feedback").classList.add("hidden"); $("nextBtn").classList.add("hidden");
   }
   function choose(idx,btn){
-    if(answered) return; answered=true;
-    const item=quizList[qi];
-    const correct = idx===item.a;
-    bumpDaily(correct);
+    if(answered) return; answered=true; const item=quizList[qi]; const correct=idx===item.a;
+    if(!practiceMode) bumpDaily(correct);
     $("choices").querySelectorAll(".choice").forEach((b,i)=>{ b.disabled=true; if(i===item.a) b.classList.add("correct"); });
     if(correct){ score++; }
     else{
       btn.classList.add("wrong");
-      const w=getWrongs();
-      if(!w.some(x=>x.q===item.q)){ w.push({q:item.q,c:item.c,a:item.a,e:item.e,gen:item.gen,u:item.u,subj:item.subj,grade:item.grade}); saveWrongs(w); }
-      // 비슷한 문제 한 번 더 (같은 원문당 1회)
+      if(!practiceMode){ const w=getWrongs(); if(!w.some(x=>x.q===item.q)){ w.push({q:item.q,c:item.c,a:item.a,e:item.e,gen:item.gen,u:item.u,subj:item.subj,grade:item.grade}); saveWrongs(w); } }
       if((item.retry||0)<1 && quizList.length<24){ quizList.push(makeSimilar(item)); }
     }
     const fb=$("feedback"); fb.className="feedback "+(correct?"ok":"no");
-    fb.innerHTML = correct
-      ? '<div class="fh">🎉 정답이에요!</div><div class="exp">'+escapeHtml(item.e)+'</div>'
-      : '<div class="fh">📒 오답노트에 담았어요 · 비슷한 문제 또 나와요</div><div class="exp"><b>정답: '+escapeHtml(item.c[item.a])+'</b><br>'+escapeHtml(item.e)+'</div>';
+    if(correct){ fb.innerHTML='<div class="fh">🎉 정답이에요!</div><div class="exp">'+escapeHtml(item.e)+'</div>'; }
+    else{ const head=practiceMode?'🧪 연습 모드 · 기록 안 함':'📒 오답노트에 담았어요 · 비슷한 문제 또 나와요'; fb.innerHTML='<div class="fh">'+head+'</div><div class="exp"><b>정답: '+escapeHtml(item.c[item.a])+'</b><br>'+escapeHtml(item.e)+'</div>'; }
     fb.classList.remove("hidden");
-    $("nextBtn").textContent=(qi===quizList.length-1)?"결과 보기 →":"다음 →";
-    $("nextBtn").classList.remove("hidden");
-    $("progBar").style.width=((qi+1)/quizList.length*100)+"%";
-    $("qCount").textContent=(qi+1)+"/"+quizList.length;
+    $("nextBtn").textContent=(qi===quizList.length-1)?"결과 보기 →":"다음 →"; $("nextBtn").classList.remove("hidden");
+    $("progBar").style.width=((qi+1)/quizList.length*100)+"%"; $("qCount").textContent=(qi+1)+"/"+quizList.length;
   }
   $("nextBtn").addEventListener("click",()=>{ if(qi<quizList.length-1){ qi++; renderQ(); } else finish(); });
-  $("quizBack").addEventListener("click",()=>{ refreshHome(); show("home"); });
+  $("quizBack").addEventListener("click",gotoSubject);
 
   function finish(){
-    const total=quizList.length;
-    $("rScore").innerHTML=score+'<small>/'+total+'</small>';
+    const total=quizList.length; $("rScore").innerHTML=score+'<small>/'+total+'</small>';
     const pct=score/total; let emo,msg;
-    if(pct===1){emo="🏆";msg="완벽해요! 다 맞았어요!";}
-    else if(pct>=0.7){emo="🎉";msg="잘했어요!";}
-    else if(pct>=0.4){emo="💪";msg="좋아요, 오답노트로 복습해요!";}
-    else{emo="📒";msg="괜찮아요! 오답노트 보면 금방 늘어요";}
+    if(pct===1){emo="🏆";msg="완벽해요! 다 맞았어요!";} else if(pct>=0.7){emo="🎉";msg="잘했어요!";}
+    else if(pct>=0.4){emo="💪";msg="좋아요, 오답노트로 복습해요!";} else{emo="📒";msg="괜찮아요! 오답노트 보면 금방 늘어요";}
     $("rEmoji").textContent=emo; $("rMsg").textContent=msg;
-    const wrong=total-score;
-    $("rSub").textContent = wrong>0 ? ("틀린 문제는 오답노트에 담고 비슷한 문제로 다시 냈어요 📒") : "오답이 없어요! 최고!";
-    const dd=getDaily(); $("rToday").innerHTML="오늘 "+child+"이(가) 푼 문제: <b>"+dd.solved+"개</b> · 정답 <b>"+dd.correct+"개</b> 🔥";
-    $("rNoteCnt").textContent=getWrongs().length;
-    show("result");
+    $("rSub").textContent=(total-score>0)?"틀린 문제는 오답노트에 담고 비슷한 문제로 다시 냈어요 📒":"오답이 없어요! 최고!";
+    const dd=getDaily(); $("rToday").innerHTML="오늘 "+child.name+"이(가) 푼 문제: <b>"+dd.solved+"개</b> · 정답 <b>"+dd.correct+"개</b> 🔥";
+    $("rNoteCnt").textContent=getWrongs().length; show("result");
   }
-  $("rHome").addEventListener("click",()=>{ refreshHome(); show("home"); });
+  $("rHome").addEventListener("click",gotoSubject);
   $("rRetry").addEventListener("click",()=>{ retryMode?startRetryFromNote():startQuiz(subject); });
   $("rNote").addEventListener("click",openNote);
 
   function openNote(){
-    $("wbWho").textContent=child;
-    const w=getWrongs(); const list=$("wbList");
+    $("wbWho").textContent=child.name; const w=getWrongs(); const list=$("wbList");
     if(!w.length){ list.innerHTML='<div class="empty"><span class="big">✨</span>오답노트가 비어 있어요!<br>문제를 풀면 틀린 것만 여기 모여요.</div>'; $("wbActions").classList.add("hidden"); }
-    else{ $("wbActions").classList.remove("hidden"); list.innerHTML=w.map(x=>('<div class="wbitem"><div class="wtag">'+(SUBJ_KO[x.subj]||"")+' · '+(UNITS[x.subj]&&UNITS[x.subj][x.grade]?UNITS[x.subj][x.grade][x.u-1]:x.grade+"학년")+'</div><div class="wq">'+escapeHtml(x.q)+'</div><div class="wa">정답: '+escapeHtml(x.c[x.a])+'</div><div class="we">'+escapeHtml(x.e)+'</div></div>')).join(""); }
+    else{ $("wbActions").classList.remove("hidden"); list.innerHTML=w.map((x,i)=>('<div class="wbitem"><button class="wbdel" data-i="'+i+'" title="삭제">✕</button><div class="wtag">'+(SUBJ_KO[x.subj]||"")+'</div><div class="wq">'+escapeHtml(x.q)+'</div><div class="wa">정답: '+escapeHtml(x.c[x.a])+'</div><div class="we">'+escapeHtml(x.e)+'</div></div>')).join("");
+      list.querySelectorAll(".wbdel").forEach(btn=>btn.addEventListener("click",()=>{ const arr=getWrongs(); arr.splice(+btn.dataset.i,1); saveWrongs(arr); openNote(); })); }
     show("wrongbook");
   }
   $("openNote").addEventListener("click",openNote);
-  $("wbBack").addEventListener("click",()=>{ refreshHome(); show("home"); });
+  $("wbBack").addEventListener("click",gotoSubject);
   $("wbRetry").addEventListener("click",startRetryFromNote);
-  $("wbClear").addEventListener("click",()=>{ if(confirm(child+"의 오답노트를 전부 지울까요?")){ saveWrongs([]); openNote(); } });
+  $("wbClear").addEventListener("click",()=>{ if(confirm(child.name+"의 오답노트를 전부 지울까요?")){ saveWrongs([]); openNote(); } });
+
+  // ---------- interview ----------
+  function openInterview(){ ivIndex=0; renderIv(); show("interview"); }
+  function renderIv(){
+    const it=INTERVIEW[ivIndex];
+    $("ivQ").textContent=it.q; $("ivQko").textContent=it.ko; $("ivCount").textContent=(ivIndex+1)+"/"+INTERVIEW.length;
+    $("ivModel").classList.add("hidden");
+    $("ivModel").innerHTML='<div class="mh">💡 모범답안 (이렇게 말해보세요)</div><div class="mtxt">'+escapeHtml(it.model)+'</div><div class="mtip">👉 '+escapeHtml(it.tip)+'</div>';
+    $("ivTrans").innerHTML='<span class="ph">🎤 "말하기"를 누르고 영어로 대답해보세요. 여기에 받아써져요.</span>';
+    stopRec();
+  }
+  function speak(t){ try{ if(!("speechSynthesis" in window)){ $("ivNote").textContent="이 브라우저는 읽어주기를 지원하지 않아요 (Chrome/Safari 권장)"; return; } speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=.9; speechSynthesis.speak(u); }catch(e){} }
+  $("ivSpeak").addEventListener("click",()=>speak(INTERVIEW[ivIndex].q));
+  $("ivReveal").addEventListener("click",()=>$("ivModel").classList.toggle("hidden"));
+  $("ivPrev").addEventListener("click",()=>{ if(ivIndex>0){ ivIndex--; renderIv(); } });
+  $("ivNext").addEventListener("click",()=>{ if(ivIndex<INTERVIEW.length-1){ ivIndex++; renderIv(); } else { $("ivNote").textContent="마지막 질문이에요! 처음부터 다시 연습해도 좋아요 😊"; } });
+  $("ivBack").addEventListener("click",()=>{ stopRec(); gotoSubject(); });
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function stopRec(){ ivRecActive=false; $("ivMic").classList.remove("on"); $("ivMic").textContent="🎤 말하기"; try{ if(ivRecog) ivRecog.stop(); }catch(e){} }
+  $("ivMic").addEventListener("click",()=>{
+    if(!SR){ $("ivNote").textContent="이 브라우저는 말하기 인식을 지원하지 않아요. Chrome이나 Safari에서 열어주세요 🙏"; return; }
+    if(ivRecActive){ stopRec(); return; }
+    try{
+      ivRecog=new SR(); ivRecog.lang="en-US"; ivRecog.interimResults=true; ivRecog.continuous=true;
+      let finalTxt="";
+      ivRecog.onresult=e=>{ let interim=""; for(let i=e.resultIndex;i<e.results.length;i++){ const t=e.results[i][0].transcript; if(e.results[i].isFinal) finalTxt+=t+" "; else interim+=t; } $("ivTrans").textContent=(finalTxt+interim)||"…"; };
+      ivRecog.onerror=ev=>{ $("ivNote").textContent="마이크 권한을 허용해주세요 (에러: "+ev.error+")"; stopRec(); };
+      ivRecog.onend=()=>{ if(ivRecActive){ try{ivRecog.start();}catch(e){} } };
+      ivRecog.start(); ivRecActive=true; $("ivMic").classList.add("on"); $("ivMic").textContent="⏹ 멈추기"; $("ivNote").textContent="";
+    }catch(e){ $("ivNote").textContent="말하기 인식을 시작할 수 없어요."; }
+  });
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  refreshHome(); show("home");
+
+  // init
+  renderKids(); gotoChild();
 })();
 </script>
