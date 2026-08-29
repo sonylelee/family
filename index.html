@@ -745,7 +745,16 @@
     $("ivTrans").innerHTML='<span class="ph">🎤 "말하기"를 누르고 영어로 대답해보세요. 여기에 받아써져요.</span>';
     stopRec();
   }
-  function speak(t){ try{ if(!("speechSynthesis" in window)){ $("ivNote").textContent="이 브라우저는 읽어주기를 지원하지 않아요 (Chrome/Safari 권장)"; return; } speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=.9; speechSynthesis.speak(u); }catch(e){} }
+  let enVoice=null;
+  function pickVoice(){ try{ const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[]; if(!vs.length) return;
+    const pref=["Samantha","Ava","Allison","Susan","Karen","Serena","Zoe","Nicky","Aaron","Google US English","Google UK English Female","Google UK English Male","Daniel","Alex"];
+    enVoice = vs.find(v=>/en[-_]US/i.test(v.lang)&&pref.some(p=>v.name.indexOf(p)>=0))
+           || vs.find(v=>/en[-_](US|GB|AU)/i.test(v.lang)&&!/compact|eSpeak|Fred|Albert|Zarvox|robot/i.test(v.name))
+           || vs.find(v=>/^en/i.test(v.lang))
+           || null;
+  }catch(e){} }
+  if("speechSynthesis" in window){ try{ speechSynthesis.onvoiceschanged=pickVoice; }catch(e){} pickVoice(); }
+  function speak(t){ try{ if(!("speechSynthesis" in window)){ $("ivNote").textContent="이 브라우저는 읽어주기를 지원하지 않아요 (Chrome/Safari 권장)"; return; } if(!enVoice) pickVoice(); speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); if(enVoice) u.voice=enVoice; u.lang=(enVoice&&enVoice.lang)||"en-US"; u.rate=.92; u.pitch=1; speechSynthesis.speak(u); }catch(e){} }
   $("ivSpeak").addEventListener("click",()=>speak(INTERVIEW[ivIndex].q));
   $("ivReveal").addEventListener("click",()=>$("ivModel").classList.toggle("hidden"));
   $("ivPrev").addEventListener("click",()=>{ if(ivIndex>0){ ivIndex--; renderIv(); } });
