@@ -153,6 +153,19 @@
   .wbdel{float:right;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text-3);width:28px;height:28px;font-weight:800;cursor:pointer;margin-left:8px}
   .wbdel:hover{border-color:var(--bad);color:var(--bad)}
 
+  .pinwrap{max-width:330px;margin:10px auto;text-align:center}
+  .pintitle{font-size:1.3rem;font-weight:800;margin-top:16px}
+  .pinsub{color:var(--text-2);font-size:.88rem;margin:6px 0 18px}
+  .dots{display:flex;justify-content:center;gap:16px;margin-bottom:8px}
+  .dots i{width:16px;height:16px;border-radius:50%;background:var(--surface-2);border:2px solid var(--border);display:inline-block}
+  .dots i.on{background:var(--brand);border-color:var(--brand)}
+  .pinerr{color:var(--bad);font-weight:700;font-size:.85rem;min-height:20px;margin-bottom:10px}
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .keypad button{padding:18px 0;font-size:1.5rem;font-weight:800;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+  .keypad button:active{background:var(--brand-soft)}
+  .keypad button.blank{visibility:hidden;box-shadow:none;border:none;background:transparent}
+  .pinforgot{margin-top:16px;background:none;border:none;color:var(--text-3);text-decoration:underline;font-size:.82rem;font-weight:600}
+
   /* interview */
   .ivcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
   .ivq{font-size:1.35rem;font-weight:800;line-height:1.4;text-wrap:balance;margin-bottom:6px}
@@ -190,6 +203,7 @@
     <!-- step 2: track -->
     <div id="vTrack" class="hidden">
       <button class="backbtn" id="trackBack">← 아이 다시 고르기</button>
+      <button class="backbtn" id="changePin" style="margin-left:8px">🔑 비밀번호 변경</button>
       <div class="section-t">무엇을 공부할까요?</div>
       <div class="tracks">
         <button class="track kr" data-track="kr"><div class="temo">🇰🇷</div><div><div class="tname">한국 학교 공부</div><div class="tdesc" id="krDesc">지금 학교 진도 · 수학·국어·영어</div></div><div class="tarr">›</div></button>
@@ -277,6 +291,19 @@
     <div class="ivnav">
       <button id="ivPrev">← 이전</button>
       <button class="prim" id="ivNext">다음 질문 →</button>
+    </div>
+  </div>
+
+  <!-- PIN -->
+  <div id="pin" class="hidden">
+    <div class="pinwrap">
+      <button class="backbtn" id="pinCancel">← 취소</button>
+      <div class="pintitle" id="pinTitle">비밀번호</div>
+      <div class="pinsub" id="pinSub"></div>
+      <div class="dots" id="pinDots"></div>
+      <div class="pinerr" id="pinErr"></div>
+      <div class="keypad" id="keypad"></div>
+      <button class="pinforgot hidden" id="pinForgot">🔑 비밀번호를 잊었어요 (부모)</button>
     </div>
   </div>
 </div>
@@ -506,7 +533,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -533,13 +560,13 @@
     const box=$("kidPick"); box.innerHTML="";
     CHILDREN.forEach(c=>{ const b=document.createElement("button"); b.className="kid";
       b.innerHTML='<span class="kemo">'+c.emo+'</span><span><span class="kname">'+c.name+'</span><span class="kmeta">'+c.kGrade+' · 국제학교 '+c.intlG+'</span></span><span class="karr">›</span>';
-      b.addEventListener("click",()=>{ child=c; LS.set("study_child",c.name); gotoTrack(); }); box.appendChild(b); });
+      b.addEventListener("click",()=>requestChild(c)); box.appendChild(b); });
   }
   function gotoChild(){ homeStep("child"); setCrumb(); show("home"); }
   function gotoTrack(){
     $("krDesc").textContent = (child.g===8?"중2 과정":child.kGrade)+" · 수학·국어·영어";
     $("intlDesc").textContent = "영어로 · "+child.intlG+" "+child.intlNote;
-    homeStep("track"); setCrumb();
+    homeStep("track"); setCrumb(); show("home");
   }
   $("trackBack").addEventListener("click",gotoChild);
   document.querySelectorAll("[data-track]").forEach(b=>b.addEventListener("click",()=>{ track=b.dataset.track; gotoSubject(); }));
@@ -566,7 +593,13 @@
   }
   $("subjBack").addEventListener("click",gotoTrack);
   function renderPractice(){ const b=$("practiceToggle"); b.classList.toggle("on",practiceMode); b.querySelector(".pstate").textContent=practiceMode?"켜짐 (기록 안 함)":"꺼짐"; }
-  $("practiceToggle").addEventListener("click",()=>{ practiceMode=!practiceMode; renderPractice(); });
+  $("practiceToggle").addEventListener("click",()=>{
+    if(practiceMode){ practiceMode=false; renderPractice(); return; }
+    const back=()=>gotoSubject(); const enable=()=>{ practiceMode=true; gotoSubject(); };
+    const pp=getParentPin();
+    if(!pp) openPin({title:"부모 비밀번호 만들기",sub:"연습 모드는 부모만 켤 수 있어요 (4자리)",mode:"create",onSuccess:p=>{ setParentPin(p); enable(); },onCancel:back});
+    else openPin({title:"부모 비밀번호",sub:"연습 모드를 켜려면 부모 번호를 입력",mode:"enter",correct:pp,onSuccess:enable,onCancel:back});
+  });
 
   function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -683,6 +716,48 @@
   });
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // ---------- PIN ----------
+  const PINK={ child:n=>"study_pin_child_"+n, parent:"study_pin_parent" };
+  function getChildPin(n){ return LS.get(PINK.child(n),""); }
+  function setChildPin(n,p){ LS.set(PINK.child(n),p); }
+  function getParentPin(){ return LS.get(PINK.parent,"9092"); }
+  function setParentPin(p){ LS.set(PINK.parent,p); }
+  let pinCtx=null;
+  function openPin(o){ pinCtx=Object.assign({buffer:"",err:""},o); renderPin(); show("pin"); }
+  function renderPin(){
+    $("pinTitle").textContent=pinCtx.title; $("pinSub").textContent=pinCtx.sub||"";
+    const dots=$("pinDots"); dots.innerHTML=""; for(let i=0;i<4;i++){ const d=document.createElement("i"); if(i<pinCtx.buffer.length)d.className="on"; dots.appendChild(d); }
+    $("pinErr").textContent=pinCtx.err||"";
+    $("pinForgot").classList.toggle("hidden", !(pinCtx.mode==="enter" && pinCtx.child));
+  }
+  function pinKey(d){
+    if(!pinCtx) return;
+    if(d==="del"){ pinCtx.buffer=pinCtx.buffer.slice(0,-1); pinCtx.err=""; renderPin(); return; }
+    if(pinCtx.buffer.length>=4) return;
+    pinCtx.buffer+=d; pinCtx.err=""; renderPin();
+    if(pinCtx.buffer.length===4) setTimeout(pinSubmit,140);
+  }
+  function pinSubmit(){
+    if(!pinCtx) return; const buf=pinCtx.buffer;
+    if(pinCtx.mode==="create"){ const cb=pinCtx.onSuccess; pinCtx=null; cb(buf); }
+    else { if(buf===pinCtx.correct){ const cb=pinCtx.onSuccess; pinCtx=null; cb(); } else { pinCtx.buffer=""; pinCtx.err="비밀번호가 달라요. 다시 눌러요!"; renderPin(); } }
+  }
+  (function(){ const kp=$("keypad"); ["1","2","3","4","5","6","7","8","9","blank","0","del"].forEach(k=>{ const b=document.createElement("button"); if(k==="blank"){ b.className="blank"; b.disabled=true; } else { b.textContent=k==="del"?"⌫":k; b.addEventListener("click",()=>pinKey(k)); } kp.appendChild(b); }); })();
+  $("pinCancel").addEventListener("click",()=>{ const cb=pinCtx&&pinCtx.onCancel; pinCtx=null; if(cb)cb(); else gotoChild(); });
+  $("pinForgot").addEventListener("click",()=>{
+    const c=pinCtx&&pinCtx.child; if(!c) return;
+    const doReset=()=>openPin({title:c.name+" 새 비밀번호 만들기",sub:"4자리를 새로 정해요",mode:"create",onSuccess:p=>{ setChildPin(c.name,p); child=c; LS.set("study_child",c.name); gotoTrack(); },onCancel:()=>requestChild(c)});
+    const pp=getParentPin();
+    if(!pp) openPin({title:"부모 비밀번호 만들기",sub:"자녀 비번을 잊었을 때 쓰는 부모 번호(4자리)",mode:"create",onSuccess:p=>{ setParentPin(p); doReset(); },onCancel:()=>requestChild(c)});
+    else openPin({title:"부모 비밀번호",sub:"자녀 비번 초기화 — 부모 번호 입력",mode:"enter",correct:pp,onSuccess:doReset,onCancel:()=>requestChild(c)});
+  });
+  function requestChild(c){
+    const pin=getChildPin(c.name);
+    if(!pin) openPin({title:c.name+" 비밀번호 만들기",sub:"처음이에요! 나만의 4자리 비밀번호를 정해요",mode:"create",onSuccess:p=>{ setChildPin(c.name,p); child=c; LS.set("study_child",c.name); gotoTrack(); },onCancel:gotoChild});
+    else openPin({title:c.name+"의 비밀번호",sub:"4자리를 눌러요",mode:"enter",correct:pin,child:c,onSuccess:()=>{ child=c; LS.set("study_child",c.name); gotoTrack(); },onCancel:gotoChild});
+  }
+  $("changePin").addEventListener("click",()=>{ const c=child; openPin({title:c.name+" 새 비밀번호",sub:"바꿀 4자리를 입력해요",mode:"create",onSuccess:p=>{ setChildPin(c.name,p); gotoTrack(); },onCancel:gotoTrack}); });
 
   // init
   renderKids(); gotoChild();
