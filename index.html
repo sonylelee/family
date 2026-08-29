@@ -1,4 +1,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="소니드 공부방">
+<meta name="theme-color" content="#2f7fd6">
 <title>소니드 공부방 · 문제풀이 & 오답노트</title>
 <style>
   :root{
@@ -197,6 +203,13 @@
   .glitem .glspk{background:var(--intl-soft);border:none;color:var(--intl);border-radius:8px;width:34px;height:34px;font-size:1rem;flex:0 0 auto;cursor:pointer}
   .glitem .glen{font-weight:800;font-size:1rem}
   .glitem .glko{margin-left:auto;color:var(--text-2);font-size:.9rem;text-align:right}
+  .ratext{font-size:2rem;font-weight:800;text-align:center;margin:16px 0;color:var(--intl);text-wrap:balance;line-height:1.3}
+  .raresult{margin-top:14px;border-radius:12px;padding:14px;font-size:1rem;font-weight:700;text-align:center;min-height:20px}
+  .raresult.ok{background:var(--good-soft);color:var(--good)}
+  .raresult.no{background:var(--bad-soft);color:var(--bad)}
+  .raresult small{font-weight:400;color:var(--text-2);font-size:.82rem}
+  .arow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .apill{font-size:.75rem;background:var(--surface-2);color:var(--text-2);border-radius:20px;padding:3px 9px}
 
   /* interview */
   .ivcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
@@ -230,6 +243,7 @@
     <div id="vChild">
       <div class="section-t">누가 공부할까요?</div>
       <div class="kids" id="kidPick"></div>
+      <button class="backbtn" id="adminBtn" style="margin-top:14px">🔧 관리 (부모)</button>
     </div>
 
     <!-- step 2: track -->
@@ -319,6 +333,10 @@
         <button class="ivbtn" id="ivMic">🎤 말하기</button>
         <button class="ivbtn" id="ivReveal">💡 모범답안</button>
       </div>
+      <div class="ivbtns" style="margin-top:10px">
+        <button class="ivbtn" id="ivRec">🎙️ 녹음</button>
+        <button class="ivbtn" id="ivPlay" disabled>▶️ 내 목소리 듣기</button>
+      </div>
       <div class="transcript" id="ivTrans"><span class="ph">🎤 "말하기"를 누르고 영어로 대답해보세요. 여기에 받아써져요.</span></div>
       <div class="model hidden" id="ivModel"></div>
       <div class="note-inline" id="ivNote"></div>
@@ -367,6 +385,24 @@
     <div class="qtop"><button class="back" id="glBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">📕 수학 단어집 (영어)</div></div>
     <div id="glList"></div>
   </div>
+
+  <!-- READ ALOUD -->
+  <div id="readaloud" class="hidden">
+    <div class="qtop"><button class="back" id="raBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">📢 읽어보기 (Read Aloud)</div><span class="qcount" id="raCount">1/6</span></div>
+    <div class="ivcard">
+      <div class="ivqko">아래를 소리 내어 또박또박 읽어보세요!</div>
+      <div class="ratext" id="raText">cat</div>
+      <div class="ivbtns"><button class="ivbtn" id="raSpeak">🔊 들려주기</button><button class="ivbtn" id="raMic">🎤 읽어보기</button></div>
+      <div class="raresult" id="raResult"></div>
+    </div>
+    <div class="ivnav"><button id="raPrev">← 이전</button><button class="prim" id="raNext">다음 →</button></div>
+  </div>
+
+  <!-- ADMIN (부모) -->
+  <div id="admin" class="hidden">
+    <div class="qtop"><button class="back" id="adminBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">🔧 관리 · 아이들 진행 상황</div></div>
+    <div id="adminList"></div>
+  </div>
 </div>
 
 <script>
@@ -382,7 +418,7 @@
 
   const TRACKS = {
     kr:   { label:"한국 학교 공부", subjects:[{k:"math",emo:"🔢",n:"수학"},{k:"korean",emo:"📖",n:"국어"},{k:"english",emo:"🔤",n:"영어"}] },
-    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
+    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"readaloud",emo:"📢",n:"읽기 연습"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
   };
 
   const UNITS = {
@@ -594,7 +630,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -644,9 +680,9 @@
     $("subjTitle").textContent = TRACKS[track].label+" · 과목 고르기";
     const box=$("subjectPick"); box.innerHTML="";
     TRACKS[track].subjects.forEach(s=>{ const b=document.createElement("button"); b.className="subj"+(track==="intl"?" intl":"");
-      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
+      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : s.k==="readaloud" ? "소리내어 읽기" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
       b.innerHTML='<span class="semo">'+s.emo+'</span><span class="sname">'+s.n+'</span><span class="scount">'+sub+'</span>';
-      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
+      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else if(s.k==="readaloud") openReadAloud(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
       box.appendChild(b); });
     $("noteCnt").textContent=getWrongs().length;
     renderPractice(); renderLevel();
@@ -755,7 +791,7 @@
     $("ivModel").classList.add("hidden");
     $("ivModel").innerHTML='<div class="mh">💡 모범답안 (이렇게 말해보세요)</div><div class="mtxt">'+escapeHtml(it.model)+'</div><div class="mtip">👉 '+escapeHtml(it.tip)+'</div>';
     $("ivTrans").innerHTML='<span class="ph">🎤 "말하기"를 누르고 영어로 대답해보세요. 여기에 받아써져요.</span>';
-    stopRec();
+    stopRec(); resetRec();
   }
   let enVoice=null;
   function pickVoice(){ try{ const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[]; if(!vs.length) return;
@@ -838,7 +874,7 @@
     $("statusTitle").textContent=child.name+" · "+TRACKS[track].label+" 상태";
     const stats=getStats(); const wrongs=getWrongs(); let html="";
     TRACKS[track].subjects.forEach(s=>{
-      if(s.k==="interview"||s.k==="mathvocab"){ html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="stmeta">연습·학습 (점수 기록 없음)</div></div>'; return; }
+      if(s.k==="interview"||s.k==="mathvocab"||s.k==="readaloud"){ html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="stmeta">연습·학습 (점수 기록 없음)</div></div>'; return; }
       const st=stats[s.k]||{solved:0,correct:0}; const wc=wrongs.filter(w=>w.subj===s.k).length; const rate=st.solved?Math.round(st.correct/st.solved*100):0;
       html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="strow"><span>푼 문제 <b>'+st.solved+'</b></span><span>정답률 <b>'+rate+'%</b></span><span>오답 <b>'+wc+'</b></span></div><div class="strate"><i style="width:'+rate+'%"></i></div></div>';
     });
@@ -861,6 +897,81 @@
     $("glList").innerHTML=html; $("glList").querySelectorAll(".glspk").forEach(b=>b.addEventListener("click",()=>speak(b.dataset.w)));
   }
   $("glBack").addEventListener("click",gotoSubject);
+
+  // ---------- 읽기 연습 (Read Aloud) ----------
+  const READALOUD = {
+    short: ["cat","dog","sun","red","big","I can run.","It is a dog.","I see a cat.","The sun is red.","I like you.","She is happy.","We can play."],
+    long: ["I like reading English books.","She goes to school every morning.","We are playing soccer in the park.","My favorite subject is science.","Can you tell me the way to the library?","Yesterday I watched a movie with my family."]
+  };
+  function raList(){ return child.g>=8 ? READALOUD.long : READALOUD.short; }
+  let raIndex=0, raRecog=null, raActive=false;
+  const RSR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  function openReadAloud(){ raIndex=0; renderRa(); show("readaloud"); }
+  function renderRa(){ const list=raList(); $("raText").textContent=list[raIndex]; $("raCount").textContent=(raIndex+1)+"/"+list.length; const r=$("raResult"); r.textContent=""; r.className="raresult"; stopRa(); }
+  function normText(s){ return String(s).toLowerCase().replace(/[^a-z0-9\s]/g,"").replace(/\s+/g," ").trim(); }
+  function raScore(said,target){ const a=normText(said).split(" ").filter(Boolean), b=normText(target).split(" ").filter(Boolean); if(!b.length) return 0; let hit=0; b.forEach(w=>{ if(a.indexOf(w)>=0) hit++; }); return hit/b.length; }
+  function stopRa(){ raActive=false; $("raMic").classList.remove("on"); $("raMic").textContent="🎤 읽어보기"; try{ if(raRecog) raRecog.stop(); }catch(e){} }
+  $("raSpeak").addEventListener("click",()=>speak(raList()[raIndex]));
+  $("raBack").addEventListener("click",()=>{ stopRa(); gotoSubject(); });
+  $("raPrev").addEventListener("click",()=>{ if(raIndex>0){ raIndex--; renderRa(); } });
+  $("raNext").addEventListener("click",()=>{ const list=raList(); if(raIndex<list.length-1){ raIndex++; renderRa(); } else { $("raResult").className="raresult ok"; $("raResult").textContent="마지막이에요! 처음부터 또 읽어봐요 😊"; } });
+  $("raMic").addEventListener("click",()=>{
+    if(!RSR){ $("raResult").className="raresult no"; $("raResult").textContent="이 브라우저는 말하기 인식을 지원하지 않아요 (Chrome/Safari)"; return; }
+    if(raActive){ stopRa(); return; }
+    try{
+      raRecog=new RSR(); raRecog.lang="en-US"; raRecog.interimResults=false; raRecog.continuous=false;
+      raRecog.onresult=e=>{ const said=e.results[0][0].transcript; const sc=raScore(said, raList()[raIndex]); const el=$("raResult");
+        if(sc>=0.6){ el.className="raresult ok"; el.innerHTML="⭐ 잘 읽었어요!<br><small>내가 읽은 것: "+escapeHtml(said)+"</small>"; if(!practiceMode){ markToday(); addXP(8); } }
+        else{ el.className="raresult no"; el.innerHTML="🔁 다시 한 번 읽어볼까?<br><small>내가 읽은 것: "+escapeHtml(said)+"</small><br>🔊로 바른 발음을 들어봐요!"; }
+      };
+      raRecog.onerror=ev=>{ $("raResult").className="raresult no"; $("raResult").textContent="마이크 권한을 허용해주세요 ("+ev.error+")"; stopRa(); };
+      raRecog.onend=()=>stopRa();
+      raRecog.start(); raActive=true; $("raMic").classList.add("on"); $("raMic").textContent="⏹ 멈추기";
+    }catch(e){ $("raResult").textContent="말하기 인식을 시작할 수 없어요."; }
+  });
+
+  // ---------- 면담 녹음 (Record & Playback) ----------
+  let mediaRec=null, recChunks=[], recURL=null, recActive=false;
+  function resetRec(){ recActive=false; try{ if(mediaRec && mediaRec.state && mediaRec.state!=="inactive") mediaRec.stop(); }catch(e){} $("ivRec").classList.remove("on"); $("ivRec").textContent="🎙️ 녹음"; $("ivPlay").disabled=true; if(recURL){ try{URL.revokeObjectURL(recURL);}catch(e){} recURL=null; } }
+  $("ivRec").addEventListener("click", function(){
+    if(recActive){ try{ mediaRec.stop(); }catch(e){} return; }
+    if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder)){ $("ivNote").textContent="이 브라우저는 녹음을 지원하지 않아요 (Chrome/Safari 권장)"; return; }
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      try{ mediaRec=new MediaRecorder(stream); }catch(e){ try{ mediaRec=new MediaRecorder(stream,{mimeType:"audio/mp4"}); }catch(e2){ $("ivNote").textContent="녹음을 시작할 수 없어요."; return; } }
+      recChunks=[];
+      mediaRec.ondataavailable=function(e){ if(e.data && e.data.size) recChunks.push(e.data); };
+      mediaRec.onstop=function(){ recActive=false; $("ivRec").classList.remove("on"); $("ivRec").textContent="🎙️ 녹음"; try{ if(recURL) URL.revokeObjectURL(recURL); const blob=new Blob(recChunks,{type:(mediaRec&&mediaRec.mimeType)||"audio/webm"}); recURL=URL.createObjectURL(blob); $("ivPlay").disabled=false; }catch(e){} stream.getTracks().forEach(function(t){t.stop();}); };
+      mediaRec.start(); recActive=true; $("ivRec").classList.add("on"); $("ivRec").textContent="⏹ 녹음 멈추기"; $("ivNote").textContent="";
+    }).catch(function(){ $("ivNote").textContent="마이크 권한을 허용해주세요."; });
+  });
+  $("ivPlay").addEventListener("click",function(){ if(recURL){ try{ new Audio(recURL).play(); }catch(e){} } });
+
+  // ---------- 관리 (부모) ----------
+  function openAdmin(){ renderAdmin(); show("admin"); }
+  function renderAdmin(){
+    const now=new Date(); const tStr=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate(); const mPrefix=now.getFullYear()+"-"+(now.getMonth()+1)+"-";
+    let html="";
+    CHILDREN.forEach(c=>{
+      const xp=LS.get("study_xp_"+c.name,0), lv=1+Math.floor(xp/100);
+      const dd=LS.get("study_daily_"+c.name,{date:"",solved:0,correct:0}); const td=(dd.date===tStr)?dd:{solved:0,correct:0};
+      const days=LS.get("study_days_"+c.name,[]);
+      let streak=0; const cur=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      while(true){ const ds=cur.getFullYear()+"-"+(cur.getMonth()+1)+"-"+cur.getDate(); if(days.indexOf(ds)>=0){ streak++; cur.setDate(cur.getDate()-1); } else break; }
+      const monthN=days.filter(x=>x.indexOf(mPrefix)===0).length;
+      const stats=LS.get("study_stats_"+c.name,{});
+      const wkr=LS.get("study_wrong_"+c.name+"_kr",[]).length, wintl=LS.get("study_wrong_"+c.name+"_intl",[]).length;
+      let subjHtml=""; Object.keys(stats).forEach(k=>{ const st=stats[k]; const rate=st.solved?Math.round(st.correct/st.solved*100):0; subjHtml+='<span class="apill">'+(SUBJ_KO[k]||k)+' '+st.solved+'문제·'+rate+'%</span>'; });
+      if(!subjHtml) subjHtml='<span class="apill" style="opacity:.6">아직 푼 문제 없음</span>';
+      html+='<div class="stcard"><div class="stname">'+c.emo+' '+c.name+' · Lv.'+lv+' '+lvEmoji(lv)+'</div>'
+        +'<div class="strow"><span>오늘 <b>'+td.solved+'</b>문제</span><span>정답 <b>'+td.correct+'</b></span><span>연속출석 <b>'+streak+'</b>일</span><span>이번달 <b>'+monthN+'</b>일</span></div>'
+        +'<div class="arow">'+subjHtml+'</div>'
+        +'<div class="strow" style="margin-top:8px"><span>오답 한국 <b>'+wkr+'</b></span><span>오답 국제 <b>'+wintl+'</b></span></div></div>';
+    });
+    html+='<div class="note-inline" style="margin-top:10px">※ 저장은 기기별이라, 각 아이가 쓰는 기기에서 봐야 정확해요.</div>';
+    $("adminList").innerHTML=html;
+  }
+  $("adminBack").addEventListener("click",gotoChild);
+  $("adminBtn").addEventListener("click",()=>{ const pp=getParentPin(); openPin({title:"부모 비밀번호",sub:"관리 화면 — 부모 번호(9092)",mode:"enter",correct:pp,onSuccess:openAdmin,onCancel:gotoChild}); });
 
   // ---------- PIN ----------
   const PINK={ child:n=>"study_pin_child_"+n, parent:"study_pin_parent" };
