@@ -210,6 +210,27 @@
   .raresult small{font-weight:400;color:var(--text-2);font-size:.82rem}
   .arow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .apill{font-size:.75rem;background:var(--surface-2);color:var(--text-2);border-radius:20px;padding:3px 9px}
+  .missions{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);margin-top:8px}
+  .missions .mh{font-weight:800;font-size:.9rem;margin-bottom:8px;display:flex;justify-content:space-between}
+  .missions .mrow{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.88rem}
+  .missions .mrow .mck{font-size:1.05rem}
+  .missions .mrow.done{color:var(--text-3)}
+  .missions .mrow.done .mlabel{text-decoration:line-through}
+  .missions .mrow .mlabel{flex:1}
+  .missions .mdo{background:var(--brand-soft);color:var(--brand);border:none;border-radius:8px;padding:5px 12px;font-weight:700;font-size:.78rem;cursor:pointer}
+  .woko{font-size:.9rem;color:var(--text-2);margin-bottom:12px;font-weight:600;background:var(--surface-2);border-radius:10px;padding:11px 13px}
+  .woans{min-height:54px;border:2px dashed var(--accent-line);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .woph{color:var(--text-3);font-size:.85rem}
+  .wopool{display:flex;flex-wrap:wrap;gap:8px}
+  .wotile{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:9px 14px;font-size:1.05rem;font-weight:700;color:var(--text);cursor:pointer}
+  .wotile.ans{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .woresult{margin-top:14px;border-radius:12px;padding:12px;text-align:center;font-weight:700;min-height:18px}
+  .woresult.ok{background:var(--good-soft);color:var(--good)}
+  .woresult.no{background:var(--bad-soft);color:var(--bad)}
+  .dictbar{display:flex;gap:8px;margin-bottom:14px}
+  .dictbar input{flex:1;padding:12px 14px;border:2px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font-size:1rem}
+  .dictbar button{background:var(--intl);color:#fff;border:none;border-radius:12px;padding:0 18px;font-weight:800;cursor:pointer}
+  .sumbody{font-size:.88rem;color:var(--text-2);line-height:1.55;margin-top:4px}
 
   /* interview */
   .ivcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
@@ -264,6 +285,7 @@
       <div class="dailystat" id="dailyStat"><span class="em">🔥</span><span>오늘 <b id="dToday">0</b>문제 · 정답 <b id="dCorrect">0</b></span></div>
       <div class="levelbar"><div class="lvhead"><span id="lvLabel">Lv.1 🌱</span><span id="xpLabel">0/100 XP</span></div><div class="xptrack"><i id="xpFill"></i></div></div>
       <div class="row2" style="margin-top:0"><button class="bigbtn ghost" id="btnCal" style="margin-top:0">📅 출석</button><button class="bigbtn ghost" id="btnStatus" style="margin-top:0">📊 상태</button></div>
+      <div class="missions" id="missions"></div>
       <button class="practice" id="practiceToggle" style="margin-top:12px">🧪 연습 모드 <span class="pstate">꺼짐</span></button>
       <div class="section-t" id="subjTitle">과목을 골라요</div>
       <div class="subjects" id="subjectPick"></div>
@@ -364,6 +386,7 @@
   <div id="units" class="hidden">
     <div class="qtop"><button class="back" id="unitsBack" aria-label="뒤로">←</button><div class="qcount" id="unitsTitle" style="flex:1">단원 고르기</div></div>
     <div id="unitsList"></div>
+    <button class="unitbtn" id="unitsSummary" style="background:var(--intl-soft);border-color:var(--intl);color:var(--intl)">📄 단원 요약 보기</button>
     <a class="ebslink" id="unitsEbs" target="_blank" rel="noopener" href="#">▶️ EBS</a>
   </div>
 
@@ -403,6 +426,33 @@
     <div class="qtop"><button class="back" id="adminBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">🔧 관리 · 아이들 진행 상황</div></div>
     <div id="adminList"></div>
   </div>
+
+  <!-- WORD ORDER GAME -->
+  <div id="wordorder" class="hidden">
+    <div class="qtop"><button class="back" id="woBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">🎮 어순 게임</div><span class="qcount" id="woCount">1/6</span></div>
+    <div class="ivcard">
+      <div class="woko" id="woKo"></div>
+      <div class="woans" id="woAns"></div>
+      <div class="wopool" id="woPool"></div>
+      <div class="woresult" id="woResult"></div>
+      <div class="ivbtns" style="margin-top:14px"><button class="ivbtn" id="woCheck">✅ 확인</button><button class="ivbtn" id="woReset">↺ 다시</button></div>
+    </div>
+    <div class="ivnav"><button id="woPrev">← 이전</button><button class="prim" id="woNext">다음 →</button></div>
+  </div>
+
+  <!-- DICTIONARY -->
+  <div id="dict" class="hidden">
+    <div class="qtop"><button class="back" id="dictBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">📖 영어사전</div></div>
+    <div class="dictbar"><input id="dictInput" type="text" placeholder="영어 단어 (예: apple)" autocapitalize="none" autocomplete="off"><button id="dictGo">찾기</button></div>
+    <div id="dictResult"></div>
+  </div>
+
+  <!-- UNIT SUMMARY -->
+  <div id="summary" class="hidden">
+    <div class="qtop"><button class="back" id="sumBack" aria-label="뒤로">←</button><div class="qcount" id="sumTitle" style="flex:1">단원 요약</div></div>
+    <div id="sumList"></div>
+    <a class="ebslink" id="sumEbs" target="_blank" rel="noopener" href="#">▶️ EBS</a>
+  </div>
 </div>
 
 <script>
@@ -418,7 +468,7 @@
 
   const TRACKS = {
     kr:   { label:"한국 학교 공부", subjects:[{k:"math",emo:"🔢",n:"수학"},{k:"korean",emo:"📖",n:"국어"},{k:"english",emo:"🔤",n:"영어"}] },
-    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"readaloud",emo:"📢",n:"읽기 연습"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
+    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"dict",emo:"📖",n:"영어사전"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"readaloud",emo:"📢",n:"읽기 연습"},{k:"wordorder",emo:"🎮",n:"어순 게임"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
   };
 
   const UNITS = {
@@ -630,7 +680,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -680,12 +730,12 @@
     $("subjTitle").textContent = TRACKS[track].label+" · 과목 고르기";
     const box=$("subjectPick"); box.innerHTML="";
     TRACKS[track].subjects.forEach(s=>{ const b=document.createElement("button"); b.className="subj"+(track==="intl"?" intl":"");
-      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : s.k==="readaloud" ? "소리내어 읽기" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
+      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : s.k==="dict" ? "단어 찾기" : s.k==="readaloud" ? "소리내어 읽기" : s.k==="wordorder" ? "문장 순서 맞추기" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
       b.innerHTML='<span class="semo">'+s.emo+'</span><span class="sname">'+s.n+'</span><span class="scount">'+sub+'</span>';
-      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else if(s.k==="readaloud") openReadAloud(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
+      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else if(s.k==="dict") openDict(); else if(s.k==="readaloud") openReadAloud(); else if(s.k==="wordorder") openWordOrder(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
       box.appendChild(b); });
     $("noteCnt").textContent=getWrongs().length;
-    renderPractice(); renderLevel();
+    renderPractice(); renderLevel(); renderMissions();
     homeStep("subject"); setCrumb(); show("home");
   }
   $("subjBack").addEventListener("click",gotoTrack);
@@ -772,6 +822,7 @@
   $("rNote").addEventListener("click",openNote);
 
   function openNote(){
+    setMission("review",true);
     $("wbWho").textContent=child.name; const w=getWrongs(); const list=$("wbList");
     if(!w.length){ list.innerHTML='<div class="empty"><span class="big">✨</span>오답노트가 비어 있어요!<br>문제를 풀면 틀린 것만 여기 모여요.</div>'; $("wbActions").classList.add("hidden"); }
     else{ $("wbActions").classList.remove("hidden"); list.innerHTML=w.map((x,i)=>('<div class="wbitem"><button class="wbdel" data-i="'+i+'" title="삭제">✕</button><div class="wtag">'+(SUBJ_KO[x.subj]||"")+'</div><div class="wq">'+escapeHtml(x.q)+'</div><div class="wa">정답: '+escapeHtml(x.c[x.a])+'</div><div class="we">'+escapeHtml(x.e)+'</div></div>')).join("");
@@ -874,7 +925,7 @@
     $("statusTitle").textContent=child.name+" · "+TRACKS[track].label+" 상태";
     const stats=getStats(); const wrongs=getWrongs(); let html="";
     TRACKS[track].subjects.forEach(s=>{
-      if(s.k==="interview"||s.k==="mathvocab"||s.k==="readaloud"){ html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="stmeta">연습·학습 (점수 기록 없음)</div></div>'; return; }
+      if(s.k==="interview"||s.k==="mathvocab"||s.k==="readaloud"||s.k==="wordorder"||s.k==="dict"){ html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="stmeta">연습·학습 (점수 기록 없음)</div></div>'; return; }
       const st=stats[s.k]||{solved:0,correct:0}; const wc=wrongs.filter(w=>w.subj===s.k).length; const rate=st.solved?Math.round(st.correct/st.solved*100):0;
       html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="strow"><span>푼 문제 <b>'+st.solved+'</b></span><span>정답률 <b>'+rate+'%</b></span><span>오답 <b>'+wc+'</b></span></div><div class="strate"><i style="width:'+rate+'%"></i></div></div>';
     });
@@ -921,7 +972,7 @@
     try{
       raRecog=new RSR(); raRecog.lang="en-US"; raRecog.interimResults=false; raRecog.continuous=false;
       raRecog.onresult=e=>{ const said=e.results[0][0].transcript; const sc=raScore(said, raList()[raIndex]); const el=$("raResult");
-        if(sc>=0.6){ el.className="raresult ok"; el.innerHTML="⭐ 잘 읽었어요!<br><small>내가 읽은 것: "+escapeHtml(said)+"</small>"; if(!practiceMode){ markToday(); addXP(8); } }
+        if(sc>=0.6){ el.className="raresult ok"; el.innerHTML="⭐ 잘 읽었어요!<br><small>내가 읽은 것: "+escapeHtml(said)+"</small>"; if(!practiceMode){ markToday(); addXP(8); setMission("read",true); } }
         else{ el.className="raresult no"; el.innerHTML="🔁 다시 한 번 읽어볼까?<br><small>내가 읽은 것: "+escapeHtml(said)+"</small><br>🔊로 바른 발음을 들어봐요!"; }
       };
       raRecog.onerror=ev=>{ $("raResult").className="raresult no"; $("raResult").textContent="마이크 권한을 허용해주세요 ("+ev.error+")"; stopRa(); };
@@ -971,7 +1022,115 @@
     $("adminList").innerHTML=html;
   }
   $("adminBack").addEventListener("click",gotoChild);
-  $("adminBtn").addEventListener("click",()=>{ const pp=getParentPin(); openPin({title:"부모 비밀번호",sub:"관리 화면 — 부모 번호(9092)",mode:"enter",correct:pp,onSuccess:openAdmin,onCancel:gotoChild}); });
+  $("adminBtn").addEventListener("click",()=>{ const pp=getParentPin(); openPin({title:"부모 비밀번호",sub:"관리 화면 — 부모 비밀번호를 입력하세요",mode:"enter",correct:pp,onSuccess:openAdmin,onCancel:gotoChild}); });
+
+  // ---------- 어순 게임 (Word Order) ----------
+  const WORDORDER = {
+    short: [
+      {s:"I like apples.", k:"나는 사과를 좋아해."},
+      {s:"She is my friend.", k:"그녀는 내 친구야."},
+      {s:"We play soccer.", k:"우리는 축구를 해."},
+      {s:"The cat is cute.", k:"그 고양이는 귀여워."},
+      {s:"I go to school.", k:"나는 학교에 가."},
+      {s:"He has a dog.", k:"그는 개를 키워."}
+    ],
+    long: [
+      {s:"I like reading English books.", k:"나는 영어책 읽는 것을 좋아해."},
+      {s:"She goes to school every day.", k:"그녀는 매일 학교에 가."},
+      {s:"We are playing soccer now.", k:"우리는 지금 축구를 하고 있어."},
+      {s:"My favorite subject is science.", k:"내가 가장 좋아하는 과목은 과학이야."},
+      {s:"He wants to be a doctor.", k:"그는 의사가 되고 싶어해."}
+    ]
+  };
+  function woList(){ return child.g>=8 ? WORDORDER.long : WORDORDER.short; }
+  let woIndex=0, woPoolArr=[], woAnsArr=[];
+  function openWordOrder(){ woIndex=0; loadWo(); show("wordorder"); }
+  function loadWo(){ const it=woList()[woIndex]; $("woKo").textContent="💡 힌트: "+it.k; woPoolArr=shuffle(it.s.split(" ")); woAnsArr=[]; const r=$("woResult"); r.textContent=""; r.className="woresult"; $("woCount").textContent=(woIndex+1)+"/"+woList().length; renderWo(); }
+  function renderWo(){
+    const pool=$("woPool"); pool.innerHTML="";
+    woPoolArr.forEach(function(w,i){ const b=document.createElement("button"); b.className="wotile"; b.textContent=w; b.addEventListener("click",function(){ woAnsArr.push(w); woPoolArr.splice(i,1); renderWo(); }); pool.appendChild(b); });
+    const ans=$("woAns"); ans.innerHTML="";
+    if(!woAnsArr.length){ ans.innerHTML='<span class="woph">여기에 단어를 순서대로 넣어요</span>'; }
+    woAnsArr.forEach(function(w,i){ const b=document.createElement("button"); b.className="wotile ans"; b.textContent=w; b.addEventListener("click",function(){ woPoolArr.push(w); woAnsArr.splice(i,1); renderWo(); }); ans.appendChild(b); });
+  }
+  $("woCheck").addEventListener("click",function(){ const it=woList()[woIndex]; const made=woAnsArr.join(" "); const el=$("woResult"); if(made===it.s){ el.className="woresult ok"; el.textContent="⭐ 정답! "+it.s; if(!practiceMode){ markToday(); addXP(10); } speak(it.s); } else { el.className="woresult no"; el.textContent="🔁 다시 해볼까? 순서를 바꿔봐요"; } });
+  $("woReset").addEventListener("click",loadWo);
+  $("woPrev").addEventListener("click",function(){ if(woIndex>0){ woIndex--; loadWo(); } });
+  $("woNext").addEventListener("click",function(){ if(woIndex<woList().length-1){ woIndex++; loadWo(); } else { $("woResult").className="woresult ok"; $("woResult").textContent="마지막이에요! 또 해볼까요? 😊"; } });
+  $("woBack").addEventListener("click",gotoSubject);
+
+  // ---------- 영어사전 ----------
+  function openDict(){ $("dictInput").value=""; $("dictResult").innerHTML='<div class="note-inline">영어 단어를 입력하고 "찾기"를 눌러요. 🔊로 발음도 들려줘요. (인터넷 필요)</div>'; show("dict"); }
+  function dictSearch(){
+    const w=(($("dictInput").value)||"").trim().toLowerCase(); if(!w) return;
+    $("dictResult").innerHTML='<div class="note-inline">찾는 중… 🔎</div>';
+    fetch("https://api.dictionaryapi.dev/api/v2/entries/en/"+encodeURIComponent(w)).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(data){
+      const e=data[0]; let html='<div class="stcard"><div class="stname" style="font-size:1.3rem">'+escapeHtml(e.word)+' <button class="glspk" id="dictSpk">🔊</button></div>';
+      let ph=e.phonetic; if(!ph && e.phonetics){ const pp=e.phonetics.find(function(p){return p.text;}); if(pp) ph=pp.text; }
+      if(ph) html+='<div class="note-inline">'+escapeHtml(ph)+'</div>';
+      (e.meanings||[]).slice(0,3).forEach(function(m){ html+='<div style="margin-top:10px"><b style="color:var(--intl)">'+escapeHtml(m.partOfSpeech||"")+'</b>'; (m.definitions||[]).slice(0,2).forEach(function(d){ html+='<div style="font-size:.9rem;margin-top:4px">• '+escapeHtml(d.definition)+'</div>'; if(d.example) html+='<div style="font-size:.82rem;color:var(--text-3);margin-left:12px">예: '+escapeHtml(d.example)+'</div>'; }); html+='</div>'; });
+      html+='</div>';
+      $("dictResult").innerHTML=html;
+      const sp=document.getElementById("dictSpk"); if(sp) sp.addEventListener("click",function(){ speak(e.word); });
+    }).catch(function(){ $("dictResult").innerHTML='<div class="empty"><span class="big">🔎</span>단어를 찾지 못했어요.<br>철자를 확인하거나 인터넷 연결을 확인해요.<br><small>(미리보기 링크에선 사전이 막힐 수 있어요 — 진짜 사이트에서 써보세요)</small></div>'; });
+  }
+  $("dictGo").addEventListener("click",dictSearch);
+  $("dictInput").addEventListener("keydown",function(e){ if(e.key==="Enter") dictSearch(); });
+  $("dictBack").addEventListener("click",gotoSubject);
+
+  // ---------- 단원 요약 ----------
+  const SUMMARIES = {
+    math: {
+      4: [
+        "분모가 같은 분수는 분모는 그대로 두고 분자끼리 더하거나 빼요. 예) 3/5+1/5=4/5.",
+        "삼각형은 변의 길이로 이등변(두 변 같음)·정삼각형(세 변 같음), 각으로 예각·직각·둔각삼각형으로 나눠요.",
+        "0.1은 1/10. 소수의 덧셈·뺄셈은 소수점을 세로로 맞춰 계산해요. 0.3+0.4=0.7.",
+        "사각형에는 사다리꼴·평행사변형·마름모·직사각형·정사각형이 있어요. 직사각형은 네 각이 모두 90°.",
+        "꺾은선그래프는 시간에 따라 변하는 값을 점으로 찍어 선으로 이어요. 변화가 크면 선이 가팔라요.",
+        "다각형은 선분으로 둘러싸인 도형. 변이 5개면 오각형. 변·각이 모두 같으면 정다각형이에요."
+      ],
+      5: [
+        "이상·이하·초과·미만으로 수의 범위를 나타내요. 반올림은 구하는 자리 아래가 5 이상이면 올림, 아니면 버림.",
+        "분수의 곱셈은 분자끼리, 분모끼리 곱해요. 1/2×1/4=1/8.",
+        "모양·크기가 같아 완전히 포개지면 합동. 접어서 겹치면 선대칭, 돌려서 겹치면 점대칭.",
+        "소수의 곱셈은 자연수처럼 곱한 뒤 소수점 아래 자리 수만큼 소수점을 찍어요. 0.6×0.5=0.3.",
+        "직육면체는 면 6·모서리 12·꼭짓점 8. 모든 면이 정사각형이면 정육면체.",
+        "평균=자료의 합÷개수. 가능성은 '확실하다/반반이다/불가능하다' 등으로 나타내요."
+      ]
+    }
+  };
+  let sumSubj=null;
+  function openSummary(subj){ sumSubj=subj; renderSummary(); show("summary"); }
+  function renderSummary(){
+    const subj=sumSubj; const units=UNITS[subj][child.g]||[]; const sums=(SUMMARIES[subj]&&SUMMARIES[subj][child.g])||null;
+    $("sumTitle").textContent=(SUBJ_KO[subj]||"")+" · 단원 요약";
+    let html="";
+    if(sums){ units.forEach(function(u,i){ if(!sums[i]) return; html+='<div class="stcard"><div class="stname">'+(i+1)+'. '+escapeHtml(u)+'</div><div class="sumbody">'+escapeHtml(sums[i])+'</div></div>'; }); }
+    if(!html){ html='<div class="empty"><span class="big">📄</span>이 과목 요약은 아직 준비 중이에요.<br>아래 EBS 강좌를 이용해보세요!</div>'; }
+    $("sumList").innerHTML=html;
+    const eb=ebsInfo(); $("sumEbs").href=eb.url; $("sumEbs").textContent="▶️ 더 알고 싶으면 "+eb.label;
+  }
+  $("sumBack").addEventListener("click",function(){ show("units"); });
+  $("unitsSummary").addEventListener("click",function(){ openSummary(unitsSubj); });
+
+  // ---------- 오늘의 미션 ----------
+  const MISSIONS=[
+    {id:"quiz", label:"오늘 문제 10개 풀기", auto:function(){ return getDaily().solved>=10; }},
+    {id:"read", label:"영어 읽기 연습 1번"},
+    {id:"review", label:"오답노트 복습하기"}
+  ];
+  function missionKey(){ return "study_mission_"+child.name+"_"+todayStr(); }
+  function getMissions(){ return LS.get(missionKey(),{}); }
+  function setMission(id,v){ const m=getMissions(); m[id]=v; LS.set(missionKey(),m); }
+  function missionDone(m){ const st=getMissions(); return (m.auto&&m.auto())||!!st[m.id]; }
+  function renderMissions(){
+    const box=$("missions"); if(!box) return;
+    const doneN=MISSIONS.filter(missionDone).length;
+    let html='<div class="mh"><span>🎯 오늘의 미션</span><span>'+doneN+'/'+MISSIONS.length+' 완료</span></div>';
+    MISSIONS.forEach(function(m){ const d=missionDone(m); html+='<div class="mrow'+(d?" done":"")+'"><span class="mck">'+(d?"✅":"⬜")+'</span><span class="mlabel">'+m.label+'</span>'+(d?"":(m.auto?'<span style="font-size:.72rem;color:var(--text-3)">자동</span>':'<button class="mdo" data-m="'+m.id+'">완료</button>'))+'</div>'; });
+    box.innerHTML=html;
+    box.querySelectorAll(".mdo").forEach(function(b){ b.addEventListener("click",function(){ setMission(b.dataset.m,true); renderMissions(); }); });
+  }
 
   // ---------- PIN ----------
   const PINK={ child:n=>"study_pin_child_"+n, parent:"study_pin_parent" };
