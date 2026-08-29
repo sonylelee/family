@@ -191,6 +191,12 @@
   .stcard .strow b{color:var(--brand);font-size:1rem}
   .stcard .strate{height:8px;background:var(--surface-2);border-radius:20px;overflow:hidden}
   .stcard .strate i{display:block;height:100%;background:var(--good);border-radius:20px}
+  .glnote{background:var(--intl-soft);color:var(--intl);border-radius:10px;padding:10px 12px;font-weight:800;font-size:.85rem;margin-bottom:6px;text-align:center}
+  .glcat{font-size:.78rem;font-weight:800;color:var(--intl);text-transform:uppercase;letter-spacing:.03em;margin:16px 4px 8px}
+  .glitem{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 14px;box-shadow:var(--shadow);margin-bottom:8px}
+  .glitem .glspk{background:var(--intl-soft);border:none;color:var(--intl);border-radius:8px;width:34px;height:34px;font-size:1rem;flex:0 0 auto;cursor:pointer}
+  .glitem .glen{font-weight:800;font-size:1rem}
+  .glitem .glko{margin-left:auto;color:var(--text-2);font-size:.9rem;text-align:right}
 
   /* interview */
   .ivcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
@@ -355,6 +361,12 @@
     <div class="qtop"><button class="back" id="statusBack" aria-label="뒤로">←</button><div class="qcount" id="statusTitle" style="flex:1">과목별 상태</div></div>
     <div id="statusList"></div>
   </div>
+
+  <!-- GLOSSARY -->
+  <div id="glossary" class="hidden">
+    <div class="qtop"><button class="back" id="glBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">📕 수학 단어집 (영어)</div></div>
+    <div id="glList"></div>
+  </div>
 </div>
 
 <script>
@@ -370,7 +382,7 @@
 
   const TRACKS = {
     kr:   { label:"한국 학교 공부", subjects:[{k:"math",emo:"🔢",n:"수학"},{k:"korean",emo:"📖",n:"국어"},{k:"english",emo:"🔤",n:"영어"}] },
-    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
+    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
   };
 
   const UNITS = {
@@ -479,54 +491,54 @@
     },
     enmath: {
       4: [
-        {u:1, q:"What is 3/5 + 1/5?", c:["4/5","4/10","3/25","2/5"], a:0, e:"Same denominator → add tops. 4/5"},
-        {u:1, q:"What is 0.3 + 0.4?", c:["0.7","0.07","7","0.12"], a:0, e:"0.3+0.4=0.7"},
-        {u:1, q:"Which number is the largest?", c:["9,990","9,099","8,999","9,090"], a:0, e:"자릿값 비교 → 9,990"},
-        {u:1, q:"A triangle with three 60° angles is a(n)…", c:["equilateral triangle","right triangle","obtuse triangle","isosceles triangle"], a:0, e:"정삼각형 = equilateral triangle"},
-        {u:1, q:"How many sides does a pentagon have?", c:["5","6","4","8"], a:0, e:"pentagon(오각형)=5"},
-        {u:1, q:"What is 6 × 7?", c:["42","36","48","13"], a:0, e:"6×7=42"}
+        {u:1, q:"What is 3/5 + 1/5?", c:["4/5","4/10","3/25","2/5"], a:0, e:"📘 '3/5 더하기 1/5은?' 분모가 같으면 분자끼리 더해요: 3+1=4 → 4/5"},
+        {u:1, q:"What is 0.3 + 0.4?", c:["0.7","0.07","7","0.12"], a:0, e:"📘 '0.3 더하기 0.4는?' 소수점 맞춰 더하면 0.7"},
+        {u:1, q:"Which number is the largest?", c:["9,990","9,099","8,999","9,090"], a:0, e:"📘 '어느 수가 가장 큰가요?' 자릿값 비교 → 9,990 (largest=가장 큰)"},
+        {u:1, q:"A triangle with three 60° angles is a(n)…", c:["equilateral triangle","right triangle","obtuse triangle","isosceles triangle"], a:0, e:"📘 '세 각이 모두 60°인 삼각형은?' equilateral triangle = 정삼각형"},
+        {u:1, q:"How many sides does a pentagon have?", c:["5","6","4","8"], a:0, e:"📘 'pentagon(오각형)의 변(side)은 몇 개?' 5개"},
+        {u:1, q:"What is 6 × 7?", c:["42","36","48","13"], a:0, e:"📘 '6 곱하기 7은?' 42"}
       ],
       5: [
-        {u:1, q:"What is 1/2 × 1/4?", c:["1/8","2/6","1/6","4/2"], a:0, e:"(1×1)/(2×4)=1/8"},
-        {u:1, q:"Round 3.7 to the nearest whole number.", c:["4","3","3.5","40"], a:0, e:"7≥5 → round up → 4"},
-        {u:1, q:"What is 0.6 × 0.5?", c:["0.3","0.11","3","0.35"], a:0, e:"30 → 0.30 = 0.3"},
-        {u:1, q:"How many faces does a rectangular prism have?", c:["6","8","12","4"], a:0, e:"직육면체=6 faces"},
-        {u:1, q:"The average of 80, 90, and 85 is…", c:["85","80","90","88"], a:0, e:"(80+90+85)÷3=85"},
-        {u:1, q:"What is 2/3 × 6?", c:["4","9","2/18","12/3"], a:0, e:"12/3=4"}
+        {u:1, q:"What is 1/2 × 1/4?", c:["1/8","2/6","1/6","4/2"], a:0, e:"📘 '1/2 곱하기 1/4은?' 분자끼리·분모끼리 곱해요 → 1/8"},
+        {u:1, q:"Round 3.7 to the nearest whole number.", c:["4","3","3.5","40"], a:0, e:"📘 '3.7을 가장 가까운 자연수로 반올림하면?' 7≥5라 올림 → 4 (round=반올림)"},
+        {u:1, q:"What is 0.6 × 0.5?", c:["0.3","0.11","3","0.35"], a:0, e:"📘 '0.6 곱하기 0.5는?' 6×5=30 → 소수 두 자리 → 0.3"},
+        {u:1, q:"How many faces does a rectangular prism have?", c:["6","8","12","4"], a:0, e:"📘 'rectangular prism(직육면체)의 면(face)은 몇 개?' 6개"},
+        {u:1, q:"The average of 80, 90, and 85 is…", c:["85","80","90","88"], a:0, e:"📘 '80, 90, 85의 평균(average)은?' (80+90+85)÷3 = 85"},
+        {u:1, q:"What is 2/3 × 6?", c:["4","9","2/18","12/3"], a:0, e:"📘 '2/3 곱하기 6은?' 12/3 = 4"}
       ],
       8: [
-        {u:1, q:"Solve: 2x + 3 = 11. x = ?", c:["4","7","3","5"], a:0, e:"2x=8 → x=4"},
-        {u:1, q:"What is 2³ × 2² ?", c:["32","64","16","8"], a:0, e:"2⁵=32"},
-        {u:1, q:"A right triangle has a 90° angle. If another angle is 30°, the third is…", c:["60°","30°","90°","45°"], a:0, e:"180−90−30=60"},
-        {u:1, q:"Simplify: 3(x + 2) = ?", c:["3x + 6","3x + 2","x + 6","3x"], a:0, e:"분배법칙: 3x+6"},
-        {u:1, q:"What is 15% of 200?", c:["30","15","20","45"], a:0, e:"200×0.15=30"},
-        {u:1, q:"The perimeter of a square with side 5 is…", c:["20","25","10","15"], a:0, e:"4×5=20"}
+        {u:1, q:"Solve: 2x + 3 = 11. x = ?", c:["4","7","3","5"], a:0, e:"📘 '2x+3=11을 풀면(solve) x는?' 2x=8 → x=4"},
+        {u:1, q:"What is 2³ × 2² ?", c:["32","64","16","8"], a:0, e:"📘 '2의 세제곱 × 2의 제곱은?' 지수를 더해요 → 2⁵=32"},
+        {u:1, q:"A right triangle has a 90° angle. If another angle is 30°, the third is…", c:["60°","30°","90°","45°"], a:0, e:"📘 '직각삼각형(right triangle)에 90°와 30°가 있으면 나머지 각은?' 180−90−30 = 60°"},
+        {u:1, q:"Simplify: 3(x + 2) = ?", c:["3x + 6","3x + 2","x + 6","3x"], a:0, e:"📘 '3(x+2)를 전개(simplify)하면?' 분배법칙 → 3x+6"},
+        {u:1, q:"What is 15% of 200?", c:["30","15","20","45"], a:0, e:"📘 '200의 15%는?' 200×0.15 = 30 (percent=백분율)"},
+        {u:1, q:"The perimeter of a square with side 5 is…", c:["20","25","10","15"], a:0, e:"📘 '한 변(side)이 5인 정사각형의 둘레(perimeter)는?' 4×5 = 20"}
       ]
     },
     enread: {
       4: [
-        {u:1, q:"I ___ a book every night.", c:["read","reads","reading","readed"], a:0, e:"I 뒤에는 read"},
-        {u:1, q:"What is the opposite of 'big'?", c:["small","tall","long","fast"], a:0, e:"big ↔ small"},
-        {u:1, q:"one cat, two ___ .", c:["cats","cat","cates","cat's"], a:0, e:"복수형 cats"},
-        {u:1, q:"Which word is a color?", c:["yellow","apple","run","happy"], a:0, e:"yellow = 노랑"},
-        {u:1, q:"She ___ to school every day.", c:["goes","go","going","gone"], a:0, e:"She + goes"},
-        {u:1, q:"Read: 'Tom has a red ball.' What color is the ball?", c:["red","blue","green","yellow"], a:0, e:"red"}
+        {u:1, q:"I ___ a book every night.", c:["read","reads","reading","readed"], a:0, e:"📘 '나는 매일 밤 책을 ___.' 주어 I 뒤엔 read(읽다)"},
+        {u:1, q:"What is the opposite of 'big'?", c:["small","tall","long","fast"], a:0, e:"📘 ''big(큰)'의 반대말은?' small(작은)"},
+        {u:1, q:"one cat, two ___ .", c:["cats","cat","cates","cat's"], a:0, e:"📘 '고양이 한 마리, 두 ___.' 복수형 cats"},
+        {u:1, q:"Which word is a color?", c:["yellow","apple","run","happy"], a:0, e:"📘 '색깔을 나타내는 단어는?' yellow(노랑)"},
+        {u:1, q:"She ___ to school every day.", c:["goes","go","going","gone"], a:0, e:"📘 '그녀는 매일 학교에 ___.' She 뒤엔 goes(간다)"},
+        {u:1, q:"Read: 'Tom has a red ball.' What color is the ball?", c:["red","blue","green","yellow"], a:0, e:"📘 지문: '톰은 빨간 공을 가지고 있다.' 공의 색은? red(빨강)"}
       ],
       5: [
-        {u:1, q:"Yesterday I ___ to the park.", c:["went","go","goes","going"], a:0, e:"과거형 went"},
-        {u:1, q:"What is the opposite of 'begin'?", c:["end","start","open","run"], a:0, e:"begin ↔ end"},
-        {u:1, q:"They ___ playing soccer now.", c:["are","is","am","be"], a:0, e:"They + are"},
-        {u:1, q:"Which sentence is correct?", c:["He is my friend.","He are my friend.","He am my friend.","He be my friend."], a:0, e:"He + is"},
-        {u:1, q:"What does 'happy' mean?", c:["기쁜","슬픈","화난","피곤한"], a:0, e:"happy=기쁜"},
-        {u:1, q:"Read: 'Mia likes apples and bananas.' What does Mia like?", c:["fruit","cars","books","shoes"], a:0, e:"apples·bananas = fruit"}
+        {u:1, q:"Yesterday I ___ to the park.", c:["went","go","goes","going"], a:0, e:"📘 '어제 나는 공원에 ___.' 과거형 went(갔다)"},
+        {u:1, q:"What is the opposite of 'begin'?", c:["end","start","open","run"], a:0, e:"📘 ''begin(시작하다)'의 반대말은?' end(끝나다)"},
+        {u:1, q:"They ___ playing soccer now.", c:["are","is","am","be"], a:0, e:"📘 '그들은 지금 축구를 하고 있다.' They 뒤엔 are"},
+        {u:1, q:"Which sentence is correct?", c:["He is my friend.","He are my friend.","He am my friend.","He be my friend."], a:0, e:"📘 '올바른 문장은?' He 뒤엔 is → 'He is my friend.'(그는 내 친구다)"},
+        {u:1, q:"What does 'happy' mean?", c:["기쁜","슬픈","화난","피곤한"], a:0, e:"📘 ''happy'의 뜻은?' 기쁜·행복한"},
+        {u:1, q:"Read: 'Mia likes apples and bananas.' What does Mia like?", c:["fruit","cars","books","shoes"], a:0, e:"📘 지문: '미아는 사과와 바나나를 좋아한다.' 좋아하는 것은? fruit(과일)"}
       ],
       8: [
-        {u:1, q:"Choose the best word: The plan was a great ___.", c:["success","successful","succeed","successfully"], a:0, e:"명사 자리 → success"},
-        {u:1, q:"What is the opposite of 'ancient'?", c:["modern","old","past","history"], a:0, e:"ancient(고대) ↔ modern(현대)"},
-        {u:1, q:"Read: 'Despite the rain, they finished the game.' They finished the game…", c:["even though it rained","because of the rain","before the rain","without a game"], a:0, e:"despite=~에도 불구하고"},
-        {u:1, q:"Choose the correct: She is the girl ___ won the prize.", c:["who","which","what","whom"], a:0, e:"사람 주격 관계대명사 who"},
-        {u:1, q:"'generous' means…", c:["관대한, 잘 베푸는","이기적인","화난","조용한"], a:0, e:"generous = 너그러운"},
-        {u:1, q:"Pick the correctly spelled word:", c:["beautiful","beatiful","beutiful","beautifull"], a:0, e:"beautiful"}
+        {u:1, q:"Choose the best word: The plan was a great ___.", c:["success","successful","succeed","successfully"], a:0, e:"📘 '그 계획은 큰 ___였다.' 명사 자리 → success(성공)"},
+        {u:1, q:"What is the opposite of 'ancient'?", c:["modern","old","past","history"], a:0, e:"📘 ''ancient(고대의)'의 반대말은?' modern(현대의)"},
+        {u:1, q:"Read: 'Despite the rain, they finished the game.' They finished the game…", c:["even though it rained","because of the rain","before the rain","without a game"], a:0, e:"📘 지문: '비에도 불구하고 그들은 경기를 끝냈다.' → even though it rained. despite=~에도 불구하고"},
+        {u:1, q:"Choose the correct: She is the girl ___ won the prize.", c:["who","which","what","whom"], a:0, e:"📘 '그녀는 상을 탄 소녀다.' 사람 주격 관계대명사 who"},
+        {u:1, q:"'generous' means…", c:["관대한, 잘 베푸는","이기적인","화난","조용한"], a:0, e:"📘 ''generous'의 뜻은?' 너그러운·잘 베푸는"},
+        {u:1, q:"Pick the correctly spelled word:", c:["beautiful","beatiful","beutiful","beautifull"], a:0, e:"📘 '철자가 맞는 단어는?' beautiful(아름다운)"}
       ]
     }
   };
@@ -582,7 +594,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -632,9 +644,9 @@
     $("subjTitle").textContent = TRACKS[track].label+" · 과목 고르기";
     const box=$("subjectPick"); box.innerHTML="";
     TRACKS[track].subjects.forEach(s=>{ const b=document.createElement("button"); b.className="subj"+(track==="intl"?" intl":"");
-      let sub = s.k==="interview" ? "말하기 연습" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
+      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
       b.innerHTML='<span class="semo">'+s.emo+'</span><span class="sname">'+s.n+'</span><span class="scount">'+sub+'</span>';
-      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
+      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
       box.appendChild(b); });
     $("noteCnt").textContent=getWrongs().length;
     renderPractice(); renderLevel();
@@ -826,7 +838,7 @@
     $("statusTitle").textContent=child.name+" · "+TRACKS[track].label+" 상태";
     const stats=getStats(); const wrongs=getWrongs(); let html="";
     TRACKS[track].subjects.forEach(s=>{
-      if(s.k==="interview"){ html+='<div class="stcard"><div class="stname">🗣️ 영어 면담</div><div class="stmeta">말하기 연습 (점수 기록 없음)</div></div>'; return; }
+      if(s.k==="interview"||s.k==="mathvocab"){ html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="stmeta">연습·학습 (점수 기록 없음)</div></div>'; return; }
       const st=stats[s.k]||{solved:0,correct:0}; const wc=wrongs.filter(w=>w.subj===s.k).length; const rate=st.solved?Math.round(st.correct/st.solved*100):0;
       html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="strow"><span>푼 문제 <b>'+st.solved+'</b></span><span>정답률 <b>'+rate+'%</b></span><span>오답 <b>'+wc+'</b></span></div><div class="strate"><i style="width:'+rate+'%"></i></div></div>';
     });
@@ -835,6 +847,20 @@
   $("statusBack").addEventListener("click",gotoSubject);
   $("btnCal").addEventListener("click",openCal);
   $("btnStatus").addEventListener("click",openStatus);
+
+  const GLOSSARY=[
+    {cat:"연산 Operations", items:[["add","더하다 (+)",4],["subtract","빼다 (−)",4],["multiply","곱하다 (×)",4],["divide","나누다 (÷)",4],["sum","합",4],["difference","차",4],["product","곱",4],["quotient","몫",4],["remainder","나머지",4],["equals","같다 (=)",4]]},
+    {cat:"수 Numbers", items:[["fraction","분수",4],["decimal","소수",4],["numerator","분자",4],["denominator","분모",4],["whole number","자연수·정수",4],["place value","자릿값",4],["round","반올림하다",4],["average / mean","평균",5],["ratio","비(比)",8],["percent","백분율 (%)",8]]},
+    {cat:"도형 Shapes", items:[["triangle","삼각형",4],["square","정사각형",4],["rectangle","직사각형",4],["circle","원",4],["angle","각",4],["right angle","직각 (90°)",4],["side","변",4],["vertex","꼭짓점",4],["parallel","평행한",4],["perimeter","둘레",5],["area","넓이",5],["volume","부피",5]]},
+    {cat:"자주 나오는 표현", items:[["how many","몇 개",4],["how much","얼마",4],["greater than","~보다 큰 (>)",4],["less than","~보다 작은 (<)",4],["total","전체·합계",4],["value","값",5],["equation","방정식",8],["solve","풀다·구하다",8],["at least","적어도",8],["increase / decrease","증가·감소",8]]}
+  ];
+  function openGlossary(){ renderGlossary(); show("glossary"); }
+  function renderGlossary(){
+    let html='<div class="glnote">📕 '+child.name+' · '+(child.g===8?"중2":child.g+"학년")+' 수준 단어예요</div>';
+    GLOSSARY.forEach(g=>{ const its=g.items.filter(it=>it[2]<=child.g); if(!its.length) return; html+='<div class="glcat">'+escapeHtml(g.cat)+'</div>'; its.forEach(it=>{ html+='<div class="glitem"><button class="glspk" data-w="'+escapeHtml(it[0])+'">🔊</button><span class="glen">'+escapeHtml(it[0])+'</span><span class="glko">'+escapeHtml(it[1])+'</span></div>'; }); });
+    $("glList").innerHTML=html; $("glList").querySelectorAll(".glspk").forEach(b=>b.addEventListener("click",()=>speak(b.dataset.w)));
+  }
+  $("glBack").addEventListener("click",gotoSubject);
 
   // ---------- PIN ----------
   const PINK={ child:n=>"study_pin_child_"+n, parent:"study_pin_parent" };
