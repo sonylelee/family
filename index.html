@@ -1537,8 +1537,9 @@
   });
   function requestChild(c){
     const pin=getChildPin(c.name);
-    if(!pin) openPin({title:c.name+" 비밀번호 만들기",sub:"처음이에요! 나만의 4자리 비밀번호를 정해요",mode:"create",onSuccess:p=>{ setChildPin(c.name,p); child=c; LS.set("study_child",c.name); gotoTrack(); },onCancel:gotoChild});
-    else openPin({title:c.name+"의 비밀번호",sub:"4자리를 눌러요",mode:"enter",correct:pin,child:c,onSuccess:()=>{ child=c; LS.set("study_child",c.name); gotoTrack(); },onCancel:gotoChild});
+    // 비번이 설정돼 있으면 입력받고, 없으면 바로 입장(자녀 비번은 선택사항 — 부모가 '비밀번호 바꾸기'로 원할 때만 설정)
+    if(!pin){ child=c; LS.set("study_child",c.name); gotoTrack(); return; }
+    openPin({title:c.name+"의 비밀번호",sub:"4자리를 눌러요",mode:"enter",correct:pin,child:c,onSuccess:()=>{ child=c; LS.set("study_child",c.name); gotoTrack(); },onCancel:gotoChild});
   }
   $("changePin").addEventListener("click",()=>{ const c=child; openPin({title:c.name+" 새 비밀번호",sub:"바꿀 4자리를 입력해요",mode:"create",onSuccess:p=>{ setChildPin(c.name,p); gotoTrack(); },onCancel:gotoTrack}); });
 
