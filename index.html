@@ -909,6 +909,32 @@
   const LS = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
   const $ = id => document.getElementById(id);
 
+  // ---------- 푸시 알림 (얼굴앱 인프라 재사용: soneed-push Worker + VAPID) ----------
+  const PUSH_URL = "https://soneed-push.soni0025.workers.dev";
+  const VAPID_PUB = "BKhxP76VnLAj4kHORwzQRzbJBYD_QJ_l59BZ4UvvYNFU3XnNfRu7ED_r2lwy7AS-M-hMv6yk3xcHKeanihT28Us";
+  const PUSH_GROUP = "gongbubang"; // 공부방 알림 그룹(얼굴앱 구독과 분리)
+  function _u8FromB64u(b64){ const pad="=".repeat((4-b64.length%4)%4); const s=(b64+pad).replace(/-/g,"+").replace(/_/g,"/"); const raw=atob(s); const u=new Uint8Array(raw.length); for(let i=0;i<raw.length;i++)u[i]=raw.charCodeAt(i); return u; }
+  function toast(msg){
+    let t=$("stoast"); if(!t){ t=document.createElement("div"); t.id="stoast"; t.style.cssText="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1e2b3a;color:#fff;padding:12px 18px;border-radius:12px;font-size:.9rem;font-weight:700;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:86%;text-align:center;opacity:0;transition:opacity .2s"; document.body.appendChild(t); }
+    t.textContent=msg; t.style.opacity="1"; clearTimeout(t._h); t._h=setTimeout(()=>{ t.style.opacity="0"; },3200);
+  }
+  if("serviceWorker" in navigator){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
+  async function enablePush(devLabel){
+    try{
+      if(!("serviceWorker" in navigator)||!("PushManager" in window)||typeof Notification==="undefined"){ toast("이 브라우저는 알림을 지원하지 않아요. 아이폰은 홈 화면에 추가한 앱으로 열어주세요."); return false; }
+      const perm=await Notification.requestPermission();
+      if(perm!=="granted"){ toast("알림이 꺼져 있어요. 설정에서 '허용'으로 바꿔주세요."); return false; }
+      const reg=await navigator.serviceWorker.register("sw.js"); await navigator.serviceWorker.ready;
+      let sub=await reg.pushManager.getSubscription();
+      if(!sub){ sub=await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:_u8FromB64u(VAPID_PUB) }); }
+      const res=await fetch(PUSH_URL+"/subscribe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:PUSH_GROUP,sub:sub.toJSON(),device:devLabel||""})});
+      const j=await res.json().catch(()=>({}));
+      if(j.ok){ toast("🔔 이 기기에 저녁 8시 알림이 켜졌어요!"); return true; }
+      toast("알림 등록 실패: "+((j&&j.error)||res.status)); return false;
+    }catch(e){ toast("알림 오류: "+(e&&e.message||e)); return false; }
+  }
+  async function pushStatus(){ try{ if(!("serviceWorker" in navigator)||typeof Notification==="undefined"||Notification.permission!=="granted")return false; const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription(); return !!sub; }catch(e){ return false; } }
+
   let child = findChild(LS.get("study_child","태희"));
   let track = "kr";
   let subject="math", grade=child.g;
@@ -1265,6 +1291,18 @@
     });
     html+='<div class="note-inline" style="margin-top:10px">※ 저장은 기기별이라, 각 아이가 쓰는 기기에서 봐야 정확해요.</div>';
     $("adminList").innerHTML=html;
+    // 🔔 저녁 8시 알림 켜기 (이 기기 · 얼굴앱 푸시 인프라 재사용)
+    (function(){
+      var card=document.createElement("div"); card.className="stcard";
+      card.innerHTML='<div class="stname">🔔 저녁 8시 알림</div>'
+        +'<div class="note-inline" style="margin:4px 0 10px">아이가 쓰는 이 기기에서 한 번 켜두면, 매일 저녁 8시에 “문제 풀 시간!” 알림이 옵니다. (아이폰은 <b>홈 화면에 추가한 앱</b>으로 열어야 켤 수 있어요)</div>'
+        +'<button class="backbtn" id="pushOnBtn" style="margin:0">🔔 이 기기에 알림 켜기</button>'
+        +'<div id="pushStat" class="note-inline" style="margin-top:8px"></div>';
+      var list=$("adminList"); list.insertBefore(card, list.firstChild);
+      var btn=$("pushOnBtn"), stat=$("pushStat");
+      pushStatus().then(function(on){ stat.textContent = on ? "✅ 이 기기는 알림이 켜져 있어요." : "⚪ 아직 이 기기엔 알림이 꺼져 있어요."; });
+      btn.addEventListener("click", async function(){ btn.disabled=true; var ok=await enablePush("공부방기기"); btn.disabled=false; stat.textContent = ok ? "✅ 이 기기는 알림이 켜져 있어요." : "⚪ 켜기에 실패했어요. 위 안내를 확인해주세요."; });
+    })();
     // 면담 녹음 재생
     CHILDREN.forEach(function(c){
       var recs=LS.get("study_ivrec_"+c.name,{}); var keys=Object.keys(recs); if(!keys.length) return;
