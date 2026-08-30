@@ -303,7 +303,6 @@
       <div class="levelbar"><div class="lvhead"><span id="lvLabel">Lv.1 🌱</span><span id="xpLabel">0/100 XP</span></div><div class="xptrack"><i id="xpFill"></i></div></div>
       <div class="row2" style="margin-top:0"><button class="bigbtn ghost" id="btnCal" style="margin-top:0">📅 출석</button><button class="bigbtn ghost" id="btnStatus" style="margin-top:0">📊 상태</button></div>
       <div class="missions" id="missions"></div>
-      <button class="practice" id="practiceToggle" style="margin-top:12px">🧪 연습 모드 <span class="pstate">꺼짐</span></button>
       <div class="section-t" id="subjTitle">과목을 골라요</div>
       <div class="subjects" id="subjectPick"></div>
       <button class="noteopen" id="openNote">📒 오답노트 <span class="cnt" id="noteCnt">0</span></button>
@@ -988,7 +987,7 @@
       b.innerHTML='<span class="kemo">'+c.emo+'</span><span><span class="kname">'+c.name+'</span><span class="kmeta">'+c.kGrade+' · 국제학교 '+c.intlG+'</span></span><span class="karr">›</span>';
       b.addEventListener("click",()=>requestChild(c)); box.appendChild(b); });
   }
-  function gotoChild(){ homeStep("child"); setCrumb(); show("home"); }
+  function gotoChild(){ practiceMode=false; homeStep("child"); setCrumb(); show("home"); }
   function gotoTrack(){
     $("krDesc").textContent = (child.g===8?"중2 과정":child.kGrade)+" · 수학·국어·영어";
     $("intlDesc").textContent = "영어로 · "+child.intlG+" "+child.intlNote;
@@ -1018,14 +1017,8 @@
     homeStep("subject"); setCrumb(); show("home");
   }
   $("subjBack").addEventListener("click",gotoTrack);
-  function renderPractice(){ const b=$("practiceToggle"); b.classList.toggle("on",practiceMode); b.querySelector(".pstate").textContent=practiceMode?"켜짐 (기록 안 함)":"꺼짐"; }
-  $("practiceToggle").addEventListener("click",()=>{
-    if(practiceMode){ practiceMode=false; renderPractice(); return; }
-    const back=()=>gotoSubject(); const enable=()=>{ practiceMode=true; gotoSubject(); };
-    const pp=getParentPin();
-    if(!pp) openPin({title:"부모 비밀번호 만들기",sub:"연습 모드는 부모만 켤 수 있어요 (4자리)",mode:"create",onSuccess:p=>{ setParentPin(p); enable(); },onCancel:back});
-    else openPin({title:"부모 비밀번호",sub:"연습 모드를 켜려면 부모 번호를 입력",mode:"enter",correct:pp,onSuccess:enable,onCancel:back});
-  });
+  // 연습 모드는 아이 화면에서 제거됨(답을 미리 볼 수 있어서). 관리(부모) 화면의 '연습 입장'으로만 켬.
+  function renderPractice(){ const b=$("practiceToggle"); if(!b) return; b.classList.toggle("on",practiceMode); b.querySelector(".pstate").textContent=practiceMode?"켜짐 (기록 안 함)":"꺼짐"; }
 
   function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
   function shuffleChoices(item){ const idx=item.c.map((_,i)=>i); for(let i=idx.length-1;i>0;i--){ const j=rnd(i+1); [idx[i],idx[j]]=[idx[j],idx[i]]; } return Object.assign({},item,{c:idx.map(i=>item.c[i]), a:idx.indexOf(item.a)}); }
@@ -1320,6 +1313,18 @@
       pushStatus().then(function(on){ stat.textContent = on ? "✅ 이 기기는 알림이 켜져 있어요." : "⚪ 아직 이 기기엔 알림이 꺼져 있어요."; });
       btn.addEventListener("click", async function(){ btn.disabled=true; var ok=await enablePush("공부방기기"); btn.disabled=false; stat.textContent = ok ? "✅ 이 기기는 알림이 켜져 있어요." : "⚪ 켜기에 실패했어요. 위 안내를 확인해주세요."; });
     })();
+    // 🧪 아이 화면 연습 입장 (부모 점검용 · 기록 안 함)
+    (function(){
+      var card=document.createElement("div"); card.className="stcard";
+      var h=document.createElement("div"); h.className="stname"; h.textContent="🧪 아이 화면 미리보기 (연습 · 기록 안 함)"; card.appendChild(h);
+      var note=document.createElement("div"); note.className="note-inline"; note.style.margin="4px 0 10px"; note.textContent="각 아이 화면에 그대로 들어가 마이크·읽기·기능이 되는지 점검할 수 있어요. 여기서 푼 건 진도·기록에 저장되지 않아요. (나가려면 트랙 → 아이 고르기로 돌아오면 연습이 꺼져요)"; card.appendChild(note);
+      CHILDREN.forEach(function(c){
+        var b=document.createElement("button"); b.className="backbtn"; b.style.margin="0 0 8px"; b.textContent=c.emo+" "+c.name+"(으)로 연습 입장";
+        b.addEventListener("click",function(){ enterPractice(c); });
+        card.appendChild(b);
+      });
+      $("adminList").appendChild(card);
+    })();
     // 면담 녹음 재생
     CHILDREN.forEach(function(c){
       var recs=LS.get("study_ivrec_"+c.name,{}); var keys=Object.keys(recs); if(!keys.length) return;
@@ -1578,7 +1583,9 @@
     if(!pp) openPin({title:"부모 비밀번호 만들기",sub:"자녀 비번을 잊었을 때 쓰는 부모 번호(4자리)",mode:"create",onSuccess:p=>{ setParentPin(p); doReset(); },onCancel:()=>requestChild(c)});
     else openPin({title:"부모 비밀번호",sub:"자녀 비번 초기화 — 부모 번호 입력",mode:"enter",correct:pp,onSuccess:doReset,onCancel:()=>requestChild(c)});
   });
-  function enterChild(c){ child=c; LS.set("study_child",c.name); syncPullChild(c.name).then(gotoTrack); }
+  function enterChild(c){ practiceMode=false; child=c; LS.set("study_child",c.name); syncPullChild(c.name).then(gotoTrack); }
+  // 관리(부모) 전용: 아이 화면을 연습모드로 열기(기록·저장 안 함, 점검용)
+  function enterPractice(c){ practiceMode=true; child=c; LS.set("study_child",c.name); gotoTrack(); }
   function requestChild(c){
     const pin=getChildPin(c.name);
     // 비번이 설정돼 있으면 입력받고, 없으면 바로 입장(자녀 비번은 선택사항 — 부모가 '비밀번호 바꾸기'로 원할 때만 설정)
