@@ -421,7 +421,7 @@
 
   <!-- GLOSSARY -->
   <div id="glossary" class="hidden">
-    <div class="qtop"><button class="back" id="glBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">📕 수학 단어집 (영어)</div></div>
+    <div class="qtop"><button class="back" id="glBack" aria-label="뒤로">←</button><div class="qcount" id="glTitle" style="flex:1">📕 단어집</div></div>
     <button class="bigbtn" id="glQuiz" style="margin-top:0;margin-bottom:12px">🎯 단어 퀴즈 풀기</button>
     <div id="glList"></div>
   </div>
@@ -452,7 +452,7 @@
       <div class="woans" id="woAns"></div>
       <div class="wopool" id="woPool"></div>
       <div class="woresult" id="woResult"></div>
-      <div class="ivbtns" style="margin-top:14px"><button class="ivbtn" id="woCheck">✅ 확인</button><button class="ivbtn" id="woReset">↺ 다시</button></div>
+      <div class="ivbtns" style="margin-top:14px"><button class="ivbtn" id="woCheck">✅ 확인</button><button class="ivbtn" id="woReset">↺ 다시</button><button class="ivbtn" id="woReveal">🙈 정답</button></div>
     </div>
     <div class="ivnav"><button id="woPrev">← 이전</button><button class="prim" id="woNext">다음 →</button></div>
   </div>
@@ -546,84 +546,84 @@
   const BANK = {
     math: {
       4: [
-        {u:1, gen:"fracAddSame", q:"3/5 + 1/5 = ?", c:["4/5","4/10","3/25","2/5"], a:0, e:"분모가 같으면 분자끼리 더해요: 3+1=4 → 4/5"},
-        {u:1, gen:"fracSubSame", q:"5/6 - 2/6 = ?", c:["1/2","3/12","7/6","2/6"], a:0, e:"5/6-2/6=3/6, 약분하면 1/2"},
-        {u:2, q:"세 각의 크기가 모두 60°인 삼각형의 이름은?", c:["정삼각형","직각삼각형","둔각삼각형","이등변삼각형"], a:0, e:"세 변·세 각이 모두 같은 삼각형은 정삼각형"},
-        {u:3, gen:"decAdd", q:"0.3 + 0.4 = ?", c:["0.7","0.07","7","0.12"], a:0, e:"소수점을 맞춰 더하면 0.3+0.4=0.7"},
-        {u:3, q:"0.6 은 0.1 이 몇 개인 수일까요?", c:["6개","60개","10개","16개"], a:0, e:"0.6 = 0.1이 6개"},
-        {u:4, q:"직사각형의 한 각의 크기는?", c:["90°","60°","100°","120°"], a:0, e:"직사각형의 네 각은 모두 직각(90°)"},
-        {u:6, q:"오각형의 변은 모두 몇 개일까요?", c:["5개","6개","4개","8개"], a:0, e:"오각형은 변이 5개예요"},
-        {u:1, q:"8 × 9 = ?", c:["72","64","81","17"], a:0, e:"8×9=72"},
-        {u:1, q:"45 ÷ 9 = ?", c:["5","6","4","7"], a:0, e:"45÷9=5"},
-        {u:1, q:"2/7 + 3/7 = ?", c:["5/7","5/14","6/7","1/7"], a:0, e:"분모가 같으니 분자끼리 더해요: 5/7"},
-        {u:2, q:"삼각형 세 각의 크기의 합은?", c:["180°","360°","90°","120°"], a:0, e:"삼각형 내각의 합은 180°"},
-        {u:3, q:"0.5 + 0.5 = ?", c:["1","0.10","0.55","0.1"], a:0, e:"0.5+0.5=1"},
-        {u:3, q:"0.8 은 0.1 이 몇 개인 수일까요?", c:["8개","80개","18개","4개"], a:0, e:"0.8 = 0.1이 8개"},
-        {u:6, q:"육각형의 변은 모두 몇 개일까요?", c:["6개","5개","7개","8개"], a:0, e:"육각형은 변이 6개"},
-        {u:1, q:"24 ÷ 4 = ?", c:["6","8","4","5"], a:0, e:"24÷4=6"},
-        {u:1, q:"7 × 8 = ?", c:["56","48","63","15"], a:0, e:"7×8=56"},
-        {u:1, q:"3/8 + 2/8 = ?", c:["5/8","5/16","1/8","6/8"], a:0, e:"분모가 같으니 3+2=5 → 5/8"},
-        {u:3, q:"0.9 − 0.4 = ?", c:["0.5","0.13","1.3","0.4"], a:0, e:"0.9−0.4=0.5"},
-        {u:4, q:"정사각형의 네 변의 길이는?", c:["모두 같다","모두 다르다","두 개만 같다","길이가 없다"], a:0, e:"정사각형은 네 변의 길이가 모두 같아요"},
-        {u:1, q:"1시간은 몇 분일까요?", c:["60분","100분","30분","90분"], a:0, e:"1시간 = 60분"},
-        {u:1, q:"10000이 5개인 수는?", c:["50000","5000","500000","15000"], a:0, e:"만이 5개 = 5만 = 50000"},
-        {u:2, q:"한 각이 90°인 삼각형은?", c:["직각삼각형","정삼각형","둔각삼각형","예각삼각형"], a:0, e:"한 각이 직각(90°) → 직각삼각형"}
+        {u:1, gen:"fracAddSame", q:"3/5 + 1/5 = ?", c:["4/5","4/10","3/25","2/5"], a:0, e:"분모가 같을 땐 분자(위)끼리만 더하면 돼요. 분모는 그대로 두는 거예요 😊"},
+        {u:1, gen:"fracSubSame", q:"5/6 - 2/6 = ?", c:["1/2","3/12","7/6","2/6"], a:0, e:"분모가 같을 땐 분자끼리 빼면 돼요. 계산한 뒤 약분할 수 있으면 약분해 주세요 🙂"},
+        {u:2, q:"세 각의 크기가 모두 60°인 삼각형의 이름은?", c:["정삼각형","직각삼각형","둔각삼각형","이등변삼각형"], a:0, e:"세 변과 세 각이 모두 같은 삼각형을 정삼각형이라고 불러요 😊"},
+        {u:3, gen:"decAdd", q:"0.3 + 0.4 = ?", c:["0.7","0.07","7","0.12"], a:0, e:"소수는 소수점을 잘 맞춰서 더해 주면 돼요. 차근차근 하면 어렵지 않아요 🙂"},
+        {u:3, q:"0.6 은 0.1 이 몇 개인 수일까요?", c:["6개","60개","10개","16개"], a:0, e:"0.6은 0.1이 여섯 개 모인 수예요. 그래서 6개랍니다 😊"},
+        {u:4, q:"직사각형의 한 각의 크기는?", c:["90°","60°","100°","120°"], a:0, e:"직사각형의 네 각은 모두 직각, 즉 90°예요 🙂"},
+        {u:6, q:"오각형의 변은 모두 몇 개일까요?", c:["5개","6개","4개","8개"], a:0, e:"오각형은 변이 다섯 개예요. '오(5)각형'이라서 5개랍니다 😊"},
+        {u:1, q:"8 × 9 = ?", c:["72","64","81","17"], a:0, e:"8 곱하기 9는 72예요. 구구단 8단을 떠올려 보세요 🙂"},
+        {u:1, q:"45 ÷ 9 = ?", c:["5","6","4","7"], a:0, e:"9단에서 45는 9×5니까, 45÷9는 5예요 😊"},
+        {u:1, q:"2/7 + 3/7 = ?", c:["5/7","5/14","6/7","1/7"], a:0, e:"분모가 같을 땐 분자끼리 더하면 돼요. 2+3=5라서 5/7이에요 🙂"},
+        {u:2, q:"삼각형 세 각의 크기의 합은?", c:["180°","360°","90°","120°"], a:0, e:"삼각형의 세 각을 모두 더하면 언제나 180°가 된답니다 😊"},
+        {u:3, q:"0.5 + 0.5 = ?", c:["1","0.10","0.55","0.1"], a:0, e:"0.5와 0.5를 더하면 딱 1이 돼요 🙂"},
+        {u:3, q:"0.8 은 0.1 이 몇 개인 수일까요?", c:["8개","80개","18개","4개"], a:0, e:"0.8은 0.1이 여덟 개 모인 수라서 8개예요 😊"},
+        {u:6, q:"육각형의 변은 모두 몇 개일까요?", c:["6개","5개","7개","8개"], a:0, e:"육각형은 변이 여섯 개예요. '육(6)각형'이니까요 🙂"},
+        {u:1, q:"24 ÷ 4 = ?", c:["6","8","4","5"], a:0, e:"4단에서 24는 4×6이니까, 24÷4는 6이에요 😊"},
+        {u:1, q:"7 × 8 = ?", c:["56","48","63","15"], a:0, e:"7 곱하기 8은 56이에요. 7단으로 확인해 보세요 🙂"},
+        {u:1, q:"3/8 + 2/8 = ?", c:["5/8","5/16","1/8","6/8"], a:0, e:"분모가 같으니 분자끼리 더하면 돼요. 3+2=5라서 5/8이랍니다 😊"},
+        {u:3, q:"0.9 − 0.4 = ?", c:["0.5","0.13","1.3","0.4"], a:0, e:"0.9에서 0.4를 빼면 0.5가 돼요 🙂"},
+        {u:4, q:"정사각형의 네 변의 길이는?", c:["모두 같다","모두 다르다","두 개만 같다","길이가 없다"], a:0, e:"정사각형은 네 변의 길이가 모두 똑같아요 😊"},
+        {u:1, q:"1시간은 몇 분일까요?", c:["60분","100분","30분","90분"], a:0, e:"1시간은 60분이에요. 시계가 한 바퀴 도는 시간이랍니다 🙂"},
+        {u:1, q:"10000이 5개인 수는?", c:["50000","5000","500000","15000"], a:0, e:"만(10000)이 다섯 개면 5만, 즉 50000이에요 😊"},
+        {u:2, q:"한 각이 90°인 삼각형은?", c:["직각삼각형","정삼각형","둔각삼각형","예각삼각형"], a:0, e:"한 각이 직각(90°)인 삼각형을 직각삼각형이라고 해요 🙂"}
       ],
       5: [
-        {u:1, gen:"roundInt", q:"3.7을 반올림하여 자연수로 나타내면?", c:["4","3","3.5","40"], a:0, e:"소수 첫째 자리 7은 5 이상이라 올림 → 4"},
-        {u:2, gen:"fracTimesInt", q:"2/3 × 6 = ?", c:["4","12/3","2/18","9"], a:0, e:"2/3 × 6 = 12/3 = 4"},
-        {u:2, gen:"fracMul", q:"1/2 × 1/4 = ?", c:["1/8","2/6","1/6","4/2"], a:0, e:"분자끼리, 분모끼리 곱해요: (1×1)/(2×4)=1/8"},
-        {u:3, q:"모양과 크기가 같아 완전히 포개지는 두 도형을?", c:["합동","대칭","닮음","평행"], a:0, e:"완전히 겹치면 '합동'이에요"},
-        {u:4, gen:"decMul", q:"0.6 × 0.5 = ?", c:["0.3","0.11","3","0.35"], a:0, e:"6×5=30, 소수 두 자리 → 0.30 = 0.3"},
-        {u:5, q:"직육면체의 면은 모두 몇 개일까요?", c:["6개","8개","12개","4개"], a:0, e:"직육면체는 면 6, 모서리 12, 꼭짓점 8"},
-        {u:6, q:"국어 80점, 수학 90점, 영어 85점의 평균은?", c:["85점","80점","90점","88점"], a:0, e:"(80+90+85)÷3 = 255÷3 = 85"},
-        {u:6, q:"주사위 한 개를 던질 때 3이 나올 가능성은?", c:["1/6","1/3","1/2","0"], a:0, e:"1~6 중 3은 하나 → 1/6"},
-        {u:2, q:"3/4 × 8 = ?", c:["6","12","24","2"], a:0, e:"3/4 × 8 = 24/4 = 6"},
-        {u:2, q:"1/3 × 1/2 = ?", c:["1/6","2/5","1/5","3/2"], a:0, e:"분자끼리·분모끼리: 1/6"},
-        {u:1, q:"4.5를 반올림하여 자연수로 나타내면?", c:["5","4","4.5","45"], a:0, e:"소수 첫째 5 → 올림 → 5"},
-        {u:4, q:"0.2 × 0.3 = ?", c:["0.06","0.6","0.5","0.006"], a:0, e:"2×3=6, 소수 두 자리 → 0.06"},
-        {u:5, q:"정육면체의 모서리는 모두 몇 개일까요?", c:["12개","6개","8개","4개"], a:0, e:"정육면체는 모서리 12개"},
-        {u:6, q:"70, 80, 90의 평균은?", c:["80","70","90","240"], a:0, e:"(70+80+90)÷3 = 80"},
-        {u:3, q:"한 직선으로 접어 완전히 겹치는 도형을?", c:["선대칭도형","점대칭도형","합동","닮음"], a:0, e:"접어서 겹치면 선대칭도형"},
-        {u:6, q:"주사위에서 짝수가 나올 가능성은?", c:["1/2","1/3","1/6","2/3"], a:0, e:"2·4·6 → 3/6 = 1/2"},
-        {u:2, q:"5/6 − 1/6 = ?", c:["2/3","6/6","5/36","1/6"], a:0, e:"5/6−1/6=4/6=2/3"},
-        {u:2, q:"2/5 × 10 = ?", c:["4","20","2","5"], a:0, e:"2/5×10 = 20/5 = 4"},
-        {u:4, q:"0.4 × 0.7 = ?", c:["0.28","2.8","0.11","0.35"], a:0, e:"4×7=28, 소수 두 자리 → 0.28"},
-        {u:1, q:"3.14를 반올림하여 소수 첫째 자리까지 나타내면?", c:["3.1","3.2","3.0","3"], a:0, e:"둘째 자리 4는 버림 → 3.1"},
-        {u:5, q:"직육면체의 꼭짓점은 모두 몇 개일까요?", c:["8개","6개","12개","4개"], a:0, e:"직육면체 꼭짓점 8개"},
-        {u:6, q:"60, 70, 80, 90의 평균은?", c:["75","70","80","300"], a:0, e:"(60+70+80+90)÷4 = 300÷4 = 75"},
-        {u:2, q:"다음 중 가분수(1보다 큰 분수)는?", c:["7/4","3/4","2/5","1/2"], a:0, e:"분자>분모인 7/4가 가분수"},
-        {u:6, q:"동전 한 개를 던져 앞면이 나올 가능성은?", c:["1/2","1/3","1/4","1"], a:0, e:"앞·뒤 2가지 중 1 → 1/2"}
+        {u:1, gen:"roundInt", q:"3.7을 반올림하여 자연수로 나타내면?", c:["4","3","3.5","40"], a:0, e:"소수 첫째 자리가 5 이상이면 올려 주면 돼요. 그래서 4가 된답니다 🙂"},
+        {u:2, gen:"fracTimesInt", q:"2/3 × 6 = ?", c:["4","12/3","2/18","9"], a:0, e:"분수 × 자연수는 분자에 그 수를 곱하면 돼요. 계산한 뒤 약분도 해 주세요 😊"},
+        {u:2, gen:"fracMul", q:"1/2 × 1/4 = ?", c:["1/8","2/6","1/6","4/2"], a:0, e:"분수끼리 곱할 땐 분자는 분자끼리, 분모는 분모끼리 곱하면 돼요 🙂"},
+        {u:3, q:"모양과 크기가 같아 완전히 포개지는 두 도형을?", c:["합동","대칭","닮음","평행"], a:0, e:"모양과 크기가 똑같아 완전히 포개지는 두 도형을 '합동'이라고 해요 😊"},
+        {u:4, gen:"decMul", q:"0.6 × 0.5 = ?", c:["0.3","0.11","3","0.35"], a:0, e:"먼저 6×5=30을 구하고, 소수점 자리 수만큼 찍어 주면 0.3이 돼요 🙂"},
+        {u:5, q:"직육면체의 면은 모두 몇 개일까요?", c:["6개","8개","12개","4개"], a:0, e:"직육면체는 면이 6개, 모서리가 12개, 꼭짓점이 8개예요 😊"},
+        {u:6, q:"국어 80점, 수학 90점, 영어 85점의 평균은?", c:["85점","80점","90점","88점"], a:0, e:"모두 더한 뒤 개수로 나누면 평균이에요. (80+90+85)÷3=85점이랍니다 🙂"},
+        {u:6, q:"주사위 한 개를 던질 때 3이 나올 가능성은?", c:["1/6","1/3","1/2","0"], a:0, e:"1부터 6까지 중 3은 하나뿐이라 가능성은 1/6이에요 😊"},
+        {u:2, q:"3/4 × 8 = ?", c:["6","12","24","2"], a:0, e:"분자에 8을 곱해 24/4, 약분하면 6이 돼요 🙂"},
+        {u:2, q:"1/3 × 1/2 = ?", c:["1/6","2/5","1/5","3/2"], a:0, e:"분자끼리, 분모끼리 곱하면 1/6이에요 😊"},
+        {u:1, q:"4.5를 반올림하여 자연수로 나타내면?", c:["5","4","4.5","45"], a:0, e:"소수 첫째 자리가 5라서 올려 주면 5가 돼요 🙂"},
+        {u:4, q:"0.2 × 0.3 = ?", c:["0.06","0.6","0.5","0.006"], a:0, e:"2×3=6을 구하고 소수 두 자리를 찍어 0.06이에요 😊"},
+        {u:5, q:"정육면체의 모서리는 모두 몇 개일까요?", c:["12개","6개","8개","4개"], a:0, e:"정육면체는 모서리가 모두 12개예요 🙂"},
+        {u:6, q:"70, 80, 90의 평균은?", c:["80","70","90","240"], a:0, e:"세 수를 더해 3으로 나누면 (70+80+90)÷3=80이에요 😊"},
+        {u:3, q:"한 직선으로 접어 완전히 겹치는 도형을?", c:["선대칭도형","점대칭도형","합동","닮음"], a:0, e:"한 직선으로 접어 완전히 겹치면 선대칭도형이라고 해요 🙂"},
+        {u:6, q:"주사위에서 짝수가 나올 가능성은?", c:["1/2","1/3","1/6","2/3"], a:0, e:"짝수는 2, 4, 6 세 가지라서 3/6, 즉 1/2이에요 😊"},
+        {u:2, q:"5/6 − 1/6 = ?", c:["2/3","6/6","5/36","1/6"], a:0, e:"분자끼리 빼면 4/6, 약분하면 2/3이 돼요 🙂"},
+        {u:2, q:"2/5 × 10 = ?", c:["4","20","2","5"], a:0, e:"분자에 10을 곱해 20/5, 약분하면 4예요 😊"},
+        {u:4, q:"0.4 × 0.7 = ?", c:["0.28","2.8","0.11","0.35"], a:0, e:"4×7=28에 소수 두 자리를 찍어 0.28이에요 🙂"},
+        {u:1, q:"3.14를 반올림하여 소수 첫째 자리까지 나타내면?", c:["3.1","3.2","3.0","3"], a:0, e:"소수 둘째 자리 4는 버림이라 3.1이 된답니다 😊"},
+        {u:5, q:"직육면체의 꼭짓점은 모두 몇 개일까요?", c:["8개","6개","12개","4개"], a:0, e:"직육면체는 꼭짓점이 8개예요 🙂"},
+        {u:6, q:"60, 70, 80, 90의 평균은?", c:["75","70","80","300"], a:0, e:"네 수를 더해 4로 나누면 (60+70+80+90)÷4=75예요 😊"},
+        {u:2, q:"다음 중 가분수(1보다 큰 분수)는?", c:["7/4","3/4","2/5","1/2"], a:0, e:"분자가 분모보다 큰 7/4가 가분수예요 🙂"},
+        {u:6, q:"동전 한 개를 던져 앞면이 나올 가능성은?", c:["1/2","1/3","1/4","1"], a:0, e:"앞과 뒤 두 가지 중 하나라서 가능성은 1/2이에요 😊"}
       ],
       8: [
-        {u:1, q:"이등변삼각형의 꼭지각이 40°일 때, 한 밑각의 크기는?", c:["70°","40°","140°","20°"], a:0, e:"두 밑각이 같으므로 (180−40)÷2 = 70°"},
-        {u:1, q:"직각을 낀 두 변이 3, 4인 직각삼각형의 빗변의 길이는?", c:["5","7","6","12"], a:0, e:"피타고라스: 3²+4²=25=5²"},
-        {u:1, q:"빗변이 13, 한 변이 5인 직각삼각형의 나머지 변의 길이는?", c:["12","8","18","9"], a:0, e:"13²−5²=169−25=144=12²"},
-        {u:1, q:"평행사변형에서 항상 성립하는 것은?", c:["마주 보는 변의 길이가 같다","네 각이 모두 90°","네 변의 길이가 같다","대각선의 길이가 같다"], a:0, e:"평행사변형은 두 쌍의 마주 보는 변이 평행하고 길이가 같다"},
-        {u:1, q:"닮음비가 2:3인 두 도형의 넓이의 비는?", c:["4:9","2:3","8:27","6:9"], a:0, e:"넓이의 비 = 닮음비의 제곱 = 2²:3² = 4:9"},
-        {u:1, q:"주사위 두 개를 던져 눈의 합이 7이 되는 경우의 수는?", c:["6가지","5가지","7가지","11가지"], a:0, e:"(1,6)(2,5)(3,4)(4,3)(5,2)(6,1) → 6가지"},
-        {u:1, q:"동전 2개를 던질 때 모두 앞면이 나올 확률은?", c:["1/4","1/2","1/3","3/4"], a:0, e:"경우 4가지 중 (앞,앞) 1가지 → 1/4"},
-        {u:1, q:"삼각형의 외심에서 세 꼭짓점에 이르는 거리는?", c:["모두 같다","모두 다르다","두 개만 같다","0이다"], a:0, e:"외심은 외접원의 중심 → 세 꼭짓점까지 거리가 같다"},
-        {u:1, q:"삼각형 두 변의 중점을 이은 선분의 길이는 밑변의 몇 배?", c:["1/2배","2배","1배","1/3배"], a:0, e:"중점연결정리: 밑변의 1/2"},
-        {u:1, q:"삼각형의 세 중선이 만나는 점을 무엇이라 하나요?", c:["무게중심","외심","내심","수심"], a:0, e:"세 중선의 교점 = 무게중심"},
-        {u:1, q:"x=3일 때, 2x − 1의 값은?", c:["5","7","6","4"], a:0, e:"2·3−1 = 5"},
-        {u:1, q:"3² + 4² 을 계산하면?", c:["25","49","12","7"], a:0, e:"9+16 = 25"},
-        {u:1, q:"일차부등식 3x < 9 의 해는?", c:["x < 3","x > 3","x < 9","x = 3"], a:0, e:"양변을 3으로 나누면 x<3"},
-        {u:1, q:"빗변이 5, 한 변이 3인 직각삼각형의 나머지 변은?", c:["4","2","8","16"], a:0, e:"5²−3²=16=4²"},
-        {u:1, q:"평행사변형의 두 대각선은 서로 어떤 관계?", c:["서로 이등분한다","수직이다","길이가 같다","평행하다"], a:0, e:"평행사변형의 대각선은 서로 이등분"},
-        {u:1, q:"닮음비가 1:3인 두 도형의 넓이의 비는?", c:["1:9","1:3","1:6","3:1"], a:0, e:"넓이의 비 = 닮음비의 제곱 = 1:9"},
-        {u:1, q:"동전 한 개를 던져 뒷면이 나올 확률은?", c:["1/2","1/4","1","0"], a:0, e:"앞·뒤 2가지 중 1 → 1/2"},
-        {u:1, q:"일차함수 y = 3x 에서 x=4일 때 y는?", c:["12","7","1","34"], a:0, e:"y = 3·4 = 12"},
-        {u:1, q:"2(a + 3) 을 전개하면?", c:["2a + 6","2a + 3","a + 6","2a"], a:0, e:"분배법칙: 2a+6"},
-        {u:1, q:"50의 10%는?", c:["5","10","15","50"], a:0, e:"50 × 0.1 = 5"},
-        {u:1, q:"이등변삼각형에서 두 밑각의 크기는?", c:["서로 같다","서로 다르다","모두 90°","합이 90°"], a:0, e:"이등변삼각형의 두 밑각은 서로 같다"},
-        {u:1, q:"빗변이 10, 한 변이 6인 직각삼각형의 나머지 변은?", c:["8","4","16","64"], a:0, e:"10²−6²=64=8²"},
-        {u:1, q:"세 변이 6, 8, 10인 삼각형은 직각삼각형인가?", c:["예 (6²+8²=10²)","아니오","알 수 없다","정삼각형"], a:0, e:"36+64=100=10² → 직각삼각형"},
-        {u:1, q:"닮음비가 2:5인 두 도형의 넓이의 비는?", c:["4:25","2:5","8:125","10:25"], a:0, e:"넓이의 비 = 닮음비의 제곱 = 4:25"},
-        {u:1, q:"주사위 두 개를 던져 두 눈의 합이 2가 될 확률은?", c:["1/36","1/6","2/36","1/12"], a:0, e:"(1,1) 한 가지 → 1/36"},
-        {u:1, q:"1~5 카드 5장 중 한 장을 뽑아 짝수일 확률은?", c:["2/5","1/2","3/5","1/5"], a:0, e:"짝수 2,4 → 2/5"},
-        {u:1, q:"평행사변형의 넓이 = 밑변 × ( )?", c:["높이","빗변","대각선","둘레"], a:0, e:"평행사변형 넓이 = 밑변 × 높이"},
-        {u:1, q:"정삼각형의 한 외각의 크기는?", c:["120°","60°","90°","180°"], a:0, e:"외각 = 180−60 = 120°"}
+        {u:1, q:"이등변삼각형의 꼭지각이 40°일 때, 한 밑각의 크기는?", c:["70°","40°","140°","20°"], a:0, e:"두 밑각의 크기가 같으니 (180−40)÷2=70°가 돼요 🙂"},
+        {u:1, q:"직각을 낀 두 변이 3, 4인 직각삼각형의 빗변의 길이는?", c:["5","7","6","12"], a:0, e:"피타고라스 정리로 3²+4²=25=5²이라 빗변은 5예요 😊"},
+        {u:1, q:"빗변이 13, 한 변이 5인 직각삼각형의 나머지 변의 길이는?", c:["12","8","18","9"], a:0, e:"13²−5²=169−25=144, 즉 12²이라서 나머지 변은 12예요 🙂"},
+        {u:1, q:"평행사변형에서 항상 성립하는 것은?", c:["마주 보는 변의 길이가 같다","네 각이 모두 90°","네 변의 길이가 같다","대각선의 길이가 같다"], a:0, e:"평행사변형은 마주 보는 두 변이 평행하고 길이도 같답니다 😊"},
+        {u:1, q:"닮음비가 2:3인 두 도형의 넓이의 비는?", c:["4:9","2:3","8:27","6:9"], a:0, e:"넓이의 비는 닮음비의 제곱이에요. 2²:3²=4:9가 된답니다 🙂"},
+        {u:1, q:"주사위 두 개를 던져 눈의 합이 7이 되는 경우의 수는?", c:["6가지","5가지","7가지","11가지"], a:0, e:"합이 7인 경우는 (1,6)(2,5)(3,4)(4,3)(5,2)(6,1), 모두 6가지예요 😊"},
+        {u:1, q:"동전 2개를 던질 때 모두 앞면이 나올 확률은?", c:["1/4","1/2","1/3","3/4"], a:0, e:"경우가 4가지인데 (앞,앞)은 하나뿐이라 확률은 1/4이에요 🙂"},
+        {u:1, q:"삼각형의 외심에서 세 꼭짓점에 이르는 거리는?", c:["모두 같다","모두 다르다","두 개만 같다","0이다"], a:0, e:"외심은 외접원의 중심이라 세 꼭짓점까지 거리가 모두 같아요 😊"},
+        {u:1, q:"삼각형 두 변의 중점을 이은 선분의 길이는 밑변의 몇 배?", c:["1/2배","2배","1배","1/3배"], a:0, e:"중점을 이은 선분은 밑변의 1/2 길이가 돼요 (중점연결정리) 🙂"},
+        {u:1, q:"삼각형의 세 중선이 만나는 점을 무엇이라 하나요?", c:["무게중심","외심","내심","수심"], a:0, e:"세 중선이 만나는 점을 무게중심이라고 해요 😊"},
+        {u:1, q:"x=3일 때, 2x − 1의 값은?", c:["5","7","6","4"], a:0, e:"x에 3을 넣으면 2×3−1=5가 돼요 🙂"},
+        {u:1, q:"3² + 4² 을 계산하면?", c:["25","49","12","7"], a:0, e:"9와 16을 더하면 25예요 😊"},
+        {u:1, q:"일차부등식 3x < 9 의 해는?", c:["x < 3","x > 3","x < 9","x = 3"], a:0, e:"양변을 3으로 나누면 x<3이 답이에요 🙂"},
+        {u:1, q:"빗변이 5, 한 변이 3인 직각삼각형의 나머지 변은?", c:["4","2","8","16"], a:0, e:"5²−3²=16=4²이라 나머지 변은 4예요 😊"},
+        {u:1, q:"평행사변형의 두 대각선은 서로 어떤 관계?", c:["서로 이등분한다","수직이다","길이가 같다","평행하다"], a:0, e:"평행사변형의 두 대각선은 서로를 이등분한답니다 🙂"},
+        {u:1, q:"닮음비가 1:3인 두 도형의 넓이의 비는?", c:["1:9","1:3","1:6","3:1"], a:0, e:"넓이의 비는 닮음비의 제곱이라 1:9가 돼요 😊"},
+        {u:1, q:"동전 한 개를 던져 뒷면이 나올 확률은?", c:["1/2","1/4","1","0"], a:0, e:"앞과 뒤 두 가지 중 하나라서 확률은 1/2이에요 🙂"},
+        {u:1, q:"일차함수 y = 3x 에서 x=4일 때 y는?", c:["12","7","1","34"], a:0, e:"x에 4를 넣으면 y=3×4=12가 돼요 😊"},
+        {u:1, q:"2(a + 3) 을 전개하면?", c:["2a + 6","2a + 3","a + 6","2a"], a:0, e:"분배법칙으로 2×a와 2×3을 더해 2a+6이에요 🙂"},
+        {u:1, q:"50의 10%는?", c:["5","10","15","50"], a:0, e:"50의 10%는 50×0.1=5예요 😊"},
+        {u:1, q:"이등변삼각형에서 두 밑각의 크기는?", c:["서로 같다","서로 다르다","모두 90°","합이 90°"], a:0, e:"이등변삼각형은 두 밑각의 크기가 서로 같아요 🙂"},
+        {u:1, q:"빗변이 10, 한 변이 6인 직각삼각형의 나머지 변은?", c:["8","4","16","64"], a:0, e:"10²−6²=64=8²이라 나머지 변은 8이에요 😊"},
+        {u:1, q:"세 변이 6, 8, 10인 삼각형은 직각삼각형인가?", c:["예 (6²+8²=10²)","아니오","알 수 없다","정삼각형"], a:0, e:"36+64=100=10²이라 직각삼각형이 맞아요 🙂"},
+        {u:1, q:"닮음비가 2:5인 두 도형의 넓이의 비는?", c:["4:25","2:5","8:125","10:25"], a:0, e:"넓이의 비는 닮음비의 제곱이라 4:25가 돼요 😊"},
+        {u:1, q:"주사위 두 개를 던져 두 눈의 합이 2가 될 확률은?", c:["1/36","1/6","2/36","1/12"], a:0, e:"두 눈의 합이 2가 되는 경우는 (1,1) 하나뿐이라 1/36이에요 🙂"},
+        {u:1, q:"1~5 카드 5장 중 한 장을 뽑아 짝수일 확률은?", c:["2/5","1/2","3/5","1/5"], a:0, e:"1~5 중 짝수는 2와 4라서 2/5의 확률이에요 😊"},
+        {u:1, q:"평행사변형의 넓이 = 밑변 × ( )?", c:["높이","빗변","대각선","둘레"], a:0, e:"평행사변형의 넓이는 밑변 × 높이로 구해요 🙂"},
+        {u:1, q:"정삼각형의 한 외각의 크기는?", c:["120°","60°","90°","180°"], a:0, e:"한 외각은 180−60=120°가 돼요 😊"}
       ]
     },
     korean: {
@@ -1098,7 +1098,8 @@
     answered=false; const item=quizList[qi]; const rt=item.retry>0; const intl=(item.subj==="enmath"||item.subj==="enread");
     const tag=$("qTag"); tag.className="qtag"+(rt?" retry":(intl?" intl":""));
     tag.textContent = rt ? "🔁 비슷한 문제 다시!" : ((SUBJ_KO[item.subj]||"")+" · "+(intl?("국제학교 "+child.intlG):getUnitName(item.subj,item.grade,item.u)));
-    $("qText").textContent=item.q; $("qCount").textContent=(qi+1)+"/"+quizList.length; $("progBar").style.width=(qi/quizList.length*100)+"%";
+    if(intl){ var mm=/뜻:\s*([^|]+)/.exec(item.e||""); var hint=mm?mm[1].trim():""; $("qText").innerHTML=escapeHtml(item.q)+(hint?'<div style="font-size:.9rem;color:var(--text-2);margin-top:8px;font-weight:600;line-height:1.5">🇰🇷 '+escapeHtml(hint)+'</div>':''); } else { $("qText").textContent=item.q; }
+    $("qCount").textContent=(qi+1)+"/"+quizList.length; $("progBar").style.width=(qi/quizList.length*100)+"%";
     const box=$("choices"); box.innerHTML=""; const keys=["가","나","다","라"];
     item.c.forEach((ch,idx)=>{ const b=document.createElement("button"); b.className="choice"; b.innerHTML='<span class="key">'+keys[idx]+'</span><span>'+escapeHtml(ch)+'</span>'; b.addEventListener("click",()=>choose(idx,b)); box.appendChild(b); });
     $("practiceBadge").classList.toggle("hidden",!practiceMode);
@@ -1282,19 +1283,37 @@
       ["accept","받아들이다",8,"'억셉트' → 억! 셉(접)수 받아들이다"],
       ["despite","~에도 불구하고",8,"'디스파잇' → 이 스파잇(spite·앙심)에도 불구하고"],
       ["although","~이지만",8,"'올도우' → all(모두) though(그래도), ~이지만"]
+    ]},
+    {cat:"국제학교 심화 (중2+)", items:[
+      ["benefit","이익·혜택",8,"'베네핏' → 베네(좋은)+핏(fit), 이로운 것"],
+      ["consequence","결과",8,"'컨시퀀스' → 큰 시퀀스(순서)의 끝에 오는 결과"],
+      ["contribute","기여하다",8,"'컨트리뷰트' → 컨트리(나라)에 이바지하다"],
+      ["demonstrate","보여주다·증명",8,"'데몬스트레이트' → 데몬(demon)이 스트레이트로 보여줌"],
+      ["establish","세우다·설립하다",8,"'이스태블리시' → 이 스타(별)를 세워 자리잡다"],
+      ["significant","중요한",8,"'시그니피컨트' → 시그널(신호)이 중요하다"],
+      ["various","다양한",8,"'베어리어스' → vary(여러) 가지, 다양한"],
+      ["eventually","결국·마침내",8,"'이벤추얼리' → 이벤트(event) 끝에 결국"],
+      ["appropriate","적절한",8,"'어프로프리엇' → 알맞게, 프로답게 적절한"],
+      ["consider","고려하다",8,"'컨시더' → 큰 시더(생각) = 곰곰이 생각하다"],
+      ["purpose","목적",8,"'퍼포스' → 그 포즈(pose)엔 목적이 있어요"],
+      ["feature","특징",8,"'피처' → 얼굴(feature)의 두드러진 특징"],
+      ["require","필요로 하다",8,"'리콰이어' → 리(다시) 콰이어(요구), 필요로 하다"],
+      ["opinion","의견",8,"'오피니언' → 오! 피니(끝) 언(말), 나의 의견"],
+      ["abandon","버리다·포기하다",8,"'어밴던' → 어! 밴(van)을 던져 버리다"]
     ]}
   ];
-  let glossData=null, glossTitle="";
-  function openGlossary(){ glossData=GLOSSARY; glossTitle="📕 수학 단어"; renderGlossary(); show("glossary"); }
-  function openEword(){ glossData=EWORDS; glossTitle="💡 영어 단어 암기"; renderGlossary(); show("glossary"); }
+  let glossData=null, glossTitle="", glossBand=false;
+  function openGlossary(){ glossData=GLOSSARY; glossTitle="📕 수학 단어"; glossBand=false; renderGlossary(); show("glossary"); }
+  function openEword(){ glossData=EWORDS; glossTitle="💡 영어 단어 암기"; glossBand=true; renderGlossary(); show("glossary"); }
   function renderGlossary(){
+    $("glTitle").textContent=glossTitle||"📕 단어집";
     let html='<div class="glnote">'+glossTitle+' · '+child.name+' · '+(child.g===8?"중2":child.g+"학년")+' 수준</div>';
-    glossData.forEach(g=>{ const its=g.items.filter(it=>it[2]<=child.g); if(!its.length) return; html+='<div class="glcat">'+escapeHtml(g.cat)+'</div>'; its.forEach(it=>{ html+='<div class="glitem"><button class="glspk" data-w="'+escapeHtml(it[0])+'">🔊</button><span class="glen">'+escapeHtml(it[0])+'</span><span class="glko">'+escapeHtml(it[1])+'</span></div>'+(it[3]?'<div style="font-size:.82rem;color:var(--text-2);background:var(--accent-soft);border-radius:8px;padding:6px 10px;margin:-2px 0 10px;line-height:1.5">💡 '+escapeHtml(it[3])+'</div>':''); }); });
+    glossData.forEach(g=>{ const its=g.items.filter(it=>it[2]<=child.g && !(glossBand && child.g>=8 && it[2]<8)); if(!its.length) return; html+='<div class="glcat">'+escapeHtml(g.cat)+'</div>'; its.forEach(it=>{ html+='<div class="glitem"><button class="glspk" data-w="'+escapeHtml(it[0])+'">🔊</button><span class="glen">'+escapeHtml(it[0])+'</span><span class="glko">'+escapeHtml(it[1])+'</span></div>'+(it[3]?'<div style="font-size:.82rem;color:var(--text-2);background:var(--accent-soft);border-radius:8px;padding:6px 10px;margin:-2px 0 10px;line-height:1.5">💡 '+escapeHtml(it[3])+'</div>':''); }); });
     $("glList").innerHTML=html; $("glList").querySelectorAll(".glspk").forEach(b=>b.addEventListener("click",()=>speak(b.dataset.w)));
   }
   $("glBack").addEventListener("click",gotoSubject);
   function startVocabQuiz(){
-    const pool=[]; (glossData||GLOSSARY).forEach(function(g){ g.items.forEach(function(it){ if(it[2]<=child.g) pool.push({en:it[0],ko:it[1],mn:it[3]||""}); }); });
+    const pool=[]; (glossData||GLOSSARY).forEach(function(g){ g.items.forEach(function(it){ if(it[2]<=child.g && !(glossBand && child.g>=8 && it[2]<8)) pool.push({en:it[0],ko:it[1],mn:it[3]||""}); }); });
     if(pool.length<4){ alert("단어가 아직 부족해요."); return; }
     const picked=shuffle(pool).slice(0, Math.min(10,pool.length));
     vocabMode=true; retryMode=false; subject="mathvocab";
@@ -1344,7 +1363,7 @@
   function ivRecKey(){ return "study_ivrec_"+child.name; }
   function stopMeter(){ try{ if(rafId) cancelAnimationFrame(rafId); }catch(e){} rafId=0; $("ivMeter").classList.add("hidden"); $("ivMeterFill").style.width="0%"; try{ if(audioCtx) audioCtx.close(); }catch(e){} audioCtx=null; }
   function resetRec(){ recActive=false; try{ if(mediaRec && mediaRec.state && mediaRec.state!=="inactive") mediaRec.stop(); }catch(e){} stopMeter(); try{ if(micStream) micStream.getTracks().forEach(function(t){t.stop();}); }catch(e){} micStream=null; var rb=$("ivRec"); if(rb){ rb.classList.remove("rec"); rb.textContent="🎙️ 녹음 시작"; } $("ivPlay").disabled=true; if(recURL){ try{URL.revokeObjectURL(recURL);}catch(e){} recURL=null; } }
-  function drawMeter(an){ var data=new Uint8Array(an.frequencyBinCount); (function tick(){ if(!recActive) return; an.getByteFrequencyData(data); var s=0; for(var i=0;i<data.length;i++) s+=data[i]; var avg=s/data.length; var pct=Math.min(100, Math.round(avg/110*100)); $("ivMeterFill").style.width=pct+"%"; rafId=requestAnimationFrame(tick); })(); }
+  function drawMeter(an){ var data=new Uint8Array(an.frequencyBinCount); (function tick(){ if(!recActive) return; an.getByteFrequencyData(data); var s=0; for(var i=0;i<data.length;i++) s+=data[i]; var avg=s/data.length; var pct=Math.min(100, Math.round(avg/85*100)); $("ivMeterFill").style.width=pct+"%"; rafId=requestAnimationFrame(tick); })(); }
   function saveRecording(blob){ try{ var fr=new FileReader(); var idx=ivIndex, q=INTERVIEW[ivIndex].q; fr.onload=function(){ try{ var all=LS.get(ivRecKey(),{}); all[idx]={q:q, data:fr.result, date:todayStr()}; LS.set(ivRecKey(),all); }catch(e){} }; fr.readAsDataURL(blob); }catch(e){} }
   $("ivRec").addEventListener("click", function(){
     if(recActive){ try{ mediaRec.stop(); }catch(e){} return; }
@@ -1361,7 +1380,7 @@
       };
       mediaRec.start(); recActive=true;
       var rb=$("ivRec"); rb.classList.add("rec"); rb.textContent="⏹ 멈추기 (녹음 중…)"; $("ivMeter").classList.remove("hidden"); $("ivNote").textContent="🔴 녹음 중 — 영어로 또박또박 말해보세요!";
-      try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); var src=audioCtx.createMediaStreamSource(stream); var an=audioCtx.createAnalyser(); an.fftSize=256; src.connect(an); drawMeter(an); }catch(e){}
+      try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended"){ try{ audioCtx.resume(); }catch(e){} } var src=audioCtx.createMediaStreamSource(stream); var an=audioCtx.createAnalyser(); an.fftSize=256; an.smoothingTimeConstant=.6; src.connect(an); drawMeter(an); }catch(e){}
     }).catch(function(){ $("ivNote").textContent="마이크 권한을 허용해주세요."; });
   });
   $("ivPlay").addEventListener("click",function(){ if(recURL){ try{ new Audio(recURL).play(); }catch(e){} } });
@@ -1469,9 +1488,9 @@
     ]
   };
   function woList(){ return child.g>=8 ? WORDORDER.long : WORDORDER.short; }
-  let woIndex=0, woPoolArr=[], woAnsArr=[];
-  function openWordOrder(){ woIndex=0; loadWo(); show("wordorder"); }
-  function loadWo(){ const it=woList()[woIndex]; $("woKo").textContent="💡 힌트: "+it.k; woPoolArr=shuffle(it.s.split(" ")); woAnsArr=[]; const r=$("woResult"); r.textContent=""; r.className="woresult"; $("woCount").textContent=(woIndex+1)+"/"+woList().length; renderWo(); }
+  let woIndex=0, woPoolArr=[], woAnsArr=[], woScore=0, woSolved={};
+  function openWordOrder(){ woIndex=0; woScore=0; woSolved={}; loadWo(); show("wordorder"); }
+  function loadWo(){ const it=woList()[woIndex]; $("woKo").textContent="💡 힌트(뜻): "+it.k; woPoolArr=shuffle(it.s.split(" ")); woAnsArr=[]; const r=$("woResult"); r.textContent=""; r.className="woresult"; $("woCount").textContent=(woIndex+1)+"/"+woList().length+" · ⭐"+woScore; renderWo(); }
   function renderWo(){
     const pool=$("woPool"); pool.innerHTML="";
     woPoolArr.forEach(function(w,i){ const b=document.createElement("button"); b.className="wotile"; b.textContent=w; b.addEventListener("click",function(){ woAnsArr.push(w); woPoolArr.splice(i,1); renderWo(); }); pool.appendChild(b); });
@@ -1479,8 +1498,9 @@
     if(!woAnsArr.length){ ans.innerHTML='<span class="woph">여기에 단어를 순서대로 넣어요</span>'; }
     woAnsArr.forEach(function(w,i){ const b=document.createElement("button"); b.className="wotile ans"; b.textContent=w; b.addEventListener("click",function(){ woPoolArr.push(w); woAnsArr.splice(i,1); renderWo(); }); ans.appendChild(b); });
   }
-  $("woCheck").addEventListener("click",function(){ const it=woList()[woIndex]; const made=woAnsArr.join(" "); const el=$("woResult"); if(made===it.s){ el.className="woresult ok"; el.textContent="⭐ 정답! "+it.s; if(!practiceMode){ markToday(); addXP(10); } speak(it.s); } else { el.className="woresult no"; el.textContent="🔁 다시 해볼까? 순서를 바꿔봐요"; } });
+  $("woCheck").addEventListener("click",function(){ const it=woList()[woIndex]; const made=woAnsArr.join(" "); const el=$("woResult"); if(made===it.s){ if(!woSolved[woIndex]){ woSolved[woIndex]=true; woScore++; if(!practiceMode){ markToday(); addXP(10); } } $("woCount").textContent=(woIndex+1)+"/"+woList().length+" · ⭐"+woScore; el.className="woresult ok"; el.textContent="⭐ 정답이에요! "+it.s+"  ·  맞힌 문장 "+woScore+"개"; try{ speak(it.s); }catch(e){} } else { el.className="woresult no"; el.textContent="🔁 조금 달라요. 순서를 다시 맞춰볼까요? 모르겠으면 '🙈 정답'을 눌러도 돼요 🙂"; } });
   $("woReset").addEventListener("click",loadWo);
+  $("woReveal").addEventListener("click",function(){ const it=woList()[woIndex]; const el=$("woResult"); el.className="woresult ok"; el.textContent="💡 정답: "+it.s; try{ speak(it.s); }catch(e){} });
   $("woPrev").addEventListener("click",function(){ if(woIndex>0){ woIndex--; loadWo(); } });
   $("woNext").addEventListener("click",function(){ if(woIndex<woList().length-1){ woIndex++; loadWo(); } else { $("woResult").className="woresult ok"; $("woResult").textContent="마지막이에요! 또 해볼까요? 😊"; } });
   $("woBack").addEventListener("click",gotoSubject);
@@ -1874,12 +1894,19 @@
   function voTile(w,onClick){ const b=document.createElement("button"); b.textContent=w; b.style.cssText="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:1rem;font-weight:700;cursor:pointer"; b.addEventListener("click",onClick); return b; }
   function renderVietOrder(){
     const box=$("vietOrder"); const it=LP.order[voIndex];
-    box.innerHTML='<div class="qcount" style="margin-bottom:8px">'+(voIndex+1)+'/'+LP.order.length+'</div><div class="stcard"><div style="font-weight:700">🎮 이 뜻이 되게 순서를 맞춰요:</div><div style="font-size:1.1rem;color:var(--brand-2);font-weight:800;margin-top:4px">'+escapeHtml(it.ko)+'</div></div><div id="voAnsBox" style="min-height:46px;margin:12px 0;padding:8px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-wrap:wrap;gap:6px"></div><div id="voPoolBox" style="display:flex;flex-wrap:wrap;gap:6px"></div><div id="voFb"></div><div style="display:flex;gap:8px;margin-top:12px"><button class="ivbtn" id="voCheck" style="flex:1">✅ 확인</button><button class="ivbtn" id="voReset" style="flex:1">↺ 다시</button></div>';
+    box.innerHTML='<div class="qcount" style="margin-bottom:8px">'+(voIndex+1)+'/'+LP.order.length+'</div><div class="stcard"><div style="font-weight:700">🎮 이 뜻이 되게 순서를 맞춰요:</div><div style="font-size:1.1rem;color:var(--brand-2);font-weight:800;margin-top:4px">'+escapeHtml(it.ko)+'</div></div><div id="voAnsBox" style="min-height:46px;margin:12px 0;padding:8px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-wrap:wrap;gap:6px"></div><div id="voPoolBox" style="display:flex;flex-wrap:wrap;gap:6px"></div><div id="voFb"></div><div style="display:flex;gap:6px;margin-top:12px"><button class="ivbtn" id="voCheck" style="flex:1">✅ 확인</button><button class="ivbtn" id="voReset" style="flex:1">↺ 다시</button><button class="ivbtn" id="voReveal" style="flex:1">🙈 정답 보기</button></div>';
     const ansBox=$("voAnsBox"), poolBox=$("voPoolBox");
     voAns.forEach((w,i)=>{ ansBox.appendChild(voTile(w,()=>{ voPool.push(w); voAns.splice(i,1); renderVietOrder(); })); });
     voPool.forEach((w,i)=>{ poolBox.appendChild(voTile(w,()=>{ voAns.push(w); voPool.splice(i,1); renderVietOrder(); })); });
     $("voCheck").addEventListener("click",checkVo);
     $("voReset").addEventListener("click",loadVo);
+    $("voReveal").addEventListener("click",revealVo);
+  }
+  function revealVo(){
+    const it=LP.order[voIndex]; const fb=$("voFb");
+    fb.innerHTML='<div class="stcard" style="margin-top:10px;background:var(--accent-soft)"><b>💡 정답</b><br><span style="font-size:1.1rem;color:var(--brand-2);font-weight:800">'+escapeHtml(it.vi)+'</span><div class="note-inline" style="margin-top:4px">'+escapeHtml(it.ko)+'</div></div>';
+    try{ LP.speak(it.vi); }catch(e){}
+    const nx=document.createElement("button"); nx.className="bigbtn"; nx.style.marginTop="10px"; nx.textContent=(voIndex+1>=LP.order.length)?"처음부터 다시":"다음 ▶"; nx.addEventListener("click",()=>{ voIndex=(voIndex+1)%LP.order.length; loadVo(); }); fb.appendChild(nx);
   }
   function checkVo(){
     const it=LP.order[voIndex]; const made=voAns.join(" "); const fb=$("voFb");
