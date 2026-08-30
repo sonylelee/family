@@ -526,7 +526,7 @@
 
   const TRACKS = {
     kr:   { label:"한국 학교 공부", subjects:[{k:"math",emo:"🔢",n:"수학"},{k:"korean",emo:"📖",n:"국어"},{k:"english",emo:"🔤",n:"영어"}] },
-    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"dict",emo:"📖",n:"영어사전"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"readaloud",emo:"📢",n:"읽기 연습"},{k:"wordorder",emo:"🎮",n:"어순 게임"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
+    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"dict",emo:"📖",n:"영어사전"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"eword",emo:"💡",n:"영단어 암기"},{k:"readaloud",emo:"📢",n:"읽기 연습"},{k:"wordorder",emo:"🎮",n:"어순 게임"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
   };
 
   const UNITS = {
@@ -1055,9 +1055,9 @@
     $("subjTitle").textContent = TRACKS[track].label+" · 과목 고르기";
     const box=$("subjectPick"); box.innerHTML="";
     TRACKS[track].subjects.forEach(s=>{ const b=document.createElement("button"); b.className="subj"+(track==="intl"?" intl":"");
-      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : s.k==="dict" ? "단어 찾기" : s.k==="readaloud" ? "소리내어 읽기" : s.k==="wordorder" ? "문장 순서 맞추기" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
+      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : s.k==="eword" ? "단어 암기법 💡" : s.k==="dict" ? "단어 찾기" : s.k==="readaloud" ? "소리내어 읽기" : s.k==="wordorder" ? "문장 순서 맞추기" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
       b.innerHTML='<span class="semo">'+s.emo+'</span><span class="sname">'+s.n+'</span><span class="scount">'+sub+'</span>';
-      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else if(s.k==="dict") openDict(); else if(s.k==="readaloud") openReadAloud(); else if(s.k==="wordorder") openWordOrder(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
+      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else if(s.k==="eword") openEword(); else if(s.k==="dict") openDict(); else if(s.k==="readaloud") openReadAloud(); else if(s.k==="wordorder") openWordOrder(); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
       box.appendChild(b); });
     $("noteCnt").textContent=getWrongs().length;
     vocabMode=false; renderPractice(); renderLevel(); renderMissions();
@@ -1229,7 +1229,7 @@
     $("statusTitle").textContent=child.name+" · "+TRACKS[track].label+" 상태";
     const stats=getStats(); const wrongs=getWrongs(); let html="";
     TRACKS[track].subjects.forEach(s=>{
-      if(s.k==="interview"||s.k==="mathvocab"||s.k==="readaloud"||s.k==="wordorder"||s.k==="dict"){ html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="stmeta">연습·학습 (점수 기록 없음)</div></div>'; return; }
+      if(s.k==="interview"||s.k==="mathvocab"||s.k==="eword"||s.k==="readaloud"||s.k==="wordorder"||s.k==="dict"){ html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="stmeta">연습·학습 (점수 기록 없음)</div></div>'; return; }
       const st=stats[s.k]||{solved:0,correct:0}; const wc=wrongs.filter(w=>w.subj===s.k).length; const rate=st.solved?Math.round(st.correct/st.solved*100):0;
       html+='<div class="stcard"><div class="stname">'+s.emo+' '+s.n+'</div><div class="strow"><span>푼 문제 <b>'+st.solved+'</b></span><span>정답률 <b>'+rate+'%</b></span><span>오답 <b>'+wc+'</b></span></div><div class="strate"><i style="width:'+rate+'%"></i></div></div>';
     });
@@ -1245,15 +1245,56 @@
     {cat:"도형 Shapes", items:[["triangle","삼각형",4,"tri(3)+angle(각) = 3각형. 악기 트라이앵글도 세모!"],["square","정사각형",4,"'스퀘어' → 네모 반듯한 광장(square)."],["rectangle","직사각형",4,"rect(곧은)+angle → 직각들의 사각형."],["circle","원",4,"'써클' → 동그란 서클(동아리)."],["angle","각",4,"'앵글' → 카메라 앵글(각도) = 각."],["right angle","직각 (90°)",4,"right(딱 맞는) 90도 각."],["side","변",4,"'사이드' → 옆면 = 변."],["vertex","꼭짓점",4,"뾰족 꼭대기 점. vertical(수직)과 친척."],["parallel","평행한",4,"parallel의 'll'이 딱 평행선처럼 생겼죠!"],["perimeter","둘레",5,"peri(주위)+meter(재기) → 둘레를 잼."],["area","넓이",5,"'에어리어' → 넓은 지역(area) = 넓이."],["volume","부피",5,"볼륨 크다 = 부피 크다 (빵빵!)."]]},
     {cat:"자주 나오는 표현", items:[["how many","몇 개",4,"many(많은) → 몇 개?"],["how much","얼마",4,"much(양) → 얼마?"],["greater than","~보다 큰 (>)",4,"greater=더 큰. 악어 입(>)이 큰 쪽으로 쩍!"],["less than","~보다 작은 (<)",4,"less=덜/적은. 작은 쪽(<)."],["total","전체·합계",4,"'토탈' → 토탈(전체) 합계."],["value","값",5,"'밸류' → 값어치(value)."],["equation","방정식",8,"equal(=)이 들어간 식 = 방정식."],["solve","풀다·구하다",8,"'솔브' → 문제를 솔~솔 풀다."],["at least","적어도",8,"least(가장 적은) → 적어도."],["increase / decrease","증가·감소",8,"in↑ 늘고(increase) / de↓ 줄고(decrease)."]]}
   ];
-  function openGlossary(){ renderGlossary(); show("glossary"); }
+  // 국제학교 영어 읽기 단어 암기 (학년별 · 소리 연상법). it[2]=최소 학년.
+  const EWORDS = [
+    {cat:"기초 낱말", items:[
+      ["rabbit","토끼",4,"'래빗' → 귀 긴 토끼가 벌떡! '내빗(래빗) 어딨어!'"],
+      ["apple","사과",4,"'애플' → 사과 베어 물면 '애~플(팔)' 시큼"],
+      ["water","물",4,"'워터' → 워~ 터진 수도, 물!"],
+      ["house","집",4,"'하우스' → 비닐하우스도 집(house)"],
+      ["friend","친구",4,"'프렌드' → 프라이드 치킨 나눠 먹는 친구"],
+      ["school","학교",4,"'스쿨' → 스쿨버스 타고 학교"],
+      ["happy","행복한",4,"'해피' → 해가 피면(happy) 기분 좋아"],
+      ["big","큰",4,"'빅' → 빅사이즈 = 큰"],
+      ["small","작은",4,"'스몰' → 스몰 콜라 = 작은 컵"],
+      ["run","달리다",4,"'런' → 런닝머신에서 달리다"]
+    ]},
+    {cat:"동작·상태", items:[
+      ["begin","시작하다",5,"'비긴' → B(비)로 긴 여정을 시작"],
+      ["brave","용감한",5,"'브레이브' → 브레이크 없이 돌진, 용감!"],
+      ["listen","듣다",5,"'리슨' → 귀를 리슨(기울여) 듣다"],
+      ["quickly","빠르게",5,"'퀵클리' → 퀵서비스처럼 빠르게"],
+      ["slow","느린",5,"'슬로우' → 슬~ 로우(low) 속도"],
+      ["close","닫다",5,"'클로즈' → CLOSED 팻말, 문 닫음"],
+      ["travel","여행하다",5,"'트래블' → 트렁크 끌고 여행"],
+      ["forest","숲",5,"'포레스트' → 포레스트 검프가 달리던 숲"],
+      ["borrow","빌리다",5,"'바로우' → 바로 돌려줄게, 빌리다"],
+      ["enough","충분한",5,"'이너프' → 이제 넣으(f) 그만! 충분해"]
+    ]},
+    {cat:"고학년 단어", items:[
+      ["ancient","고대의",8,"'에인션트' → 애인이랑 이집트(고대) 유물 구경"],
+      ["generous","관대한",8,"'제너러스' → 제너(주는)+러스, 잘 베푸는"],
+      ["increase","증가하다",8,"'인크리스' → 안(in)으로 크게↑ 늘다"],
+      ["decrease","감소하다",8,"'디크리스' → 아래(de)로 줄다↓"],
+      ["reluctant","마지못한",8,"'릴럭턴트' → 이럴 수도(reluc), 꺼려하는"],
+      ["ambitious","야심 있는",8,"'앰비셔스' → 앰비(야망) 있어서 큰 꿈"],
+      ["necessary","필요한",8,"'네세서리' → 네(내)게 세게 필요해"],
+      ["accept","받아들이다",8,"'억셉트' → 억! 셉(접)수 받아들이다"],
+      ["despite","~에도 불구하고",8,"'디스파잇' → 이 스파잇(spite·앙심)에도 불구하고"],
+      ["although","~이지만",8,"'올도우' → all(모두) though(그래도), ~이지만"]
+    ]}
+  ];
+  let glossData=null, glossTitle="";
+  function openGlossary(){ glossData=GLOSSARY; glossTitle="📕 수학 단어"; renderGlossary(); show("glossary"); }
+  function openEword(){ glossData=EWORDS; glossTitle="💡 영어 단어 암기"; renderGlossary(); show("glossary"); }
   function renderGlossary(){
-    let html='<div class="glnote">📕 '+child.name+' · '+(child.g===8?"중2":child.g+"학년")+' 수준 단어예요</div>';
-    GLOSSARY.forEach(g=>{ const its=g.items.filter(it=>it[2]<=child.g); if(!its.length) return; html+='<div class="glcat">'+escapeHtml(g.cat)+'</div>'; its.forEach(it=>{ html+='<div class="glitem"><button class="glspk" data-w="'+escapeHtml(it[0])+'">🔊</button><span class="glen">'+escapeHtml(it[0])+'</span><span class="glko">'+escapeHtml(it[1])+'</span></div>'+(it[3]?'<div style="font-size:.82rem;color:var(--text-2);background:var(--accent-soft);border-radius:8px;padding:6px 10px;margin:-2px 0 10px;line-height:1.5">💡 '+escapeHtml(it[3])+'</div>':''); }); });
+    let html='<div class="glnote">'+glossTitle+' · '+child.name+' · '+(child.g===8?"중2":child.g+"학년")+' 수준</div>';
+    glossData.forEach(g=>{ const its=g.items.filter(it=>it[2]<=child.g); if(!its.length) return; html+='<div class="glcat">'+escapeHtml(g.cat)+'</div>'; its.forEach(it=>{ html+='<div class="glitem"><button class="glspk" data-w="'+escapeHtml(it[0])+'">🔊</button><span class="glen">'+escapeHtml(it[0])+'</span><span class="glko">'+escapeHtml(it[1])+'</span></div>'+(it[3]?'<div style="font-size:.82rem;color:var(--text-2);background:var(--accent-soft);border-radius:8px;padding:6px 10px;margin:-2px 0 10px;line-height:1.5">💡 '+escapeHtml(it[3])+'</div>':''); }); });
     $("glList").innerHTML=html; $("glList").querySelectorAll(".glspk").forEach(b=>b.addEventListener("click",()=>speak(b.dataset.w)));
   }
   $("glBack").addEventListener("click",gotoSubject);
   function startVocabQuiz(){
-    const pool=[]; GLOSSARY.forEach(function(g){ g.items.forEach(function(it){ if(it[2]<=child.g) pool.push({en:it[0],ko:it[1],mn:it[3]||""}); }); });
+    const pool=[]; (glossData||GLOSSARY).forEach(function(g){ g.items.forEach(function(it){ if(it[2]<=child.g) pool.push({en:it[0],ko:it[1],mn:it[3]||""}); }); });
     if(pool.length<4){ alert("단어가 아직 부족해요."); return; }
     const picked=shuffle(pool).slice(0, Math.min(10,pool.length));
     vocabMode=true; retryMode=false; subject="mathvocab";
