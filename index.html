@@ -1153,8 +1153,8 @@
   function isGated(){ return track==="kr" && (child.g===4||child.g===5); }
   function unlockedUnit(subj){ const units=(UNITS[subj][child.g]||[]).length||1; const per=TOTAL_WEEKS/units; return Math.min(Math.max(Math.ceil(curWeek()/per),1),units); }
 
-  // 오늘 카운트
-  function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+  // 오늘 카운트 (YYYY-MM-DD, 항상 2자리로 패딩 — 날짜 비교·정렬 일관성)
+  function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function getDaily(){ const d=LS.get("study_daily_"+child.name,{date:"",solved:0,correct:0}); return d.date===todayStr()?d:{date:todayStr(),solved:0,correct:0}; }
   function bumpDaily(ok){ const d=getDaily(); d.solved++; if(ok)d.correct++; LS.set("study_daily_"+child.name,d); const h=LS.get("study_hist_"+child.name,{}); h[todayStr()]={solved:d.solved,correct:d.correct}; LS.set("study_hist_"+child.name,h); }
 
@@ -1214,9 +1214,9 @@
   function expandPool(pool, subj, grade, target){
     target = target || QUIZ_TARGET;
     const genItems = pool.filter(p=>p.gen && GEN[p.gen]);
-    const out = []; const seen = {};
-    shuffle(pool.slice()).forEach(function(q){ if(seen[q.q]) return; seen[q.q]=1; out.push(Object.assign({},q,{subj:subj,grade:grade,retry:0})); });
-    if(genItems.length){ let guard=0; while(out.length<target && guard<target*12){ guard++; const src=genItems[rnd(genItems.length)]; const g=Object.assign(GEN[src.gen](),{gen:src.gen,u:src.u,subj:subj,grade:grade,retry:0}); if(seen[g.q]) continue; seen[g.q]=1; out.push(g); } }
+    const out = []; const seen = {}; const keyOf = function(q){ return (q.q||"")+"||"+((q.c||[]).join("~")); };
+    shuffle(pool.slice()).forEach(function(q){ const kk=keyOf(q); if(seen[kk]) return; seen[kk]=1; out.push(Object.assign({},q,{subj:subj,grade:grade,retry:0})); });
+    if(genItems.length){ let guard=0; while(out.length<target && guard<target*12){ guard++; const src=genItems[rnd(genItems.length)]; const g=Object.assign(GEN[src.gen](),{gen:src.gen,u:src.u,subj:subj,grade:grade,retry:0}); const kk=keyOf(g); if(seen[kk]) continue; seen[kk]=1; out.push(g); } }
     return shuffle(out);
   }
   function startQuiz(subj){
@@ -1580,7 +1580,7 @@
   function ivRecKey(){ return "study_ivrec_"+child.name; }
   function stopMeter(){ try{ if(rafId) cancelAnimationFrame(rafId); }catch(e){} rafId=0; $("ivMeter").classList.add("hidden"); $("ivMeterFill").style.width="0%"; try{ if(audioCtx) audioCtx.close(); }catch(e){} audioCtx=null; }
   function resetRec(){ recActive=false; try{ if(mediaRec && mediaRec.state && mediaRec.state!=="inactive") mediaRec.stop(); }catch(e){} stopMeter(); try{ if(micStream) micStream.getTracks().forEach(function(t){t.stop();}); }catch(e){} micStream=null; var rb=$("ivRec"); if(rb){ rb.classList.remove("rec"); rb.textContent="🎙️ 녹음 시작"; } $("ivPlay").disabled=true; if(recURL){ try{URL.revokeObjectURL(recURL);}catch(e){} recURL=null; } }
-  function drawMeter(an){ var data=new Uint8Array(an.frequencyBinCount); (function tick(){ if(!recActive) return; an.getByteFrequencyData(data); var s=0; for(var i=0;i<data.length;i++) s+=data[i]; var avg=s/data.length; var pct=Math.min(100, Math.round(avg/85*100)); $("ivMeterFill").style.width=pct+"%"; rafId=requestAnimationFrame(tick); })(); }
+  function drawMeter(an){ var data=new Uint8Array(an.fftSize); (function tick(){ if(!recActive) return; an.getByteTimeDomainData(data); var peak=0; for(var i=0;i<data.length;i++){ var v=Math.abs(data[i]-128); if(v>peak) peak=v; } var pct=Math.min(100, Math.round(peak/60*100)); $("ivMeterFill").style.width=pct+"%"; rafId=requestAnimationFrame(tick); })(); }
   function saveRecording(blob){ try{ var fr=new FileReader(); var idx=ivIndex, q=INTERVIEW[ivIndex].q; fr.onload=function(){ try{ var all=LS.get(ivRecKey(),{}); all[idx]={q:q, data:fr.result, date:todayStr()}; LS.set(ivRecKey(),all); }catch(e){} }; fr.readAsDataURL(blob); }catch(e){} }
   $("ivRec").addEventListener("click", function(){
     if(recActive){ try{ mediaRec.stop(); }catch(e){} return; }
@@ -1597,7 +1597,11 @@
       };
       mediaRec.start(); recActive=true;
       var rb=$("ivRec"); rb.classList.add("rec"); rb.textContent="⏹ 멈추기 (녹음 중…)"; $("ivMeter").classList.remove("hidden"); $("ivNote").textContent="🔴 녹음 중 — 영어로 또박또박 말해보세요!";
-      try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended"){ try{ audioCtx.resume(); }catch(e){} } var src=audioCtx.createMediaStreamSource(stream); var an=audioCtx.createAnalyser(); an.fftSize=256; an.smoothingTimeConstant=.6; src.connect(an); drawMeter(an); }catch(e){}
+      try{
+        audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+        var startMeter=function(){ try{ var src=audioCtx.createMediaStreamSource(stream); var an=audioCtx.createAnalyser(); an.fftSize=512; var g=audioCtx.createGain(); g.gain.value=0; src.connect(an); an.connect(g); g.connect(audioCtx.destination); drawMeter(an); }catch(e){} };
+        if(audioCtx.state==="suspended"){ audioCtx.resume().then(startMeter).catch(startMeter); } else { startMeter(); }
+      }catch(e){}
     }).catch(function(){ $("ivNote").textContent="마이크 권한을 허용해주세요."; });
   });
   $("ivPlay").addEventListener("click",function(){ if(recURL){ try{ new Audio(recURL).play(); }catch(e){} } });
@@ -2412,7 +2416,7 @@
   }
   function chooseCur(i,btn){
     if(curQAns) return; curQAns=true;
-    const it=curQ[curQi]; const ok=(i===it.a); if(ok){ curQScore++; try{ markToday(); addXP(10); }catch(e){} }
+    const it=curQ[curQi]; const ok=(i===it.a); try{ bumpDaily(ok); markToday(); }catch(e){} if(ok){ curQScore++; try{ addXP(10); }catch(e){} }
     btn.style.background=ok?"var(--good-soft)":"var(--bad-soft)";
     const fb=$("cqF"); fb.innerHTML='<div class="stcard" style="margin-top:10px"><div style="font-weight:800;margin-bottom:4px">'+(ok?"⭕ 정답!":"❌ 정답: "+escapeHtml(it.c[it.a]))+'</div><div style="line-height:1.6">📘 '+escapeHtml(it.e)+'</div></div>';
     const nx=document.createElement("button"); nx.className="bigbtn"; nx.style.marginTop="10px"; nx.textContent=(curQi+1>=curQ.length)?"결과 보기":"다음 ▶"; nx.addEventListener("click",()=>{ curQi++; renderCurQ(); }); fb.appendChild(nx);
