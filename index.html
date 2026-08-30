@@ -231,6 +231,17 @@
   .dictbar input{flex:1;padding:12px 14px;border:2px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font-size:1rem}
   .dictbar button{background:var(--intl);color:#fff;border:none;border-radius:12px;padding:0 18px;font-weight:800;cursor:pointer}
   .sumbody{font-size:.88rem;color:var(--text-2);line-height:1.55;margin-top:4px}
+  .pltablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+  .pltable{width:100%;border-collapse:collapse;font-size:.82rem;min-width:340px}
+  .pltable th,.pltable td{border:1px solid var(--border);padding:0;text-align:center}
+  .pltable th{background:var(--surface-2);font-weight:800;padding:7px 2px}
+  .pltable td:first-child,.pltable th:first-child{width:40px;background:var(--surface-2);font-weight:700}
+  .pl-in{width:100%;border:none;background:transparent;color:var(--text);font-size:.82rem;padding:8px 4px;text-align:center;box-sizing:border-box}
+  .pl-in:focus{outline:2px solid var(--brand);border-radius:4px}
+  .plrow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .plrow .pld{width:30px;height:34px;flex:0 0 auto;background:var(--brand-soft);color:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem}
+  .plrow .pl-in{border:1px solid var(--border);border-radius:9px;text-align:left;background:var(--surface);padding:9px 12px}
+  .plnotice{width:100%;min-height:90px;border:1px solid var(--border);border-radius:12px;padding:11px;background:var(--surface);color:var(--text);font-size:.88rem;font-family:inherit;box-sizing:border-box;line-height:1.5}
 
   /* interview */
   .ivcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
@@ -239,6 +250,11 @@
   .ivbtns{display:flex;gap:10px;flex-wrap:wrap}
   .ivbtn{flex:1;min-width:120px;border:2px solid var(--border);background:var(--surface);color:var(--text);border-radius:12px;padding:12px;font-weight:700;font-size:.95rem;display:flex;align-items:center;justify-content:center;gap:6px}
   .ivbtn.on{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+  .recbtn{width:100%;margin-top:12px;border:none;border-radius:14px;background:var(--intl);color:#fff;font-weight:800;font-size:1.05rem;padding:16px;cursor:pointer;transition:.15s}
+  .recbtn.rec{background:var(--bad);animation:recpulse 1.2s infinite}
+  @keyframes recpulse{0%,100%{box-shadow:0 0 0 0 rgba(229,83,60,.5)}50%{box-shadow:0 0 0 14px rgba(229,83,60,0)}}
+  .meter{height:16px;background:var(--surface-2);border-radius:20px;overflow:hidden;margin-top:10px}
+  .meter i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--good),var(--accent),var(--bad));border-radius:20px;transition:width .06s linear}
   .transcript{margin-top:14px;background:var(--surface-2);border:1px dashed var(--border);border-radius:12px;padding:14px;min-height:56px;font-size:1rem;color:var(--text)}
   .transcript .ph{color:var(--text-3)}
   .model{margin-top:14px;background:var(--intl-soft);border:1px solid var(--intl);border-radius:12px;padding:14px 16px}
@@ -275,6 +291,7 @@
       <div class="tracks">
         <button class="track kr" data-track="kr"><div class="temo">🇰🇷</div><div><div class="tname">한국 학교 공부</div><div class="tdesc" id="krDesc">지금 학교 진도 · 수학·국어·영어</div></div><div class="tarr">›</div></button>
         <button class="track intl" data-track="intl"><div class="temo">🌍</div><div><div class="tname">국제학교 준비</div><div class="tdesc" id="intlDesc">영어로 · 입학시험 대비</div></div><div class="tarr">›</div></button>
+        <button class="track" data-planner="1"><div class="temo" style="background:var(--accent-soft)">📅</div><div><div class="tname">학교생활 플래너</div><div class="tdesc">시간표 · 학원 · 준비물 · 공지</div></div><div class="tarr">›</div></button>
       </div>
     </div>
 
@@ -350,16 +367,11 @@
     <div class="ivcard">
       <div class="ivq" id="ivQ">Question</div>
       <div class="ivqko" id="ivQko"></div>
-      <div class="ivbtns">
-        <button class="ivbtn" id="ivSpeak">🔊 들려주기</button>
-        <button class="ivbtn" id="ivMic">🎤 말하기</button>
-        <button class="ivbtn" id="ivReveal">💡 모범답안</button>
-      </div>
-      <div class="ivbtns" style="margin-top:10px">
-        <button class="ivbtn" id="ivRec">🎙️ 녹음</button>
-        <button class="ivbtn" id="ivPlay" disabled>▶️ 내 목소리 듣기</button>
-      </div>
-      <div class="transcript" id="ivTrans"><span class="ph">🎤 "말하기"를 누르고 영어로 대답해보세요. 여기에 받아써져요.</span></div>
+      <button class="ivbtn" id="ivSpeak" style="width:100%">🔊 질문 들려주기</button>
+      <button class="recbtn" id="ivRec">🎙️ 녹음 시작</button>
+      <div class="meter hidden" id="ivMeter"><i id="ivMeterFill"></i></div>
+      <button class="ivbtn" id="ivPlay" disabled style="width:100%;margin-top:10px">▶️ 내 목소리 다시 듣기</button>
+      <button class="ivbtn" id="ivReveal" style="width:100%;margin-top:10px">💡 모범답안 보기</button>
       <div class="model hidden" id="ivModel"></div>
       <div class="note-inline" id="ivNote"></div>
     </div>
@@ -454,6 +466,20 @@
     <div id="sumList"></div>
     <a class="ebslink" id="sumEbs" target="_blank" rel="noopener" href="#">▶️ EBS</a>
   </div>
+
+  <!-- PLANNER -->
+  <div id="planner" class="hidden">
+    <div class="qtop"><button class="back" id="plBack" aria-label="뒤로">←</button><div class="qcount" id="plTitle" style="flex:1">📅 플래너</div></div>
+    <div class="section-t">🗓 학교 시간표</div>
+    <div class="pltablewrap"><table class="pltable" id="ttTable"></table></div>
+    <div class="section-t">🏫 학원 스케줄</div>
+    <div id="acList"></div>
+    <div class="section-t">🎒 준비물</div>
+    <div id="supList"></div>
+    <div class="section-t">📌 학교 공지 · 메모</div>
+    <textarea id="plNotice" class="plnotice" placeholder="학교 공지사항이나 메모를 적어요 (붙여넣기 가능)"></textarea>
+    <div class="note-inline" style="margin-top:8px">✏️ 입력하면 자동 저장돼요 (이 기기)</div>
+  </div>
 </div>
 
 <script>
@@ -502,7 +528,15 @@
         {u:2, q:"삼각형 세 각의 크기의 합은?", c:["180°","360°","90°","120°"], a:0, e:"삼각형 내각의 합은 180°"},
         {u:3, q:"0.5 + 0.5 = ?", c:["1","0.10","0.55","0.1"], a:0, e:"0.5+0.5=1"},
         {u:3, q:"0.8 은 0.1 이 몇 개인 수일까요?", c:["8개","80개","18개","4개"], a:0, e:"0.8 = 0.1이 8개"},
-        {u:6, q:"육각형의 변은 모두 몇 개일까요?", c:["6개","5개","7개","8개"], a:0, e:"육각형은 변이 6개"}
+        {u:6, q:"육각형의 변은 모두 몇 개일까요?", c:["6개","5개","7개","8개"], a:0, e:"육각형은 변이 6개"},
+        {u:1, q:"24 ÷ 4 = ?", c:["6","8","4","5"], a:0, e:"24÷4=6"},
+        {u:1, q:"7 × 8 = ?", c:["56","48","63","15"], a:0, e:"7×8=56"},
+        {u:1, q:"3/8 + 2/8 = ?", c:["5/8","5/16","1/8","6/8"], a:0, e:"분모가 같으니 3+2=5 → 5/8"},
+        {u:3, q:"0.9 − 0.4 = ?", c:["0.5","0.13","1.3","0.4"], a:0, e:"0.9−0.4=0.5"},
+        {u:4, q:"정사각형의 네 변의 길이는?", c:["모두 같다","모두 다르다","두 개만 같다","길이가 없다"], a:0, e:"정사각형은 네 변의 길이가 모두 같아요"},
+        {u:1, q:"1시간은 몇 분일까요?", c:["60분","100분","30분","90분"], a:0, e:"1시간 = 60분"},
+        {u:1, q:"10000이 5개인 수는?", c:["50000","5000","500000","15000"], a:0, e:"만이 5개 = 5만 = 50000"},
+        {u:2, q:"한 각이 90°인 삼각형은?", c:["직각삼각형","정삼각형","둔각삼각형","예각삼각형"], a:0, e:"한 각이 직각(90°) → 직각삼각형"}
       ],
       5: [
         {u:1, gen:"roundInt", q:"3.7을 반올림하여 자연수로 나타내면?", c:["4","3","3.5","40"], a:0, e:"소수 첫째 자리 7은 5 이상이라 올림 → 4"},
@@ -520,7 +554,15 @@
         {u:5, q:"정육면체의 모서리는 모두 몇 개일까요?", c:["12개","6개","8개","4개"], a:0, e:"정육면체는 모서리 12개"},
         {u:6, q:"70, 80, 90의 평균은?", c:["80","70","90","240"], a:0, e:"(70+80+90)÷3 = 80"},
         {u:3, q:"한 직선으로 접어 완전히 겹치는 도형을?", c:["선대칭도형","점대칭도형","합동","닮음"], a:0, e:"접어서 겹치면 선대칭도형"},
-        {u:6, q:"주사위에서 짝수가 나올 가능성은?", c:["1/2","1/3","1/6","2/3"], a:0, e:"2·4·6 → 3/6 = 1/2"}
+        {u:6, q:"주사위에서 짝수가 나올 가능성은?", c:["1/2","1/3","1/6","2/3"], a:0, e:"2·4·6 → 3/6 = 1/2"},
+        {u:2, q:"5/6 − 1/6 = ?", c:["2/3","6/6","5/36","1/6"], a:0, e:"5/6−1/6=4/6=2/3"},
+        {u:2, q:"2/5 × 10 = ?", c:["4","20","2","5"], a:0, e:"2/5×10 = 20/5 = 4"},
+        {u:4, q:"0.4 × 0.7 = ?", c:["0.28","2.8","0.11","0.35"], a:0, e:"4×7=28, 소수 두 자리 → 0.28"},
+        {u:1, q:"3.14를 반올림하여 소수 첫째 자리까지 나타내면?", c:["3.1","3.2","3.0","3"], a:0, e:"둘째 자리 4는 버림 → 3.1"},
+        {u:5, q:"직육면체의 꼭짓점은 모두 몇 개일까요?", c:["8개","6개","12개","4개"], a:0, e:"직육면체 꼭짓점 8개"},
+        {u:6, q:"60, 70, 80, 90의 평균은?", c:["75","70","80","300"], a:0, e:"(60+70+80+90)÷4 = 300÷4 = 75"},
+        {u:2, q:"다음 중 가분수(1보다 큰 분수)는?", c:["7/4","3/4","2/5","1/2"], a:0, e:"분자>분모인 7/4가 가분수"},
+        {u:6, q:"동전 한 개를 던져 앞면이 나올 가능성은?", c:["1/2","1/3","1/4","1"], a:0, e:"앞·뒤 2가지 중 1 → 1/2"}
       ],
       8: [
         {u:1, q:"이등변삼각형의 꼭지각이 40°일 때, 한 밑각의 크기는?", c:["70°","40°","140°","20°"], a:0, e:"두 밑각이 같으므로 (180−40)÷2 = 70°"},
@@ -542,7 +584,15 @@
         {u:1, q:"동전 한 개를 던져 뒷면이 나올 확률은?", c:["1/2","1/4","1","0"], a:0, e:"앞·뒤 2가지 중 1 → 1/2"},
         {u:1, q:"일차함수 y = 3x 에서 x=4일 때 y는?", c:["12","7","1","34"], a:0, e:"y = 3·4 = 12"},
         {u:1, q:"2(a + 3) 을 전개하면?", c:["2a + 6","2a + 3","a + 6","2a"], a:0, e:"분배법칙: 2a+6"},
-        {u:1, q:"50의 10%는?", c:["5","10","15","50"], a:0, e:"50 × 0.1 = 5"}
+        {u:1, q:"50의 10%는?", c:["5","10","15","50"], a:0, e:"50 × 0.1 = 5"},
+        {u:1, q:"이등변삼각형에서 두 밑각의 크기는?", c:["서로 같다","서로 다르다","모두 90°","합이 90°"], a:0, e:"이등변삼각형의 두 밑각은 서로 같다"},
+        {u:1, q:"빗변이 10, 한 변이 6인 직각삼각형의 나머지 변은?", c:["8","4","16","64"], a:0, e:"10²−6²=64=8²"},
+        {u:1, q:"세 변이 6, 8, 10인 삼각형은 직각삼각형인가?", c:["예 (6²+8²=10²)","아니오","알 수 없다","정삼각형"], a:0, e:"36+64=100=10² → 직각삼각형"},
+        {u:1, q:"닮음비가 2:5인 두 도형의 넓이의 비는?", c:["4:25","2:5","8:125","10:25"], a:0, e:"넓이의 비 = 닮음비의 제곱 = 4:25"},
+        {u:1, q:"주사위 두 개를 던져 두 눈의 합이 2가 될 확률은?", c:["1/36","1/6","2/36","1/12"], a:0, e:"(1,1) 한 가지 → 1/36"},
+        {u:1, q:"1~5 카드 5장 중 한 장을 뽑아 짝수일 확률은?", c:["2/5","1/2","3/5","1/5"], a:0, e:"짝수 2,4 → 2/5"},
+        {u:1, q:"평행사변형의 넓이 = 밑변 × ( )?", c:["높이","빗변","대각선","둘레"], a:0, e:"평행사변형 넓이 = 밑변 × 높이"},
+        {u:1, q:"정삼각형의 한 외각의 크기는?", c:["120°","60°","90°","180°"], a:0, e:"외각 = 180−60 = 120°"}
       ]
     },
     korean: {
@@ -558,7 +608,13 @@
         {u:3, q:"'자다'를 웃어른께 높여 쓰는 말은?", c:["주무시다","자시다","잡숫다","계시다"], a:0, e:"'할머니가 주무시다'"},
         {u:4, q:"\"배가 고팠다. ( ) 밥을 먹었다.\" 빈칸은?", c:["그래서","그러나","하지만","그런데"], a:0, e:"원인·결과 → 그래서"},
         {u:5, q:"'빠르다'와 비슷한 뜻의 말은?", c:["날쌔다","느리다","무겁다","조용하다"], a:0, e:"빠르다 ≒ 날쌔다"},
-        {u:6, q:"고양이가 우는 소리를 흉내낸 말은?", c:["야옹","멍멍","꿀꿀","짹짹"], a:0, e:"고양이는 '야옹'"}
+        {u:6, q:"고양이가 우는 소리를 흉내낸 말은?", c:["야옹","멍멍","꿀꿀","짹짹"], a:0, e:"고양이는 '야옹'"},
+        {u:1, q:"'무겁다'의 반대말은?", c:["가볍다","크다","길다","높다"], a:0, e:"무겁다 ↔ 가볍다"},
+        {u:2, q:"맞춤법이 바른 것은?", c:["설날","설랄","섣날","설 날"], a:0, e:"'설날'이 바른 표기"},
+        {u:3, q:"'먹다'를 웃어른께 높여 쓰는 말은?", c:["드시다","먹으시다","자시다","먹는다"], a:0, e:"'드시다/잡수시다'가 높임말"},
+        {u:4, q:"\"날씨가 춥다. ( ) 옷을 두껍게 입었다.\" 빈칸은?", c:["그래서","그러나","하지만","그런데"], a:0, e:"원인·결과 → 그래서"},
+        {u:6, q:"물이 흐르는 모양을 흉내낸 말은?", c:["졸졸","멍멍","꿀꿀","쨍쨍"], a:0, e:"물 흐르는 모양 '졸졸'"},
+        {u:5, q:"'기쁘다'와 비슷한 뜻의 말은?", c:["즐겁다","슬프다","무섭다","피곤하다"], a:0, e:"기쁘다 ≒ 즐겁다"}
       ],
       5: [
         {u:1, q:"맞춤법이 바른 것은?", c:["며칠","몇일","몇 일","며 칠"], a:0, e:"'몇 월 며칠'처럼 '며칠'이 바른 표기"},
@@ -572,7 +628,13 @@
         {u:1, q:"'소망'의 뜻으로 맞춤법이 바른 것은?", c:["바람","바램","바랬다","바램이"], a:0, e:"'바람'이 바른 표기 (바램 ✗)"},
         {u:2, q:"'낮'의 반대말은?", c:["밤","저녁","아침","새벽"], a:0, e:"낮 ↔ 밤"},
         {u:3, q:"사자성어 '일석이조'의 뜻은?", c:["한 번에 두 가지 이득","돌 두 개","새 두 마리","아주 어려움"], a:0, e:"돌 하나로 새 둘 → 한 번에 두 이득"},
-        {u:5, q:"'참다'와 반대되는 행동은?", c:["터뜨리다","견디다","버티다","기다리다"], a:0, e:"참다(억누름) ↔ 터뜨리다"}
+        {u:5, q:"'참다'와 반대되는 행동은?", c:["터뜨리다","견디다","버티다","기다리다"], a:0, e:"참다(억누름) ↔ 터뜨리다"},
+        {u:3, q:"속담 '말 한마디에 천 냥 빚도 갚는다'의 뜻은?", c:["말을 잘하면 어려운 일도 해결된다","돈이 많다","말이 빠르다","빚을 지지 마라"], a:0, e:"말을 잘하면 어려운 일도 풀린다"},
+        {u:2, q:"(시간이) '이르다'의 반대말은?", c:["늦다","빠르다","멀다","작다"], a:0, e:"이르다 ↔ 늦다"},
+        {u:6, q:"관용어 '손이 크다'의 뜻은?", c:["씀씀이가 후하다","손이 실제로 크다","일을 잘한다","키가 크다"], a:0, e:"씀씀이가 후하다"},
+        {u:1, q:"맞춤법이 바른 것은?", c:["일일이","일일히","일이리","일 일이"], a:0, e:"'일일이'가 바른 표기"},
+        {u:2, q:"'낯설다'의 반대말은?", c:["익숙하다","새롭다","조용하다","어렵다"], a:0, e:"낯설다 ↔ 익숙하다"},
+        {u:3, q:"사자성어 '유유상종'의 뜻은?", c:["비슷한 사람끼리 어울림","혼자 지냄","서로 싸움","매우 빠름"], a:0, e:"비슷한 무리끼리 서로 사귐"}
       ],
       8: [
         {u:1, q:"'매우'는 어떤 품사일까요?", c:["부사","형용사","동사","명사"], a:0, e:"다른 말을 꾸며 주는 부사"},
@@ -589,7 +651,14 @@
         {u:1, q:"맞춤법이 바른 것은? (금방)", c:["금세","금새","금세기","금 새"], a:0, e:"'금세'(=금방)가 바른 표기"},
         {u:1, q:"관용어 '귀가 얇다'의 뜻은?", c:["남의 말에 잘 넘어간다","귀가 작다","잘 듣는다","고집이 세다"], a:0, e:"귀가 얇다 = 남 말에 잘 솔깃함"},
         {u:1, q:"한자성어 '자업자득'의 뜻은?", c:["자기가 한 일의 결과를 받음","남의 탓","뜻밖의 행운","서로 협동함"], a:0, e:"자기가 저지른 일의 대가를 받음"},
-        {u:1, q:"'묵묵하다'의 뜻은?", c:["말없이 꾸준하다","시끄럽다","게으르다","매우 빠르다"], a:0, e:"묵묵하다 = 말없이 참고 꾸준함"}
+        {u:1, q:"'묵묵하다'의 뜻은?", c:["말없이 꾸준하다","시끄럽다","게으르다","매우 빠르다"], a:0, e:"묵묵하다 = 말없이 참고 꾸준함"},
+        {u:1, q:"한자성어 '대기만성'의 뜻은?", c:["큰 그릇은 늦게 이루어진다","빨리 성공한다","크게 실패한다","화를 낸다"], a:0, e:"큰 인물은 늦게 이루어진다"},
+        {u:1, q:"'과묵하다'의 뜻은?", c:["말수가 적고 신중하다","말이 많다","화를 잘 낸다","게으르다"], a:0, e:"말수가 적고 신중함"},
+        {u:1, q:"다음 중 '부사'인 것은?", c:["매우","예쁘다","책상","그리고"], a:0, e:"'매우'는 정도를 나타내는 부사"},
+        {u:1, q:"관용어 '코가 높다'의 뜻은?", c:["잘난 체하며 뽐낸다","코가 크다","감기에 걸렸다","겸손하다"], a:0, e:"콧대가 높다 = 뽐냄"},
+        {u:1, q:"한자성어 '견물생심'의 뜻은?", c:["물건을 보면 욕심이 생김","물을 마심","서로 싸움","협동함"], a:0, e:"물건을 보면 갖고 싶은 마음이 생김"},
+        {u:1, q:"'모호하다'의 뜻은?", c:["분명하지 않다","매우 밝다","빠르다","조용하다"], a:0, e:"흐릿하고 분명하지 않음"},
+        {u:1, q:"속담 '등잔 밑이 어둡다'의 뜻은?", c:["가까운 것을 오히려 모른다","밤이 어둡다","불이 꺼졌다","멀리 본다"], a:0, e:"가까이 있는 것을 도리어 잘 모름"}
       ]
     },
     english: {
@@ -605,7 +674,13 @@
         {u:3, q:"\"Good night!\" 의 뜻은?", c:["잘 자!","좋은 아침!","고마워!","미안해!"], a:0, e:"밤 인사 '잘 자!'"},
         {u:4, q:"숫자 'three' 는?", c:["3","2","4","5"], a:0, e:"three = 3"},
         {u:5, q:"'happy' 의 뜻은?", c:["행복한","슬픈","화난","배고픈"], a:0, e:"happy = 행복한"},
-        {u:6, q:"'pencil' 의 뜻은?", c:["연필","책","가방","의자"], a:0, e:"pencil = 연필 ✏️"}
+        {u:6, q:"'pencil' 의 뜻은?", c:["연필","책","가방","의자"], a:0, e:"pencil = 연필 ✏️"},
+        {u:1, q:"'apple' 의 뜻은?", c:["사과","바나나","포도","딸기"], a:0, e:"apple = 사과 🍎"},
+        {u:2, q:"'green' 은 무슨 색일까요?", c:["초록","빨강","파랑","노랑"], a:0, e:"green = 초록"},
+        {u:4, q:"숫자 'ten' 은?", c:["10","9","11","1"], a:0, e:"ten = 10"},
+        {u:5, q:"\"I'm sorry.\" 의 뜻은?", c:["미안해요","고마워요","안녕하세요","잘 자요"], a:0, e:"사과 표현 '미안해요'"},
+        {u:6, q:"'window' 의 뜻은?", c:["창문","문","책상","의자"], a:0, e:"window = 창문"},
+        {u:1, q:"다음 중 동물이 아닌 것은?", c:["table","cat","dog","rabbit"], a:0, e:"table은 책상(사물)"}
       ],
       5: [
         {u:1, q:"'apple' 의 뜻은?", c:["사과","바나나","포도","오렌지"], a:0, e:"apple = 사과 🍎"},
@@ -619,7 +694,13 @@
         {u:1, q:"'cold'(추운)의 반대말은?", c:["hot","cool","ice","snow"], a:0, e:"cold ↔ hot"},
         {u:2, q:"They ___ students.", c:["are","is","am","be"], a:0, e:"They(복수) → are"},
         {u:3, q:"'book'의 복수형은?", c:["books","bookes","book's","booky"], a:0, e:"복수형 books"},
-        {u:6, q:"'Friday' 다음 요일은?", c:["Saturday","Sunday","Monday","Thursday"], a:0, e:"금요일 다음은 토요일(Saturday)"}
+        {u:6, q:"'Friday' 다음 요일은?", c:["Saturday","Sunday","Monday","Thursday"], a:0, e:"금요일 다음은 토요일(Saturday)"},
+        {u:1, q:"'eat'(먹다)의 과거형은?", c:["ate","eated","eats","eating"], a:0, e:"불규칙 과거형 ate"},
+        {u:1, q:"'big'의 반대말은?", c:["small","tall","long","fast"], a:0, e:"big ↔ small"},
+        {u:2, q:"We ___ happy. 빈칸에 알맞은 것은?", c:["are","is","am","be"], a:0, e:"We(복수) → are"},
+        {u:3, q:"'child'(아이)의 복수형은?", c:["children","childs","childes","child"], a:0, e:"불규칙 복수형 children"},
+        {u:5, q:"\"What time ___ it?\" 빈칸은?", c:["is","are","am","be"], a:0, e:"시간 묻기: What time is it?"},
+        {u:6, q:"'Sunday' 다음 요일은?", c:["Monday","Saturday","Friday","Tuesday"], a:0, e:"일요일 다음은 월요일(Monday)"}
       ],
       8: [
         {u:1, q:"I have lived here ___ 2020.", c:["since","for","at","in"], a:0, e:"since + 시점(2020), for + 기간"},
@@ -635,7 +716,15 @@
         {u:1, q:"She is good ___ math.", c:["at","in","on","to"], a:0, e:"be good at ~ (~을 잘하다)"},
         {u:1, q:"This book is ___ than that one.", c:["better","good","best","well"], a:0, e:"비교급 better"},
         {u:1, q:"The book ___ I read was fun.", c:["which","who","whom","whose"], a:0, e:"사물 선행사 → which"},
-        {u:1, q:"What is the past tense of 'teach'?", c:["taught","teached","teaches","teaching"], a:0, e:"불규칙 과거 taught"}
+        {u:1, q:"What is the past tense of 'teach'?", c:["taught","teached","teaches","teaching"], a:0, e:"불규칙 과거 taught"},
+        {u:1, q:"He has lived here ___ ten years.", c:["for","since","ago","at"], a:0, e:"for + 기간(ten years)"},
+        {u:1, q:"The house ___ in 1990.", c:["was built","built","builds","is building"], a:0, e:"수동태 과거: was built"},
+        {u:1, q:"She is the tallest ___ her class.", c:["in","at","on","of"], a:0, e:"in her class (~에서)"},
+        {u:1, q:"I don't know ___ to do.", c:["what","which","who","whose"], a:0, e:"무엇을 할지: what to do"},
+        {u:1, q:"If I ___ rich, I would travel.", c:["were","am","are","will be"], a:0, e:"가정법 과거: If I were"},
+        {u:1, q:"What is the past participle of 'break'?", c:["broken","broke","breaked","breaking"], a:0, e:"break-broke-broken"},
+        {u:1, q:"He runs ___ than me.", c:["faster","fast","fastest","more fast"], a:0, e:"비교급 faster"},
+        {u:1, q:"'honest' means…", c:["정직한","게으른","화난","조용한"], a:0, e:"honest = 정직한"}
       ]
     },
     enmath: {
@@ -651,7 +740,15 @@
         {u:1, q:"What is 2/7 + 3/7?", c:["5/7","5/14","6/7","1/7"], a:0, e:"📘 분모가 같으면 분자끼리 → 5/7"},
         {u:1, q:"How many sides does a hexagon have?", c:["6","5","7","8"], a:0, e:"📘 'hexagon(육각형)의 변(side)은?' 6"},
         {u:1, q:"The sum of the angles in a triangle is…", c:["180°","360°","90°","120°"], a:0, e:"📘 '삼각형 세 각의 합은?' 180°"},
-        {u:1, q:"What is 0.5 + 0.5?", c:["1","0.10","0.55","0.1"], a:0, e:"📘 '0.5 더하기 0.5는?' 1"}
+        {u:1, q:"What is 0.5 + 0.5?", c:["1","0.10","0.55","0.1"], a:0, e:"📘 '0.5 더하기 0.5는?' 1"},
+        {u:1, q:"What is 12 ÷ 4?", c:["3","4","6","8"], a:0, e:"📘 '12 나누기 4는?' 3"},
+        {u:1, q:"How many minutes are in one hour?", c:["60","100","30","24"], a:0, e:"📘 '1시간은 몇 분(minute)?' 60분"},
+        {u:1, q:"What is 1/2 of 10?", c:["5","2","10","20"], a:0, e:"📘 '10의 1/2(절반, half)은?' 5"},
+        {u:1, q:"Which is an even number?", c:["8","7","5","9"], a:0, e:"📘 '짝수(even number)는?' 8"},
+        {u:1, q:"What is 100 − 37?", c:["63","73","67","53"], a:0, e:"📘 '100 빼기 37은?' 63"},
+        {u:1, q:"A square has how many equal sides?", c:["4","3","5","2"], a:0, e:"📘 '정사각형(square)의 같은 변(side)은 몇 개?' 4"},
+        {u:1, q:"What is 25 + 25?", c:["50","40","55","45"], a:0, e:"📘 '25 더하기 25는?' 50"},
+        {u:1, q:"Which is greater, 3/4 or 1/4?", c:["3/4","1/4","equal","cannot tell"], a:0, e:"📘 '3/4과 1/4 중 더 큰(greater) 것은?' 3/4"}
       ],
       5: [
         {u:1, q:"What is 1/2 × 1/4?", c:["1/8","2/6","1/6","4/2"], a:0, e:"📘 '1/2 곱하기 1/4은?' 분자끼리·분모끼리 곱해요 → 1/8"},
@@ -665,7 +762,15 @@
         {u:1, q:"How many edges does a cube have?", c:["12","6","8","4"], a:0, e:"📘 'cube(정육면체)의 모서리(edge)는?' 12"},
         {u:1, q:"The average of 70, 80, and 90 is…", c:["80","70","90","240"], a:0, e:"📘 평균 (70+80+90)÷3 = 80"},
         {u:1, q:"What is 1/3 × 1/2?", c:["1/6","2/5","1/5","3/2"], a:0, e:"📘 분자·분모끼리 곱 → 1/6"},
-        {u:1, q:"Round 4.5 to the nearest whole number.", c:["5","4","4.5","45"], a:0, e:"📘 반올림 → 5"}
+        {u:1, q:"Round 4.5 to the nearest whole number.", c:["5","4","4.5","45"], a:0, e:"📘 반올림 → 5"},
+        {u:1, q:"What is 20% of 50?", c:["10","20","5","25"], a:0, e:"📘 '50의 20%는?' 50×0.2 = 10"},
+        {u:1, q:"What is the area of a rectangle 4 by 5?", c:["20","9","18","45"], a:0, e:"📘 '가로4 세로5 직사각형의 넓이(area)?' 4×5 = 20"},
+        {u:1, q:"What is 3.2 − 1.5?", c:["1.7","1.3","2.7","1.8"], a:0, e:"📘 '3.2 빼기 1.5는?' 1.7"},
+        {u:1, q:"Which fraction equals 0.5?", c:["1/2","1/3","1/4","2/3"], a:0, e:"📘 '0.5와 같은 분수(fraction)?' 1/2"},
+        {u:1, q:"What is 7²?", c:["49","14","21","64"], a:0, e:"📘 '7의 제곱(squared)?' 49"},
+        {u:1, q:"The perimeter of a square with side 6 is…", c:["24","36","12","18"], a:0, e:"📘 '한 변(side) 6인 정사각형 둘레(perimeter)?' 4×6 = 24"},
+        {u:1, q:"What is 144 ÷ 12?", c:["12","14","11","24"], a:0, e:"📘 '144 나누기 12는?' 12"},
+        {u:1, q:"Convert 1/4 to a decimal.", c:["0.25","0.4","0.14","0.5"], a:0, e:"📘 '1/4을 소수(decimal)로?' 0.25"}
       ],
       8: [
         {u:1, q:"Solve: 2x + 3 = 11. x = ?", c:["4","7","3","5"], a:0, e:"📘 '2x+3=11을 풀면(solve) x는?' 2x=8 → x=4"},
@@ -679,7 +784,15 @@
         {u:1, q:"What is 10% of 50?", c:["5","10","15","50"], a:0, e:"📘 '50의 10%는?' 5"},
         {u:1, q:"A cube has ___ faces.", c:["6","8","12","4"], a:0, e:"📘 정육면체(cube)의 면(face)은 6"},
         {u:1, q:"If y = 3x and x = 5, then y = ?", c:["15","8","35","53"], a:0, e:"📘 3×5 = 15"},
-        {u:1, q:"The perimeter of a rectangle 4 by 6 is…", c:["20","24","10","12"], a:0, e:"📘 둘레 (4+6)×2 = 20"}
+        {u:1, q:"The perimeter of a rectangle 4 by 6 is…", c:["20","24","10","12"], a:0, e:"📘 둘레 (4+6)×2 = 20"},
+        {u:1, q:"Solve: x/2 = 6. x = ?", c:["12","3","8","4"], a:0, e:"📘 'x를 2로 나눈 값이 6이면 x는?' x = 12"},
+        {u:1, q:"What is the slope of y = 2x + 1?", c:["2","1","3","0"], a:0, e:"📘 '기울기(slope)는?' x의 계수 → 2"},
+        {u:1, q:"Simplify: 2x + 3x = ?", c:["5x","6x","5","x"], a:0, e:"📘 '동류항끼리 더하면?' 5x"},
+        {u:1, q:"What is √64?", c:["8","6","16","32"], a:0, e:"📘 '64의 제곱근(square root)?' 8"},
+        {u:1, q:"20 is what percent of 80?", c:["25%","20%","40%","30%"], a:0, e:"📘 '20은 80의 몇 %?' 20÷80 = 0.25 → 25%"},
+        {u:1, q:"The area of a triangle with base 6, height 4 is…", c:["12","24","10","18"], a:0, e:"📘 '삼각형 넓이 = 밑변×높이÷2' = 6×4÷2 = 12"},
+        {u:1, q:"Solve: 5x − 2 = 13. x = ?", c:["3","5","2","4"], a:0, e:"📘 5x = 15 → x = 3"},
+        {u:1, q:"What is (−3)²?", c:["9","-9","6","-6"], a:0, e:"📘 '음수의 제곱' (−3)×(−3) = 9"}
       ]
     },
     enread: {
@@ -695,7 +808,15 @@
         {u:1, q:"one dog, two ___ .", c:["dogs","dog","doges","dog's"], a:0, e:"📘 복수형 dogs"},
         {u:1, q:"Which word is an animal?", c:["cat","apple","red","run"], a:0, e:"📘 cat = 고양이(동물)"},
         {u:1, q:"He ___ a book. (읽다)", c:["reads","read","reading","readed"], a:0, e:"📘 He 뒤엔 reads"},
-        {u:1, q:"Read: 'The sky is blue.' What color is the sky?", c:["blue","red","green","pink"], a:0, e:"📘 지문: '하늘은 파랗다' → blue"}
+        {u:1, q:"Read: 'The sky is blue.' What color is the sky?", c:["blue","red","green","pink"], a:0, e:"📘 지문: '하늘은 파랗다' → blue"},
+        {u:1, q:"What is the opposite of 'up'?", c:["down","top","high","over"], a:0, e:"📘 up(위) ↔ down(아래)"},
+        {u:1, q:"Which word means a place to learn?", c:["school","car","apple","dog"], a:0, e:"📘 'school = 배우는 곳(학교)'"},
+        {u:1, q:"We ___ friends.", c:["are","is","am","be"], a:0, e:"📘 'We 뒤엔 are'"},
+        {u:1, q:"one box, two ___ .", c:["boxes","boxs","box","boxies"], a:0, e:"📘 '-x로 끝나면 -es → boxes'"},
+        {u:1, q:"Read: 'Ann has a big dog.' Is the dog big or small?", c:["big","small","tall","fast"], a:0, e:"📘 지문: '앤은 큰 개가 있다' → big"},
+        {u:1, q:"Which is a number word?", c:["three","green","run","cat"], a:0, e:"📘 three = 숫자 3"},
+        {u:1, q:"The opposite of 'day' is…", c:["night","sun","morning","noon"], a:0, e:"📘 day(낮) ↔ night(밤)"},
+        {u:1, q:"I like ___ apple.", c:["an","a","two","much"], a:0, e:"📘 '모음 소리 앞엔 an → an apple'"}
       ],
       5: [
         {u:1, q:"Yesterday I ___ to the park.", c:["went","go","goes","going"], a:0, e:"📘 '어제 나는 공원에 ___.' 과거형 went(갔다)"},
@@ -709,7 +830,15 @@
         {u:1, q:"He ___ playing now.", c:["is","are","am","be"], a:0, e:"📘 He 뒤엔 is"},
         {u:1, q:"Which sentence is correct?", c:["I am a student.","I are a student.","I is a student.","I be a student."], a:0, e:"📘 I 뒤엔 am → 'I am a student.'"},
         {u:1, q:"What does 'sad' mean?", c:["슬픈","기쁜","화난","배고픈"], a:0, e:"📘 sad = 슬픈"},
-        {u:1, q:"Read: 'Sam has three pens.' How many pens?", c:["three","two","one","four"], a:0, e:"📘 지문: '샘은 펜 세 개가 있다' → three"}
+        {u:1, q:"Read: 'Sam has three pens.' How many pens?", c:["three","two","one","four"], a:0, e:"📘 지문: '샘은 펜 세 개가 있다' → three"},
+        {u:1, q:"Choose the past tense: I ___ my lunch.", c:["ate","eat","eats","eaten"], a:0, e:"📘 '과거형: 먹었다 → ate'"},
+        {u:1, q:"What does 'quickly' mean?", c:["빠르게","천천히","조용히","크게"], a:0, e:"📘 quickly = 빠르게"},
+        {u:1, q:"Read: 'The cat sat under the table.' Where is the cat?", c:["under the table","on the table","in the box","near the door"], a:0, e:"📘 지문: '고양이가 탁자 아래 앉았다' → under the table(아래에)"},
+        {u:1, q:"Which sentence is correct?", c:["She has a pen.","She have a pen.","She having a pen.","She haves a pen."], a:0, e:"📘 'She 뒤엔 has → She has a pen.'"},
+        {u:1, q:"The opposite of 'open' is…", c:["close","start","push","turn"], a:0, e:"📘 open(열다) ↔ close(닫다)"},
+        {u:1, q:"We ___ to music yesterday.", c:["listened","listen","listens","listening"], a:0, e:"📘 '과거형: 들었다 → listened'"},
+        {u:1, q:"What does 'brave' mean?", c:["용감한","친절한","슬픈","배고픈"], a:0, e:"📘 brave = 용감한"},
+        {u:1, q:"Read: 'Ben runs faster than Tom.' Who is faster?", c:["Ben","Tom","both","neither"], a:0, e:"📘 지문: '벤이 톰보다 빠르다' → Ben (faster=더 빠른)"}
       ],
       8: [
         {u:1, q:"Choose the best word: The plan was a great ___.", c:["success","successful","succeed","successfully"], a:0, e:"📘 '그 계획은 큰 ___였다.' 명사 자리 → success(성공)"},
@@ -723,7 +852,15 @@
         {u:1, q:"'brave' means…", c:["용감한","겁많은","조용한","게으른"], a:0, e:"📘 brave = 용감한"},
         {u:1, q:"Choose the correctly spelled word:", c:["necessary","neccessary","necesary","necessery"], a:0, e:"📘 necessary(필요한)"},
         {u:1, q:"Read: 'Although he was tired, he kept working.' He kept working…", c:["even though he was tired","because he was tired","before working","without working"], a:0, e:"📘 지문: '피곤했지만 계속 일했다' — although = ~이지만"},
-        {u:1, q:"What is the opposite of 'buy'?", c:["sell","pay","cost","shop"], a:0, e:"📘 buy(사다) ↔ sell(팔다)"}
+        {u:1, q:"What is the opposite of 'buy'?", c:["sell","pay","cost","shop"], a:0, e:"📘 buy(사다) ↔ sell(팔다)"},
+        {u:1, q:"Choose the best word: He spoke ___ so everyone understood.", c:["clearly","clear","clearness","cleared"], a:0, e:"📘 '동사를 꾸미는 부사 자리 → clearly(명확하게)'"},
+        {u:1, q:"'reluctant' means…", c:["꺼리는, 마지못한","기꺼이 하는","용감한","친절한"], a:0, e:"📘 reluctant = 마지못해 하는"},
+        {u:1, q:"Read: 'The experiment failed because of a small error.' Why did it fail?", c:["a small error","the weather","no reason","it succeeded"], a:0, e:"📘 지문: '작은 실수 때문에 실험이 실패했다' → a small error"},
+        {u:1, q:"Choose the correct: This is the book ___ I bought.", c:["that","who","whose","where"], a:0, e:"📘 '사물 목적격 관계대명사 → that'"},
+        {u:1, q:"'ambitious' means…", c:["야심 있는","게으른","조용한","슬픈"], a:0, e:"📘 ambitious = 포부·야망이 큰"},
+        {u:1, q:"Pick the correctly spelled word:", c:["definitely","definately","definetly","definitly"], a:0, e:"📘 definitely(분명히)"},
+        {u:1, q:"What is the opposite of 'accept'?", c:["reject","take","agree","receive"], a:0, e:"📘 accept(받아들이다) ↔ reject(거절하다)"},
+        {u:1, q:"Read: 'While she was cooking, the phone rang.' What happened during cooking?", c:["the phone rang","she ate","she slept","she left"], a:0, e:"📘 지문: '요리하는 동안 전화가 울렸다' → the phone rang. while = ~하는 동안"}
       ]
     }
   };
@@ -779,7 +916,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -940,8 +1077,8 @@
     $("ivQ").textContent=it.q; $("ivQko").textContent=it.ko; $("ivCount").textContent=(ivIndex+1)+"/"+INTERVIEW.length;
     $("ivModel").classList.add("hidden");
     $("ivModel").innerHTML='<div class="mh">💡 모범답안 (이렇게 말해보세요)</div><div class="mtxt">'+escapeHtml(it.model)+'</div><div class="mtip">👉 '+escapeHtml(it.tip)+'</div>';
-    $("ivTrans").innerHTML='<span class="ph">🎤 "말하기"를 누르고 영어로 대답해보세요. 여기에 받아써져요.</span>';
-    stopRec(); resetRec();
+    $("ivNote").textContent="";
+    resetRec();
   }
   let enVoice=null;
   function pickVoice(){ try{ const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[]; if(!vs.length) return;
@@ -957,22 +1094,7 @@
   $("ivReveal").addEventListener("click",()=>$("ivModel").classList.toggle("hidden"));
   $("ivPrev").addEventListener("click",()=>{ if(ivIndex>0){ ivIndex--; renderIv(); } });
   $("ivNext").addEventListener("click",()=>{ if(ivIndex<INTERVIEW.length-1){ ivIndex++; renderIv(); } else { $("ivNote").textContent="마지막 질문이에요! 처음부터 다시 연습해도 좋아요 😊"; } });
-  $("ivBack").addEventListener("click",()=>{ stopRec(); gotoSubject(); });
-
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  function stopRec(){ ivRecActive=false; $("ivMic").classList.remove("on"); $("ivMic").textContent="🎤 말하기"; try{ if(ivRecog) ivRecog.stop(); }catch(e){} }
-  $("ivMic").addEventListener("click",()=>{
-    if(!SR){ $("ivNote").textContent="이 브라우저는 말하기 인식을 지원하지 않아요. Chrome이나 Safari에서 열어주세요 🙏"; return; }
-    if(ivRecActive){ stopRec(); return; }
-    try{
-      ivRecog=new SR(); ivRecog.lang="en-US"; ivRecog.interimResults=true; ivRecog.continuous=true;
-      let finalTxt="";
-      ivRecog.onresult=e=>{ let interim=""; for(let i=e.resultIndex;i<e.results.length;i++){ const t=e.results[i][0].transcript; if(e.results[i].isFinal) finalTxt+=t+" "; else interim+=t; } $("ivTrans").textContent=(finalTxt+interim)||"…"; };
-      ivRecog.onerror=ev=>{ $("ivNote").textContent="마이크 권한을 허용해주세요 (에러: "+ev.error+")"; stopRec(); };
-      ivRecog.onend=()=>{ if(ivRecActive){ try{ivRecog.start();}catch(e){} } };
-      ivRecog.start(); ivRecActive=true; $("ivMic").classList.add("on"); $("ivMic").textContent="⏹ 멈추기"; $("ivNote").textContent="";
-    }catch(e){ $("ivNote").textContent="말하기 인식을 시작할 수 없어요."; }
-  });
+  $("ivBack").addEventListener("click",()=>{ resetRec(); gotoSubject(); });
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
@@ -1093,18 +1215,29 @@
     }catch(e){ $("raResult").textContent="말하기 인식을 시작할 수 없어요."; }
   });
 
-  // ---------- 면담 녹음 (Record & Playback) ----------
-  let mediaRec=null, recChunks=[], recURL=null, recActive=false;
-  function resetRec(){ recActive=false; try{ if(mediaRec && mediaRec.state && mediaRec.state!=="inactive") mediaRec.stop(); }catch(e){} $("ivRec").classList.remove("on"); $("ivRec").textContent="🎙️ 녹음"; $("ivPlay").disabled=true; if(recURL){ try{URL.revokeObjectURL(recURL);}catch(e){} recURL=null; } }
+  // ---------- 면담 녹음 (마이크 레벨 · 바로 듣기 · 부모탭 저장) ----------
+  let mediaRec=null, recChunks=[], recURL=null, recActive=false, audioCtx=null, rafId=0, micStream=null;
+  function ivRecKey(){ return "study_ivrec_"+child.name; }
+  function stopMeter(){ try{ if(rafId) cancelAnimationFrame(rafId); }catch(e){} rafId=0; $("ivMeter").classList.add("hidden"); $("ivMeterFill").style.width="0%"; try{ if(audioCtx) audioCtx.close(); }catch(e){} audioCtx=null; }
+  function resetRec(){ recActive=false; try{ if(mediaRec && mediaRec.state && mediaRec.state!=="inactive") mediaRec.stop(); }catch(e){} stopMeter(); try{ if(micStream) micStream.getTracks().forEach(function(t){t.stop();}); }catch(e){} micStream=null; var rb=$("ivRec"); if(rb){ rb.classList.remove("rec"); rb.textContent="🎙️ 녹음 시작"; } $("ivPlay").disabled=true; if(recURL){ try{URL.revokeObjectURL(recURL);}catch(e){} recURL=null; } }
+  function drawMeter(an){ var data=new Uint8Array(an.frequencyBinCount); (function tick(){ if(!recActive) return; an.getByteFrequencyData(data); var s=0; for(var i=0;i<data.length;i++) s+=data[i]; var avg=s/data.length; var pct=Math.min(100, Math.round(avg/110*100)); $("ivMeterFill").style.width=pct+"%"; rafId=requestAnimationFrame(tick); })(); }
+  function saveRecording(blob){ try{ var fr=new FileReader(); var idx=ivIndex, q=INTERVIEW[ivIndex].q; fr.onload=function(){ try{ var all=LS.get(ivRecKey(),{}); all[idx]={q:q, data:fr.result, date:todayStr()}; LS.set(ivRecKey(),all); }catch(e){} }; fr.readAsDataURL(blob); }catch(e){} }
   $("ivRec").addEventListener("click", function(){
     if(recActive){ try{ mediaRec.stop(); }catch(e){} return; }
     if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder)){ $("ivNote").textContent="이 브라우저는 녹음을 지원하지 않아요 (Chrome/Safari 권장)"; return; }
     navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      micStream=stream;
       try{ mediaRec=new MediaRecorder(stream); }catch(e){ try{ mediaRec=new MediaRecorder(stream,{mimeType:"audio/mp4"}); }catch(e2){ $("ivNote").textContent="녹음을 시작할 수 없어요."; return; } }
       recChunks=[];
       mediaRec.ondataavailable=function(e){ if(e.data && e.data.size) recChunks.push(e.data); };
-      mediaRec.onstop=function(){ recActive=false; $("ivRec").classList.remove("on"); $("ivRec").textContent="🎙️ 녹음"; try{ if(recURL) URL.revokeObjectURL(recURL); const blob=new Blob(recChunks,{type:(mediaRec&&mediaRec.mimeType)||"audio/webm"}); recURL=URL.createObjectURL(blob); $("ivPlay").disabled=false; }catch(e){} stream.getTracks().forEach(function(t){t.stop();}); };
-      mediaRec.start(); recActive=true; $("ivRec").classList.add("on"); $("ivRec").textContent="⏹ 녹음 멈추기"; $("ivNote").textContent="";
+      mediaRec.onstop=function(){
+        recActive=false; stopMeter(); try{ if(micStream) micStream.getTracks().forEach(function(t){t.stop();}); }catch(e){}
+        var rb=$("ivRec"); rb.classList.remove("rec"); rb.textContent="🎙️ 다시 녹음";
+        try{ if(recURL) URL.revokeObjectURL(recURL); var blob=new Blob(recChunks,{type:(mediaRec&&mediaRec.mimeType)||"audio/webm"}); recURL=URL.createObjectURL(blob); $("ivPlay").disabled=false; saveRecording(blob); var a=new Audio(recURL); a.play().catch(function(){}); $("ivNote").textContent="🎧 방금 녹음을 바로 들려드려요!"; }catch(e){}
+      };
+      mediaRec.start(); recActive=true;
+      var rb=$("ivRec"); rb.classList.add("rec"); rb.textContent="⏹ 멈추기 (녹음 중…)"; $("ivMeter").classList.remove("hidden"); $("ivNote").textContent="🔴 녹음 중 — 영어로 또박또박 말해보세요!";
+      try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); var src=audioCtx.createMediaStreamSource(stream); var an=audioCtx.createAnalyser(); an.fftSize=256; src.connect(an); drawMeter(an); }catch(e){}
     }).catch(function(){ $("ivNote").textContent="마이크 권한을 허용해주세요."; });
   });
   $("ivPlay").addEventListener("click",function(){ if(recURL){ try{ new Audio(recURL).play(); }catch(e){} } });
@@ -1132,6 +1265,19 @@
     });
     html+='<div class="note-inline" style="margin-top:10px">※ 저장은 기기별이라, 각 아이가 쓰는 기기에서 봐야 정확해요.</div>';
     $("adminList").innerHTML=html;
+    // 면담 녹음 재생
+    CHILDREN.forEach(function(c){
+      var recs=LS.get("study_ivrec_"+c.name,{}); var keys=Object.keys(recs); if(!keys.length) return;
+      var card=document.createElement("div"); card.className="stcard";
+      var h=document.createElement("div"); h.className="stname"; h.textContent="🎤 "+c.emo+" "+c.name+" 면담 녹음"; card.appendChild(h);
+      keys.sort(function(a,b){return a-b;}).forEach(function(k){ var r=recs[k];
+        var row=document.createElement("div"); row.className="plrow";
+        var btn=document.createElement("button"); btn.className="mdo"; btn.textContent="▶️ 듣기"; btn.addEventListener("click",function(){ try{ new Audio(r.data).play(); }catch(e){} });
+        var lab=document.createElement("span"); lab.className="mlabel"; lab.style.fontSize=".8rem"; lab.textContent=(r.q||("질문 "+(Number(k)+1)))+"  ("+(r.date||"")+")";
+        row.appendChild(btn); row.appendChild(lab); card.appendChild(row);
+      });
+      $("adminList").appendChild(card);
+    });
   }
   $("adminBack").addEventListener("click",gotoChild);
   $("adminBtn").addEventListener("click",()=>{ const pp=getParentPin(); openPin({title:"부모 비밀번호",sub:"관리 화면 — 부모 비밀번호를 입력하세요",mode:"enter",correct:pp,onSuccess:openAdmin,onCancel:gotoChild}); });
@@ -1269,6 +1415,32 @@
   }
   $("sumBack").addEventListener("click",function(){ show("units"); });
   $("unitsSummary").addEventListener("click",function(){ openSummary(unitsSubj); });
+
+  // ---------- 학교생활 플래너 ----------
+  const PLDAYS=["월","화","수","목","금"];
+  function plKey(){ return "study_planner_"+child.name; }
+  function getPlan(){ return LS.get(plKey(),{tt:{},academy:{},supplies:{},notice:""}); }
+  function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  function openPlanner(){ renderPlanner(); show("planner"); }
+  function renderPlanner(){
+    const pl=getPlan(); $("plTitle").textContent="📅 "+child.name+" 플래너";
+    let th='<thead><tr><th>교시</th>'+PLDAYS.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr></thead><tbody>';
+    for(var pr=1;pr<=6;pr++){ th+='<tr><td>'+pr+'</td>'+PLDAYS.map(function(d){ var v=(pl.tt[d+'-'+pr]||''); return '<td><input class="pl-in" data-tt="'+d+'-'+pr+'" value="'+escAttr(v)+'"></td>'; }).join('')+'</tr>'; }
+    th+='</tbody>'; $("ttTable").innerHTML=th;
+    $("acList").innerHTML=PLDAYS.map(function(d){ return '<div class="plrow"><span class="pld">'+d+'</span><input class="pl-in" data-ac="'+d+'" placeholder="예: 영어학원 5시, 수학 7시" value="'+escAttr(pl.academy[d]||'')+'"></div>'; }).join('');
+    $("supList").innerHTML=PLDAYS.map(function(d){ return '<div class="plrow"><span class="pld">'+d+'</span><input class="pl-in" data-sup="'+d+'" placeholder="예: 실내화, 리코더" value="'+escAttr(pl.supplies[d]||'')+'"></div>'; }).join('');
+    $("plNotice").value=pl.notice||"";
+    document.querySelectorAll('#planner .pl-in, #planner #plNotice').forEach(function(el){ el.addEventListener('input',savePlannerFromDom); });
+  }
+  function savePlannerFromDom(){
+    var pl={tt:{},academy:{},supplies:{},notice:$("plNotice").value};
+    document.querySelectorAll('[data-tt]').forEach(function(el){ if(el.value.trim()) pl.tt[el.dataset.tt]=el.value; });
+    document.querySelectorAll('[data-ac]').forEach(function(el){ if(el.value.trim()) pl.academy[el.dataset.ac]=el.value; });
+    document.querySelectorAll('[data-sup]').forEach(function(el){ if(el.value.trim()) pl.supplies[el.dataset.sup]=el.value; });
+    LS.set(plKey(),pl);
+  }
+  $("plBack").addEventListener("click",gotoTrack);
+  document.querySelectorAll('[data-planner]').forEach(function(b){ b.addEventListener('click',openPlanner); });
 
   // ---------- 오늘의 미션 ----------
   const MISSIONS=[
