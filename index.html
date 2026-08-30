@@ -288,7 +288,11 @@
       <button class="backbtn" id="trackBack">← 아이 다시 고르기</button>
       <button class="backbtn" id="changePin" style="margin-left:8px">🔑 비밀번호 변경</button>
       <div class="section-t">무엇을 공부할까요?</div>
-      <div class="tracks">
+      <div class="tracks hidden" id="adultTracks">
+        <button class="track" data-lang="viet"><div class="temo">🇻🇳</div><div><div class="tname">베트남어</div><div class="tdesc">남부(호찌민) 발음 · 회화·암기·어순·퀴즈</div></div><div class="tarr">›</div></button>
+        <button class="track" data-lang="eng"><div class="temo" style="background:var(--good-soft)">🔤</div><div><div class="tname">영어</div><div class="tdesc">실용 회화·암기 요령·어순(고급)·퀴즈</div></div><div class="tarr">›</div></button>
+      </div>
+      <div class="tracks" id="kidTracks">
         <button class="track kr" data-track="kr"><div class="temo">🇰🇷</div><div><div class="tname">한국 학교 공부</div><div class="tdesc" id="krDesc">지금 학교 진도 · 수학·국어·영어</div></div><div class="tarr">›</div></button>
         <button class="track intl" data-track="intl"><div class="temo">🌍</div><div><div class="tname">국제학교 준비</div><div class="tdesc" id="intlDesc">영어로 · 입학시험 대비</div></div><div class="tarr">›</div></button>
         <button class="track" data-curric="1"><div class="temo" style="background:var(--good-soft)">📚</div><div><div class="tname">이번 주 학교 진도</div><div class="tdesc">수업 전 예습 요약 · 배운 단원 복습 문제</div></div><div class="tarr">›</div></button>
@@ -484,14 +488,18 @@
   <!-- VIETNAMESE (베트남어 · 남부 발음) -->
   <div id="viet" class="hidden">
     <div class="qtop"><button class="back" id="vietBack" aria-label="뒤로">←</button><div class="qcount" id="vietTitle" style="flex:1">🇻🇳 베트남어</div></div>
-    <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="backbtn" id="vmLearn" style="flex:1;margin:0">📘 배우기</button>
-      <button class="backbtn" id="vmQuiz" style="flex:1;margin:0">📝 퀴즈</button>
+    <div style="display:flex;gap:5px;margin-bottom:12px">
+      <button class="backbtn" id="vmLearn" style="flex:1;margin:0;font-size:.8rem;padding:9px 4px">📘 배우기</button>
+      <button class="backbtn" id="vmMem" style="flex:1;margin:0;font-size:.8rem;padding:9px 4px">💡 암기</button>
+      <button class="backbtn" id="vmOrder" style="flex:1;margin:0;font-size:.8rem;padding:9px 4px">🎮 어순</button>
+      <button class="backbtn" id="vmQuiz" style="flex:1;margin:0;font-size:.8rem;padding:9px 4px">📝 퀴즈</button>
     </div>
     <div id="vietLearn">
       <div id="vietTopics" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
       <div id="vietCards"></div>
     </div>
+    <div id="vietMem" class="hidden"></div>
+    <div id="vietOrder" class="hidden"></div>
     <div id="vietQuiz" class="hidden"></div>
   </div>
 
@@ -1016,19 +1024,24 @@
   function renderKids(){
     const box=$("kidPick"); box.innerHTML="";
     CHILDREN.forEach(c=>{ const b=document.createElement("button"); b.className="kid";
-      const meta = c.adult ? "🇻🇳 베트남어 학습 (남부 발음)" : (c.kGrade+' · 국제학교 '+c.intlG);
+      const meta = c.adult ? "🇻🇳 베트남어 · 🔤 영어 학습" : (c.kGrade+' · 국제학교 '+c.intlG);
       b.innerHTML='<span class="kemo">'+c.emo+'</span><span><span class="kname">'+c.name+'</span><span class="kmeta">'+meta+'</span></span><span class="karr">›</span>';
       b.addEventListener("click",()=>requestChild(c)); box.appendChild(b); });
   }
   function gotoChild(){ practiceMode=false; homeStep("child"); setCrumb(); show("home"); }
   function gotoTrack(){
-    if(child.adult){ openViet(); return; }
-    $("krDesc").textContent = (child.g===8?"중2 과정":child.kGrade)+" · 수학·국어·영어";
-    $("intlDesc").textContent = "영어로 · "+child.intlG+" "+child.intlNote;
+    const adult=!!child.adult;
+    $("adultTracks").classList.toggle("hidden",!adult);
+    $("kidTracks").classList.toggle("hidden",adult);
+    if(!adult){
+      $("krDesc").textContent = (child.g===8?"중2 과정":child.kGrade)+" · 수학·국어·영어";
+      $("intlDesc").textContent = "영어로 · "+child.intlG+" "+child.intlNote;
+    }
     homeStep("track"); setCrumb(); show("home");
   }
   $("trackBack").addEventListener("click",gotoChild);
   document.querySelectorAll("[data-track]").forEach(b=>b.addEventListener("click",()=>{ track=b.dataset.track; gotoSubject(); }));
+  document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{ openLang(b.dataset.lang==="eng"?ENG_PACK:VIET_PACK); }));
 
   // ---------- step 3: subject ----------
   function gotoSubject(){
@@ -1352,7 +1365,7 @@
       var any=false, card=document.createElement("div"); card.className="stcard";
       var gh=document.createElement("div"); gh.className="stname"; gh.textContent="📄 주간학습안내 (원본 이미지)"; card.appendChild(gh);
       CHILDREN.forEach(function(c){ if(!GUIDE_IMG[c.name]) return; any=true;
-        var lab=document.createElement("div"); lab.className="note-inline"; lab.style.margin="10px 0 4px"; lab.textContent=c.emo+" "+c.name;
+        var lab=document.createElement("div"); lab.className="note-inline"; lab.style.margin="10px 0 4px"; lab.textContent=c.emo+" "+c.name+" — "+(GUIDE_LABEL[c.name]||"주간안내");
         var img=document.createElement("img"); img.src=GUIDE_IMG[c.name]; img.alt=c.name+" 주간안내"; img.style.cssText="width:100%;border-radius:10px;border:1px solid var(--border);cursor:zoom-in"; img.addEventListener("click",function(){ window.open(GUIDE_IMG[c.name],"_blank"); });
         card.appendChild(lab); card.appendChild(img);
       });
@@ -1710,25 +1723,81 @@
       {vi:"Hôm nay bạn có đi làm không?", pron:"홈 나이 반↓ 꺼↗ 디 람↓ 콩", ko:"오늘 당신은 일하러 가요?", w:[["bạn","너 (주어)"],["có…không?","~해요? (의문)"],["đi làm","일하러 가다"]], gr:"의문문 = 동사를 có … không?으로 감싸요. 시간(hôm nay)은 그대로 앞에."}
     ]}
   ]};
-  let vietTopic="greet", viVoice=null;
+  let vietTopic="greet", viVoice=null, LP=null;
   let vqList=[], vqi=0, vqScore=0, vqAnswered=false;
+  let voIndex=0, voPool=[], voAns=[];
   function pickViVoice(){ try{ const vs=(speechSynthesis.getVoices()||[]); viVoice=vs.find(v=>/vi[-_]?vn/i.test(v.lang))||vs.find(v=>/vietnam/i.test(v.name))||null; }catch(e){} }
   if("speechSynthesis" in window){ try{ speechSynthesis.onvoiceschanged=pickViVoice; pickViVoice(); }catch(e){} }
   function speakVi(t){ try{ if(!("speechSynthesis" in window))return; if(!viVoice) pickViVoice(); speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); if(viVoice){ u.voice=viVoice; u.lang=viVoice.lang; } else u.lang="vi-VN"; u.rate=.85; speechSynthesis.speak(u); }catch(e){} }
   function vShuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i];a[i]=a[j];a[j]=t; } return a; }
-  function allVietCards(){ const a=[]; VIET.topics.forEach(t=>t.cards.forEach(c=>a.push(c))); return a; }
-  function vietTopicByKey(k){ return VIET.topics.find(t=>t.key===k)||VIET.topics[0]; }
-  function openViet(){ $("vietTitle").textContent="🇻🇳 "+child.name+" · 베트남어"; renderVietTopics(); renderVietCards(); vietSetMode("learn"); show("viet"); }
-  function vietSetMode(m){ const learn=(m==="learn"); $("vietLearn").classList.toggle("hidden",!learn); $("vietQuiz").classList.toggle("hidden",learn);
-    $("vmLearn").style.background=learn?"var(--brand)":""; $("vmLearn").style.color=learn?"#fff":"";
-    $("vmQuiz").style.background=!learn?"var(--brand)":""; $("vmQuiz").style.color=!learn?"#fff":"";
-    if(!learn) startVietQuiz(); }
-  function renderVietTopics(){ const box=$("vietTopics"); box.innerHTML=""; VIET.topics.forEach(t=>{ const b=document.createElement("button"); const on=t.key===vietTopic; b.textContent=t.emo+" "+t.name; b.style.cssText="border:1px solid var(--border);background:"+(on?"var(--brand)":"var(--surface)")+";color:"+(on?"#fff":"var(--text)")+";padding:8px 12px;border-radius:999px;font-weight:700;font-size:.85rem;cursor:pointer"; b.addEventListener("click",()=>{ vietTopic=t.key; renderVietTopics(); renderVietCards(); }); box.appendChild(b); }); }
+  function allVietCards(){ const a=[]; LP.topics.forEach(t=>t.cards.forEach(c=>a.push(c))); return a; }
+  function vietTopicByKey(k){ return LP.topics.find(t=>t.key===k)||LP.topics[0]; }
+  function openLang(pack){ LP=pack; vietTopic=(pack.topics[0]&&pack.topics[0].key)||"greet"; $("vietTitle").textContent=pack.title+" · "+child.name; renderVietTopics(); renderVietCards(); vietSetMode("learn"); show("viet"); }
+  function openViet(){ openLang(VIET_PACK); }
+  const VMEM = [
+    ["Xin chào","안녕하세요","'짜오(chào)' → 이탈리아 인사 '차오(ciao)'와 쌍둥이! 짜오=안녕"],
+    ["Cảm ơn","고맙습니다","'깜언' → 고마워서 깜!짝, 언(오빠)한테 감사"],
+    ["Dạ","네(공손)","'야↓' → 어른께 '야(예)'. d는 남부에서 'ㅇ/y' 소리"],
+    ["tôi","나","'또이' → '또 이(사람) 나야'"],
+    ["anh","오빠/형(손위 남성)","'아잉' → 아이~ 형아!"],
+    ["chị","언니/누나(손위 여성)","'찌↓' → 찌~ 언니"],
+    ["em","손아랫사람","'앰' → 애(어린)+m = 어린 사람"],
+    ["muốn","원하다·하고 싶다","'무온' → 뭐 원해? '무(뭐)온(원)'"],
+    ["uống","마시다","'우옹' → 우와~ 옹달샘 물 마시다"],
+    ["ăn","먹다","'안?' → 안 먹니? 먹다=ăn"],
+    ["đi","가다","'디' → 디디고 가다"],
+    ["đến","오다·도착하다","'덴' → 도착해서 '덴장(된장)' 먹자"],
+    ["về","돌아가다","'베' → 집에 베~ 돌아가"],
+    ["có","있다·가지다","'꺼' → 그거 있어? 꺼내봐"],
+    ["không","아니다·없다","'콩' → 콩알만큼도 안 돼! (부정)"],
+    ["nhà","집","'냐' → 집에서 냐옹(고양이). 냐=집"],
+    ["ở","~에 있다·살다","'어' → '어~ 여기 있어'"],
+    ["của","~의(소유)","'꾸어' → 꾸어다 놓은 내 것"],
+    ["với","~와 함께","'버이' → 벗(친구)이랑 함께"],
+    ["cà phê","커피","'까페' → 카페(cafe) 그대로! 커피"],
+    ["tiền","돈","'띠엔' → 띠~엔(錢=전), 돈"],
+    ["đắt","비싸다","'닷' → 닷새 월급 다 나가, 비싸!"],
+    ["ngon","맛있다","'응온' → 응~ 온몸이 좋아, 맛있다"],
+    ["học","배우다·공부하다","'혹' → 혹시 배웠어? 학(學)"],
+    ["biết","알다(사실)","'비엣' → 비었던 머리에 지식 채워 '안다'"],
+    ["hiểu","이해하다(내용)","'히에우' → 히~ 에휴, 알겠다"],
+    ["gặp","만나다","'갑' → 갑자기 만나다"],
+    ["mua","사다","'무어' → 뭐 사? 무어 살까"],
+    ["bán","팔다","'반' → 반값에 팔다"]
+  ];
+  function vietSetMode(m){
+    const isLearn=m==="learn", isMem=m==="mem", isOrder=m==="order", isQuiz=m==="quiz";
+    $("vietLearn").classList.toggle("hidden",!isLearn);
+    $("vietMem").classList.toggle("hidden",!isMem);
+    $("vietOrder").classList.toggle("hidden",!isOrder);
+    $("vietQuiz").classList.toggle("hidden",!isQuiz);
+    $("vmLearn").style.background=isLearn?"var(--brand)":""; $("vmLearn").style.color=isLearn?"#fff":"";
+    $("vmMem").style.background=isMem?"var(--brand)":""; $("vmMem").style.color=isMem?"#fff":"";
+    $("vmOrder").style.background=isOrder?"var(--brand)":""; $("vmOrder").style.color=isOrder?"#fff":"";
+    $("vmQuiz").style.background=isQuiz?"var(--brand)":""; $("vmQuiz").style.color=isQuiz?"#fff":"";
+    if(isMem) renderVietMem();
+    if(isOrder) startVietOrder();
+    if(isQuiz) startVietQuiz();
+  }
+  function renderVietMem(){
+    const box=$("vietMem"); box.innerHTML="";
+    const h=document.createElement("div"); h.className="section-t"; h.textContent="💡 핵심 단어 암기 요령 (소리 연상)"; box.appendChild(h);
+    LP.mem.forEach(function(m){
+      const d=document.createElement("div"); d.className="stcard"; d.style.textAlign="left";
+      const top=document.createElement("div"); top.style.cssText="display:flex;align-items:center;gap:10px;justify-content:space-between";
+      const w=document.createElement("div"); w.innerHTML='<span style="font-size:1.1rem;font-weight:800;color:var(--brand-2)">'+escapeHtml(m[0])+'</span> <span style="color:var(--text-2)">'+escapeHtml(m[1])+'</span>';
+      const spk=document.createElement("button"); spk.textContent="🔊"; spk.style.cssText="border:none;background:var(--brand-soft);border-radius:10px;padding:6px 11px;cursor:pointer;flex:0 0 auto"; spk.addEventListener("click",()=>LP.speak(m[0]));
+      top.appendChild(w); top.appendChild(spk); d.appendChild(top);
+      const tip=document.createElement("div"); tip.style.cssText="margin-top:6px;font-size:.9rem;background:var(--accent-soft);border-radius:10px;padding:8px 10px;line-height:1.55"; tip.textContent="💡 "+m[2]; d.appendChild(tip);
+      box.appendChild(d);
+    });
+  }
+  function renderVietTopics(){ const box=$("vietTopics"); box.innerHTML=""; LP.topics.forEach(t=>{ const b=document.createElement("button"); const on=t.key===vietTopic; b.textContent=t.emo+" "+t.name; b.style.cssText="border:1px solid var(--border);background:"+(on?"var(--brand)":"var(--surface)")+";color:"+(on?"#fff":"var(--text)")+";padding:8px 12px;border-radius:999px;font-weight:700;font-size:.85rem;cursor:pointer"; b.addEventListener("click",()=>{ vietTopic=t.key; renderVietTopics(); renderVietCards(); }); box.appendChild(b); }); }
   function vietCardEl(c){
     const d=document.createElement("div"); d.className="stcard"; d.style.textAlign="left";
     const top=document.createElement("div"); top.style.cssText="display:flex;align-items:center;gap:10px;justify-content:space-between";
     const vi=document.createElement("div"); vi.style.cssText="font-size:1.15rem;font-weight:800;color:var(--brand-2);line-height:1.3"; vi.textContent=c.vi;
-    const spk=document.createElement("button"); spk.textContent="🔊"; spk.style.cssText="border:none;background:var(--brand-soft);border-radius:10px;padding:6px 11px;font-size:1rem;cursor:pointer;flex:0 0 auto"; spk.addEventListener("click",()=>speakVi(c.vi));
+    const spk=document.createElement("button"); spk.textContent="🔊"; spk.style.cssText="border:none;background:var(--brand-soft);border-radius:10px;padding:6px 11px;font-size:1rem;cursor:pointer;flex:0 0 auto"; spk.addEventListener("click",()=>LP.speak(c.vi));
     top.appendChild(vi); top.appendChild(spk); d.appendChild(top);
     const pron=document.createElement("div"); pron.style.cssText="font-size:1.05rem;margin:6px 0;color:var(--accent);font-weight:700"; pron.textContent=c.pron; d.appendChild(pron);
     const ko=document.createElement("div"); ko.style.cssText="font-weight:700;margin-bottom:8px"; ko.textContent=c.ko; d.appendChild(ko);
@@ -1744,7 +1813,7 @@
     const c=vqList[vqi]; vqAnswered=false;
     const others=vShuffle(allVietCards().filter(x=>x.vi!==c.vi)).slice(0,3).map(x=>x.vi);
     const choices=vShuffle([c.vi].concat(others));
-    box.innerHTML='<div class="qcount" style="margin-bottom:8px">'+(vqi+1)+'/'+vqList.length+'</div><div class="stcard"><div style="font-weight:700;margin-bottom:4px">다음을 베트남어로?</div><div style="font-size:1.15rem;color:var(--brand-2);font-weight:800">'+c.ko+'</div></div><div id="vqChoices" style="margin-top:10px"></div><div id="vqFb"></div>';
+    box.innerHTML='<div class="qcount" style="margin-bottom:8px">'+(vqi+1)+'/'+vqList.length+'</div><div class="stcard"><div style="font-weight:700;margin-bottom:4px">'+LP.quizPrompt+'</div><div style="font-size:1.15rem;color:var(--brand-2);font-weight:800">'+c.ko+'</div></div><div id="vqChoices" style="margin-top:10px"></div><div id="vqFb"></div>';
     const cb=$("vqChoices");
     choices.forEach(ch=>{ const b=document.createElement("button"); b.className="backbtn"; b.style.cssText="margin:0 0 8px;text-align:left;width:100%"; b.textContent=ch; b.addEventListener("click",()=>chooseViet(ch,c,b)); cb.appendChild(b); });
   }
@@ -1756,10 +1825,107 @@
     const head=document.createElement("div"); head.style.cssText="font-weight:800;margin:8px 0 4px"; head.textContent=ok?"⭕ 정답!":"❌ 정답은 아래예요"; fb.appendChild(head);
     fb.appendChild(vietCardEl(c));
     const nx=document.createElement("button"); nx.className="bigbtn"; nx.style.marginTop="10px"; nx.textContent=(vqi+1>=vqList.length)?"결과 보기":"다음 ▶"; nx.addEventListener("click",()=>{ vqi++; renderVietQ(); }); fb.appendChild(nx);
-    try{ speakVi(c.vi); }catch(e){}
+    try{ LP.speak(c.vi); }catch(e){}
   }
+  // ---- 어순 게임 (베트남어/영어 공통) ----
+  function startVietOrder(){ voIndex=0; loadVo(); }
+  function loadVo(){ const it=LP.order[voIndex]; voPool=vShuffle(it.vi.split(" ").slice()); voAns=[]; renderVietOrder(); }
+  function voTile(w,onClick){ const b=document.createElement("button"); b.textContent=w; b.style.cssText="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:1rem;font-weight:700;cursor:pointer"; b.addEventListener("click",onClick); return b; }
+  function renderVietOrder(){
+    const box=$("vietOrder"); const it=LP.order[voIndex];
+    box.innerHTML='<div class="qcount" style="margin-bottom:8px">'+(voIndex+1)+'/'+LP.order.length+'</div><div class="stcard"><div style="font-weight:700">🎮 이 뜻이 되게 순서를 맞춰요:</div><div style="font-size:1.1rem;color:var(--brand-2);font-weight:800;margin-top:4px">'+escapeHtml(it.ko)+'</div></div><div id="voAnsBox" style="min-height:46px;margin:12px 0;padding:8px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-wrap:wrap;gap:6px"></div><div id="voPoolBox" style="display:flex;flex-wrap:wrap;gap:6px"></div><div id="voFb"></div><div style="display:flex;gap:8px;margin-top:12px"><button class="ivbtn" id="voCheck" style="flex:1">✅ 확인</button><button class="ivbtn" id="voReset" style="flex:1">↺ 다시</button></div>';
+    const ansBox=$("voAnsBox"), poolBox=$("voPoolBox");
+    voAns.forEach((w,i)=>{ ansBox.appendChild(voTile(w,()=>{ voPool.push(w); voAns.splice(i,1); renderVietOrder(); })); });
+    voPool.forEach((w,i)=>{ poolBox.appendChild(voTile(w,()=>{ voAns.push(w); voPool.splice(i,1); renderVietOrder(); })); });
+    $("voCheck").addEventListener("click",checkVo);
+    $("voReset").addEventListener("click",loadVo);
+  }
+  function checkVo(){
+    const it=LP.order[voIndex]; const made=voAns.join(" "); const fb=$("voFb");
+    if(made===it.vi){ fb.innerHTML='<div class="stcard" style="margin-top:10px;background:var(--good-soft)"><b>⭕ 정답!</b><br>'+escapeHtml(it.vi)+'</div>'; try{ LP.speak(it.vi); markToday(); addXP(10); }catch(e){} const nx=document.createElement("button"); nx.className="bigbtn"; nx.style.marginTop="10px"; nx.textContent=(voIndex+1>=LP.order.length)?"처음부터 다시":"다음 ▶"; nx.addEventListener("click",()=>{ voIndex=(voIndex+1)%LP.order.length; loadVo(); }); fb.appendChild(nx); }
+    else { fb.innerHTML='<div class="stcard" style="margin-top:10px;background:var(--bad-soft)">🔁 순서를 다시 해볼까요? 위 칸의 단어를 눌러 빼낼 수 있어요.</div>'; }
+  }
+  // ---- 어순 게임 문장 (베트남어) ----
+  const VORDER = [
+    {vi:"Tôi muốn uống cà phê.", ko:"저는 커피를 마시고 싶어요."},
+    {vi:"Nhà của tôi ở Thảo Điền.", ko:"우리 집은 타오디엔에 있어요."},
+    {vi:"Tôi không ăn cay.", ko:"저는 매운 거 안 먹어요."},
+    {vi:"Hôm qua tôi đã đi làm.", ko:"어제 저는 일하러 갔어요."},
+    {vi:"Ngày mai tôi sẽ đến.", ko:"내일 저는 갈 거예요."},
+    {vi:"Tôi đang học tiếng Việt.", ko:"저는 베트남어를 공부하고 있어요."},
+    {vi:"Con tôi học ở đây.", ko:"제 아이가 여기 다녀요."},
+    {vi:"Tôi muốn đặt bàn.", ko:"저는 예약하고 싶어요."},
+    {vi:"Có wifi không?", ko:"와이파이 있어요?"},
+    {vi:"Cho tôi một cà phê.", ko:"커피 하나 주세요."}
+  ];
+  // ---- 영어 학습 (이소니·장지환, 성인/실용) ----
+  const ENG = { topics: [
+    { key:"greet", emo:"👋", name:"인사·소개", cards:[
+      {vi:"Nice to meet you.", pron:"나이스 투 미츄", ko:"만나서 반갑습니다.", w:[["nice","좋은"],["meet","만나다"]], gr:"처음 만났을 때. 헤어질 땐 It was nice meeting you."},
+      {vi:"I run a beauty business.", pron:"아이 런 어 뷰티 비즈니스", ko:"저는 뷰티 사업을 합니다.", w:[["run","운영하다"],["business","사업"]], gr:"run a business = 사업을 운영하다."},
+      {vi:"Could you say that again, please?", pron:"쿠쥬 쎄이 댓 어겐, 플리즈", ko:"다시 한 번 말씀해 주시겠어요?", w:[["again","다시"]], gr:"못 알아들었을 때 아주 유용."},
+      {vi:"How do you say this in English?", pron:"하우 두 유 쎄이 디스 인 잉글리시", ko:"이건 영어로 뭐라고 해요?", w:[["how","어떻게"],["say","말하다"]], gr:"모르는 단어를 물을 때."}
+    ]},
+    { key:"cafe", emo:"🍽️", name:"식당·주문", cards:[
+      {vi:"Can I have a menu, please?", pron:"캔 아이 해브 어 메뉴, 플리즈", ko:"메뉴판 주시겠어요?", w:[["have","받다"]], gr:"Can I have ~? = ~ 주세요(정중)."},
+      {vi:"I would like an iced americano.", pron:"아이 우드 라익 언 아이스드 아메리카노", ko:"아이스 아메리카노 주세요.", w:[["would like","~을 원하다(정중)"]], gr:"I'd like = 주문 만능 표현."},
+      {vi:"Can I get the bill, please?", pron:"캔 아이 겟 더 빌, 플리즈", ko:"계산서 주시겠어요?", w:[["bill","계산서"]], gr:"미국은 check라고도 해요."},
+      {vi:"Is this seat taken?", pron:"이즈 디스 씻 테이큰", ko:"이 자리 (누가) 있나요?", w:[["seat","자리"],["taken","차지된"]], gr:"빈자리를 물을 때."}
+    ]},
+    { key:"biz", emo:"💼", name:"비즈니스·미팅", cards:[
+      {vi:"Let us schedule a meeting.", pron:"렛 어스 스케줄 어 미팅", ko:"미팅 일정을 잡읍시다.", w:[["schedule","일정을 잡다"]], gr:"Let's + 동사원형 = ~합시다."},
+      {vi:"Could you send me the details?", pron:"쿠쥬 쎈드 미 더 디테일즈", ko:"자세한 내용을 보내주시겠어요?", w:[["send","보내다"],["details","세부사항"]], gr:"Could you ~? = 정중한 부탁."},
+      {vi:"I will get back to you soon.", pron:"아일 겟 백 투 유 쑨", ko:"곧 다시 연락드릴게요.", w:[["get back to","~에게 다시 연락하다"]], gr:"통화·이메일 마무리에 유용."},
+      {vi:"That works for me.", pron:"댓 웍스 포 미", ko:"저는 그걸로 괜찮아요.", w:[["work","(일정이) 되다"]], gr:"약속 잡을 때 동의 표현."}
+    ]},
+    { key:"travel", emo:"✈️", name:"이동·예약", cards:[
+      {vi:"I would like to book a room.", pron:"아이 우드 라익 투 북 어 룸", ko:"방을 예약하고 싶어요.", w:[["book","예약하다"],["room","방"]], gr:"book = 예약하다(동사)."},
+      {vi:"How much is it in total?", pron:"하우 머치 이즈 잇 인 토탈", ko:"전부 얼마예요?", w:[["total","합계"]], gr:"in total = 전부 합쳐서."},
+      {vi:"Where is the nearest ATM?", pron:"웨어 이즈 더 니어리스트 에이티엠", ko:"가장 가까운 ATM이 어디예요?", w:[["nearest","가장 가까운"]], gr:"Where is ~? = ~이 어디예요?"},
+      {vi:"Can you call a taxi for me?", pron:"캔 유 콜 어 택시 포 미", ko:"택시 좀 불러 주시겠어요?", w:[["call","부르다"]], gr:"for me = 나를 위해."}
+    ]},
+    { key:"build", emo:"✍️", name:"문장 만들기 (시제)", cards:[
+      {vi:"I work every day.", pron:"아이 웍 에브리 데이", ko:"저는 매일 일해요.", w:[["work","일하다"],["every day","매일"]], gr:"반복되는 습관 = 현재형."},
+      {vi:"I worked yesterday.", pron:"아이 웍트 예스터데이", ko:"저는 어제 일했어요.", w:[["worked","일했다(과거)"]], gr:"과거는 보통 동사+ed. yesterday와 함께."},
+      {vi:"I am working now.", pron:"아임 워킹 나우", ko:"저는 지금 일하고 있어요.", w:[["am working","일하는 중"]], gr:"be + 동사ing = 진행형(지금 ~하는 중)."},
+      {vi:"I will work tomorrow.", pron:"아이 윌 웍 투모로우", ko:"저는 내일 일할 거예요.", w:[["will","~할 것이다"]], gr:"will + 동사원형 = 미래."}
+    ]}
+  ]};
+  const EMEM = [
+    ["schedule","일정","'스케줄' → 스케줄러에 일정 적기. (sch를 '스크'가 아니라 '스케'로!)"],
+    ["details","세부사항","'디테일' → 디테일하게 = 세부까지"],
+    ["book","예약하다","'북' → 이름을 book(장부)에 적어 예약"],
+    ["available","이용 가능한","'어베일러블' → 어! 베일 벗겨 쓸 수 있는"],
+    ["confirm","확인·확정하다","'컨펌' → 컨펌해줘 = 확정해줘"],
+    ["deadline","마감","'데드라인' → dead(죽음)+line, 넘으면 큰일! 마감"],
+    ["refund","환불","'리펀드' → 다시(re) 펀드(자금) = 환불"],
+    ["discount","할인","'디스카운트' → 카운트(계산)를 깎다"],
+    ["reservation","예약","'레저베이션' → 자리를 리저브(reserve) 해둠"],
+    ["appointment","약속·예약","'어포인트먼트' → 포인트(점) 콕 정한 약속"],
+    ["receipt","영수증","'리씨트' → p는 묵음! '리씨트'로 발음"],
+    ["urgent","긴급한","'어전트' → 어! 전(前)에 빨리! 긴급"],
+    ["approve","승인하다","'어프루브' → 프로(pro)가 오케이! 승인"],
+    ["nearby","근처의","'니어바이' → near(가까이)+by = 근처"],
+    ["invoice","청구서","'인보이스' → in+voice, 돈 내라 알리는 목소리"]
+  ];
+  const EORDER = [
+    {vi:"I would like to book a room for two nights.", ko:"이틀 밤 방을 예약하고 싶어요."},
+    {vi:"Could you please send me the details?", ko:"자세한 내용을 보내주시겠어요?"},
+    {vi:"Let me know if that works for you.", ko:"그게 괜찮으면 알려주세요."},
+    {vi:"I will get back to you tomorrow morning.", ko:"내일 아침에 다시 연락드릴게요."},
+    {vi:"Where can I find the nearest bank?", ko:"가장 가까운 은행을 어디서 찾을 수 있나요?"},
+    {vi:"Can you tell me how much it costs?", ko:"얼마인지 말씀해 주시겠어요?"},
+    {vi:"I have been living here for two years.", ko:"저는 여기서 2년째 살고 있어요."},
+    {vi:"She is the woman who runs the company.", ko:"그녀가 그 회사를 운영하는 여성이에요."},
+    {vi:"Please let me know when you are ready.", ko:"준비되면 알려주세요."},
+    {vi:"I am looking forward to meeting you soon.", ko:"곧 만나뵙기를 기대하고 있어요."}
+  ];
+  const VIET_PACK = { title:"🇻🇳 베트남어", quizPrompt:"다음을 베트남어로?", topics:VIET.topics, mem:VMEM, order:VORDER, speak:speakVi };
+  const ENG_PACK  = { title:"🔤 영어", quizPrompt:"다음을 영어로?", topics:ENG.topics, mem:EMEM, order:EORDER, speak:speak };
   $("vietBack").addEventListener("click",gotoChild);
   $("vmLearn").addEventListener("click",()=>vietSetMode("learn"));
+  $("vmMem").addEventListener("click",()=>vietSetMode("mem"));
+  $("vmOrder").addEventListener("click",()=>vietSetMode("order"));
   $("vmQuiz").addEventListener("click",()=>vietSetMode("quiz"));
 
   // ===== 이번 주 학교 진도 (주간학습안내 기반 · 예습 요약 + 배운 뒤 복습 문제) =====
@@ -1829,6 +1995,7 @@
   };
   // 주간학습안내 원본 이미지(가정통신문 캡처). family 리포에 함께 업로드 필요.
   const GUIDE_IMG = { "태정":"guide-taejeong.jpg", "태희":"guide-taehee.jpg", "태운":"guide-taeun.jpg" };
+  const GUIDE_LABEL = { "태정":"주간학습안내", "태희":"주간학습안내", "태운":"석우중 시간표" }; // 태운 것은 단원 안내 아님(시간표)
   let curQ=[], curQi=0, curQScore=0, curQAns=false, curQUnit=null;
   function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function curDL(dstr){ const p=dstr.split("-"); return Number(p[1])+"/"+Number(p[2]); }
@@ -1836,7 +2003,7 @@
   function renderCurric(){
     const body=$("curBody"); body.innerHTML="";
     // 주간안내 원본 이미지
-    if(GUIDE_IMG[child.name]){ const gc=document.createElement("div"); gc.className="stcard"; gc.innerHTML='<div class="stname">📄 이번 주 주간학습안내 (원본)</div><div class="note-inline" style="margin:2px 0 8px">탭하면 크게 볼 수 있어요</div>'; const img=document.createElement("img"); img.src=GUIDE_IMG[child.name]; img.alt="주간학습안내"; img.style.cssText="width:100%;border-radius:10px;cursor:zoom-in;border:1px solid var(--border)"; img.addEventListener("click",()=>window.open(GUIDE_IMG[child.name],"_blank")); gc.appendChild(img); body.appendChild(gc); }
+    if(GUIDE_IMG[child.name]){ const gc=document.createElement("div"); gc.className="stcard"; gc.innerHTML='<div class="stname">📄 이번 주 '+(GUIDE_LABEL[child.name]||"주간안내")+' (원본)</div><div class="note-inline" style="margin:2px 0 8px">탭하면 크게 볼 수 있어요</div>'; const img=document.createElement("img"); img.src=GUIDE_IMG[child.name]; img.alt="주간학습안내"; img.style.cssText="width:100%;border-radius:10px;cursor:zoom-in;border:1px solid var(--border)"; img.addEventListener("click",()=>window.open(GUIDE_IMG[child.name],"_blank")); gc.appendChild(img); body.appendChild(gc); }
     const list=CURRICULUM[child.name]||[];
     if(!list.length){ const e=document.createElement("div"); e.className="note-inline"; e.style.marginTop="10px"; e.textContent="이 아이의 단원별 예습·복습 문제는 아직 없어요. 주간안내를 보내주시면 채워드려요."; body.appendChild(e); return; }
     const t=todayStr();
