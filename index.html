@@ -906,8 +906,25 @@
   };
 
   // ---------- storage ----------
-  const LS = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+  const LS = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} if(k.indexOf("study_")===0 && k!=="study_child"){ try{ schedulePush(); }catch(e){} } } };
   const $ = id => document.getElementById(id);
+
+  // ---------- 웹 저장(동기화): Supabase study_state 테이블 (기기 상관없이 이어서) ----------
+  // 테이블이 아직 없으면 조용히 로컬만 사용. 만들면 자동으로 웹 저장이 켜짐.
+  const SB_URL = "https://xzclowgorxhcbsfrrbop.supabase.co";
+  const SB_KEY = "sb_publishable_66Ts2AQrKrjfitjTi11uCQ_dGXiY_EZ";
+  const SB_H = { apikey:SB_KEY, Authorization:"Bearer "+SB_KEY, "Content-Type":"application/json" };
+  const SYNC_NS = "unhj:";
+  let _pushTimer=null;
+  function _childKeyMap(name){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.indexOf("study_")===0 && k.indexOf(name)>=0) o[k]=localStorage.getItem(k); } return o; }
+  function _globalKeyMap(){ const names=CHILDREN.map(c=>c.name); const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!k||k.indexOf("study_")!==0||k==="study_child") continue; if(names.some(n=>k.indexOf(n)>=0)) continue; o[k]=localStorage.getItem(k); } return o; }
+  async function syncPull(id){ try{ const r=await fetch(SB_URL+"/rest/v1/study_state?id=eq."+encodeURIComponent(id)+"&select=data",{headers:SB_H}); if(!r.ok) return {ok:false,found:false}; const rows=await r.json(); if(rows&&rows[0]&&rows[0].data){ const d=rows[0].data; Object.keys(d).forEach(k=>{ try{ if(typeof d[k]==="string") localStorage.setItem(k,d[k]); }catch(e){} }); return {ok:true,found:true}; } return {ok:true,found:false}; }catch(e){ return {ok:false,found:false}; } }
+  async function syncPush(id,dataMap){ try{ const body=JSON.stringify([{id:id,data:dataMap,updated_at:new Date().toISOString()}]); const r=await fetch(SB_URL+"/rest/v1/study_state",{method:"POST",headers:Object.assign({Prefer:"resolution=merge-duplicates,return=minimal"},SB_H),body}); return r.ok; }catch(e){ return false; } }
+  // 서버에서 불러오되, 서버에 아직 데이터가 없고 로컬에 있으면 처음 한 번 올려줌(기존 기기 데이터 이전)
+  async function pullOrSeed(id,keymapFn){ const res=await syncPull(id); if(res.ok && !res.found && keymapFn){ const m=keymapFn(); if(Object.keys(m).length) await syncPush(id,m); } return res; }
+  function syncPullChild(name){ return pullOrSeed(SYNC_NS+name,()=>_childKeyMap(name)); }
+  async function syncPullAll(){ await pullOrSeed(SYNC_NS+"__global",_globalKeyMap); for(const c of CHILDREN){ await pullOrSeed(SYNC_NS+c.name,()=>_childKeyMap(c.name)); } }
+  function schedulePush(){ clearTimeout(_pushTimer); _pushTimer=setTimeout(async function(){ try{ if(typeof child!=="undefined"&&child) await syncPush(SYNC_NS+child.name,_childKeyMap(child.name)); await syncPush(SYNC_NS+"__global",_globalKeyMap()); }catch(e){} },1200); }
 
   // ---------- 푸시 알림 (얼굴앱 인프라 재사용: soneed-push Worker + VAPID) ----------
   const PUSH_URL = "https://soneed-push.soni0025.workers.dev";
@@ -1269,7 +1286,7 @@
   $("ivPlay").addEventListener("click",function(){ if(recURL){ try{ new Audio(recURL).play(); }catch(e){} } });
 
   // ---------- 관리 (부모) ----------
-  function openAdmin(){ renderAdmin(); show("admin"); }
+  function openAdmin(){ renderAdmin(); show("admin"); syncPullAll().then(renderAdmin); }
   function renderAdmin(){
     const now=new Date(); const tStr=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate(); const mPrefix=now.getFullYear()+"-"+(now.getMonth()+1)+"-";
     let html="";
@@ -1561,15 +1578,17 @@
     if(!pp) openPin({title:"부모 비밀번호 만들기",sub:"자녀 비번을 잊었을 때 쓰는 부모 번호(4자리)",mode:"create",onSuccess:p=>{ setParentPin(p); doReset(); },onCancel:()=>requestChild(c)});
     else openPin({title:"부모 비밀번호",sub:"자녀 비번 초기화 — 부모 번호 입력",mode:"enter",correct:pp,onSuccess:doReset,onCancel:()=>requestChild(c)});
   });
+  function enterChild(c){ child=c; LS.set("study_child",c.name); syncPullChild(c.name).then(gotoTrack); }
   function requestChild(c){
     const pin=getChildPin(c.name);
     // 비번이 설정돼 있으면 입력받고, 없으면 바로 입장(자녀 비번은 선택사항 — 부모가 '비밀번호 바꾸기'로 원할 때만 설정)
-    if(!pin){ child=c; LS.set("study_child",c.name); gotoTrack(); return; }
-    openPin({title:c.name+"의 비밀번호",sub:"4자리를 눌러요",mode:"enter",correct:pin,child:c,onSuccess:()=>{ child=c; LS.set("study_child",c.name); gotoTrack(); },onCancel:gotoChild});
+    if(!pin){ enterChild(c); return; }
+    openPin({title:c.name+"의 비밀번호",sub:"4자리를 눌러요",mode:"enter",correct:pin,child:c,onSuccess:()=>{ enterChild(c); },onCancel:gotoChild});
   }
   $("changePin").addEventListener("click",()=>{ const c=child; openPin({title:c.name+" 새 비밀번호",sub:"바꿀 4자리를 입력해요",mode:"create",onSuccess:p=>{ setChildPin(c.name,p); gotoTrack(); },onCancel:gotoTrack}); });
 
   // init
   renderKids(); gotoChild();
+  syncPullAll().then(function(){ renderKids(); });
 })();
 </script>
