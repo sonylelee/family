@@ -446,8 +446,14 @@
 
   <!-- ADMIN (부모) -->
   <div id="admin" class="hidden">
-    <div class="qtop"><button class="back" id="adminBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">🔧 관리 · 아이들 진행 상황</div></div>
+    <div class="qtop"><button class="back" id="adminBack" aria-label="뒤로">←</button><div class="qcount" style="flex:1">🔧 관리 · 아이들</div></div>
     <div id="adminList"></div>
+  </div>
+
+  <!-- ADMIN CHILD DETAIL (아이별 일일 리포트) -->
+  <div id="adminchild" class="hidden">
+    <div class="qtop"><button class="back" id="adminChildBack" aria-label="뒤로">←</button><div class="qcount" id="adminChildTitle" style="flex:1">리포트</div></div>
+    <div id="adminChildBody"></div>
   </div>
 
   <!-- WORD ORDER GAME -->
@@ -1130,7 +1136,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet","curric","submenu"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); const cb=$("crumb"); if(cb) cb.textContent=(s==="admin")?"관리":((typeof child!=="undefined"&&child)?child.name:"시작"); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet","curric","submenu","adminchild"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); const cb=$("crumb"); if(cb) cb.textContent=(s==="admin"||s==="adminchild")?"관리":((typeof child!=="undefined"&&child)?child.name:"시작"); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -1150,7 +1156,7 @@
   // 오늘 카운트
   function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
   function getDaily(){ const d=LS.get("study_daily_"+child.name,{date:"",solved:0,correct:0}); return d.date===todayStr()?d:{date:todayStr(),solved:0,correct:0}; }
-  function bumpDaily(ok){ const d=getDaily(); d.solved++; if(ok)d.correct++; LS.set("study_daily_"+child.name,d); }
+  function bumpDaily(ok){ const d=getDaily(); d.solved++; if(ok)d.correct++; LS.set("study_daily_"+child.name,d); const h=LS.get("study_hist_"+child.name,{}); h[todayStr()]={solved:d.solved,correct:d.correct}; LS.set("study_hist_"+child.name,h); }
 
   // ---------- step 1: child ----------
   function renderKids(){
@@ -1600,33 +1606,14 @@
   function openAdmin(){ renderAdmin(); show("admin"); syncPullAll().then(renderAdmin); }
   function renderAdmin(){
     const now=new Date(); const tStr=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate(); const mPrefix=now.getFullYear()+"-"+(now.getMonth()+1)+"-";
-    let html="";
-    CHILDREN.forEach(c=>{
-      const xp=LS.get("study_xp_"+c.name,0), lv=1+Math.floor(xp/100);
-      const dd=LS.get("study_daily_"+c.name,{date:"",solved:0,correct:0}); const td=(dd.date===tStr)?dd:{solved:0,correct:0};
-      const days=LS.get("study_days_"+c.name,[]);
-      let streak=0; const cur=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-      while(true){ const ds=cur.getFullYear()+"-"+(cur.getMonth()+1)+"-"+cur.getDate(); if(days.indexOf(ds)>=0){ streak++; cur.setDate(cur.getDate()-1); } else break; }
-      const monthN=days.filter(x=>x.indexOf(mPrefix)===0).length;
-      const stats=LS.get("study_stats_"+c.name,{});
-      const wrongsKr=LS.get("study_wrong_"+c.name+"_kr",[]), wrongsIntl=LS.get("study_wrong_"+c.name+"_intl",[]);
-      const wkr=wrongsKr.length, wintl=wrongsIntl.length;
-      let subjHtml=""; Object.keys(stats).forEach(k=>{ const st=stats[k]; const rate=st.solved?Math.round(st.correct/st.solved*100):0; const cls=rate<60&&st.solved>=3?' style="background:var(--bad-soft);color:var(--bad)"':''; subjHtml+='<span class="apill"'+cls+'>'+(SUBJ_KO[k]||k)+' '+st.solved+'문제·'+rate+'%</span>'; });
-      if(!subjHtml) subjHtml='<span class="apill" style="opacity:.6">아직 푼 문제 없음</span>';
-      // 🎯 집중 필요: 현재 오답노트를 과목·단원별로 집계
-      const byUnit={}; wrongsKr.concat(wrongsIntl).forEach(function(w){ const nm=(getUnitName(w.subj,w.grade,w.u)||"단원 "+(w.u||1)); const key=(SUBJ_KO[w.subj]||w.subj)+" · "+nm; byUnit[key]=(byUnit[key]||0)+1; });
-      const sortedU=Object.keys(byUnit).sort(function(a,b){return byUnit[b]-byUnit[a];});
-      let focusHtml="";
-      if(sortedU.length){ focusHtml='<div class="stname" style="margin-top:12px;font-size:.95rem">🎯 집중이 필요한 곳 (오답 많은 순)</div>'; sortedU.slice(0,6).forEach(function(k,i){ focusHtml+='<div class="strow"><span style="flex:1">'+(i+1)+'. '+escapeHtml(k)+'</span><span>오답 <b>'+byUnit[k]+'</b></span></div>'; }); }
-      else focusHtml='<div class="note-inline" style="margin-top:10px">지금은 오답노트가 비어 있어요. 잘하고 있어요! 😊</div>';
-      html+='<div class="stcard"><div class="stname">'+c.emo+' '+c.name+' · Lv.'+lv+' '+lvEmoji(lv)+'</div>'
-        +'<div class="strow"><span>오늘 <b>'+td.solved+'</b>문제</span><span>정답 <b>'+td.correct+'</b></span><span>연속출석 <b>'+streak+'</b>일</span><span>이번달 <b>'+monthN+'</b>일</span></div>'
-        +'<div class="stname" style="margin-top:10px;font-size:.95rem">📊 과목별 정답률</div><div class="arow">'+subjHtml+'</div>'
-        +'<div class="strow" style="margin-top:8px"><span>오답 한국 <b>'+wkr+'</b></span><span>오답 국제 <b>'+wintl+'</b></span></div>'
-        +focusHtml+'</div>';
+    $("adminList").innerHTML="";
+    const intro=document.createElement("div"); intro.className="note-inline"; intro.style.marginBottom="10px"; intro.textContent="아이를 눌러 오늘·일별 리포트를 볼 수 있어요."; $("adminList").appendChild(intro);
+    CHILDREN.forEach(function(c){ const s=adminStats(c.name);
+      const b=document.createElement("button"); b.className="track"; b.style.marginBottom="10px";
+      b.innerHTML='<div class="temo">'+c.emo+'</div><div style="flex:1;text-align:left"><div class="tname">'+escapeHtml(c.name)+' · Lv.'+s.lv+' '+lvEmoji(s.lv)+'</div><div class="tdesc">오늘 '+s.td.solved+'문제 · 정답 '+s.td.correct+' · 연속 '+s.streak+'일</div></div><div class="tarr">›</div>';
+      b.addEventListener("click",function(){ openAdminChild(c.name); });
+      $("adminList").appendChild(b);
     });
-    html+='<div class="note-inline" style="margin-top:10px">※ 저장은 기기별이라, 각 아이가 쓰는 기기에서 봐야 정확해요.</div>';
-    $("adminList").innerHTML=html;
     // 🔔 저녁 8시 알림 켜기 (이 기기 · 얼굴앱 푸시 인프라 재사용)
     (function(){
       var card=document.createElement("div"); card.className="stcard";
@@ -1662,20 +1649,47 @@
       });
       $("adminList").appendChild(card);
     })();
-    // 면담 녹음 재생
-    CHILDREN.forEach(function(c){
-      var recs=LS.get("study_ivrec_"+c.name,{}); var keys=Object.keys(recs); if(!keys.length) return;
-      var card=document.createElement("div"); card.className="stcard";
-      var h=document.createElement("div"); h.className="stname"; h.textContent="🎤 "+c.emo+" "+c.name+" 면담 녹음"; card.appendChild(h);
-      keys.sort(function(a,b){return a-b;}).forEach(function(k){ var r=recs[k];
-        var row=document.createElement("div"); row.className="plrow";
+  }
+  function dstr(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
+  function adminStats(name){
+    const xp=LS.get("study_xp_"+name,0), lv=1+Math.floor(xp/100);
+    const dd=LS.get("study_daily_"+name,{date:"",solved:0,correct:0}); const td=(dd.date===todayStr())?dd:{solved:0,correct:0};
+    const days=LS.get("study_days_"+name,[]); const now=new Date();
+    let streak=0; const cur=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    while(true){ if(days.indexOf(dstr(cur))>=0){ streak++; cur.setDate(cur.getDate()-1); } else break; }
+    const mPrefix=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"; const monthN=days.filter(x=>x.indexOf(mPrefix)===0).length;
+    return {lv:lv, td:td, days:days, streak:streak, monthN:monthN};
+  }
+  function openAdminChild(name){ renderAdminChild(name); show("adminchild"); syncPullAll().then(function(){ renderAdminChild(name); }); }
+  function renderAdminChild(name){
+    const c=CHILDREN.find(function(x){return x.name===name;})||CHILDREN[0];
+    const s=adminStats(name);
+    $("adminChildTitle").textContent=c.emo+" "+name+" 리포트";
+    const stats=LS.get("study_stats_"+name,{});
+    const wrongsKr=LS.get("study_wrong_"+name+"_kr",[]), wrongsIntl=LS.get("study_wrong_"+name+"_intl",[]);
+    let subjHtml=""; Object.keys(stats).forEach(function(k){ const st=stats[k]; const rate=st.solved?Math.round(st.correct/st.solved*100):0; const cls=rate<60&&st.solved>=3?' style="background:var(--bad-soft);color:var(--bad)"':''; subjHtml+='<span class="apill"'+cls+'>'+(SUBJ_KO[k]||k)+' '+st.solved+'문제·'+rate+'%</span>'; });
+    if(!subjHtml) subjHtml='<span class="apill" style="opacity:.6">아직 푼 문제 없음</span>';
+    const byUnit={}; wrongsKr.concat(wrongsIntl).forEach(function(w){ const nm=(getUnitName(w.subj,w.grade,w.u)||"단원 "+(w.u||1)); const key=(SUBJ_KO[w.subj]||w.subj)+" · "+nm; byUnit[key]=(byUnit[key]||0)+1; });
+    const sortedU=Object.keys(byUnit).sort(function(a,b){return byUnit[b]-byUnit[a];});
+    let focusHtml=""; if(sortedU.length){ sortedU.slice(0,6).forEach(function(k,i){ focusHtml+='<div class="strow"><span style="flex:1">'+(i+1)+'. '+escapeHtml(k)+'</span><span>오답 <b>'+byUnit[k]+'</b></span></div>'; }); } else focusHtml='<div class="note-inline">지금은 오답노트가 비어 있어요. 잘하고 있어요! 😊</div>';
+    const hist=LS.get("study_hist_"+name,{}); const dates=Object.keys(hist).sort().reverse().slice(0,14);
+    let dayHtml=""; if(dates.length){ dates.forEach(function(d){ const r=hist[d]; const p=d.split("-"); const rate=r.solved?Math.round(r.correct/r.solved*100):0; dayHtml+='<div class="strow"><span style="flex:1">'+Number(p[1])+"/"+Number(p[2])+'</span><span>푼 문제 <b>'+r.solved+'</b></span><span>정답 <b>'+r.correct+'</b> ('+rate+'%)</span></div>'; }); } else dayHtml='<div class="note-inline">아직 일별 기록이 없어요. 문제를 풀면 여기에 쌓여요!</div>';
+    const body=$("adminChildBody");
+    body.innerHTML='<div class="stcard"><div class="stname">'+c.emo+' '+escapeHtml(name)+' · Lv.'+s.lv+' '+lvEmoji(s.lv)+'</div>'
+      +'<div class="strow"><span>오늘 <b>'+s.td.solved+'</b>문제</span><span>정답 <b>'+s.td.correct+'</b></span><span>연속출석 <b>'+s.streak+'</b>일</span><span>이번달 <b>'+s.monthN+'</b>일</span></div></div>'
+      +'<div class="stcard"><div class="stname">📊 과목별 정답률</div><div class="arow" style="margin-top:8px">'+subjHtml+'</div><div class="strow" style="margin-top:8px"><span>오답 한국 <b>'+wrongsKr.length+'</b></span><span>오답 국제 <b>'+wrongsIntl.length+'</b></span></div></div>'
+      +'<div class="stcard"><div class="stname">🎯 집중이 필요한 곳 (오답 많은 순)</div>'+focusHtml+'</div>'
+      +'<div class="stcard"><div class="stname">📅 일별 리포트 (최근 14일)</div>'+dayHtml+'</div>';
+    var recs=LS.get("study_ivrec_"+name,{}); var rkeys=Object.keys(recs);
+    if(rkeys.length){ var card=document.createElement("div"); card.className="stcard"; var h=document.createElement("div"); h.className="stname"; h.textContent="🎤 면담 녹음"; card.appendChild(h);
+      rkeys.sort(function(a,b){return a-b;}).forEach(function(k){ var r=recs[k]; var row=document.createElement("div"); row.className="plrow";
         var btn=document.createElement("button"); btn.className="mdo"; btn.textContent="▶️ 듣기"; btn.addEventListener("click",function(){ try{ new Audio(r.data).play(); }catch(e){} });
         var lab=document.createElement("span"); lab.className="mlabel"; lab.style.fontSize=".8rem"; lab.textContent=(r.q||("질문 "+(Number(k)+1)))+"  ("+(r.date||"")+")";
-        row.appendChild(btn); row.appendChild(lab); card.appendChild(row);
-      });
-      $("adminList").appendChild(card);
-    });
+        row.appendChild(btn); row.appendChild(lab); card.appendChild(row); });
+      body.appendChild(card);
+    }
   }
+  $("adminChildBack").addEventListener("click",openAdmin);
   $("adminBack").addEventListener("click",gotoChild);
   $("adminBtn").addEventListener("click",()=>{ const pp=getParentPin(); openPin({title:"부모 비밀번호",sub:"관리 화면 — 부모 비밀번호를 입력하세요",mode:"enter",correct:pp,onSuccess:openAdmin,onCancel:gotoChild}); });
 
