@@ -3,9 +3,9 @@
 <link rel="icon" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="소니드 공부방">
+<meta name="apple-mobile-web-app-title" content="운희정 스터디 플래너">
 <meta name="theme-color" content="#2f7fd6">
-<title>소니드 공부방 · 문제풀이 & 오답노트</title>
+<title>운희정 스터디 플래너 · 문제풀이 & 오답노트</title>
 <style>
   :root{
     --bg:#eef4fb; --surface:#ffffff; --surface-2:#eaf1f9; --border:#dbe6f2;
@@ -270,7 +270,7 @@
 <div class="wrap">
   <div class="appbar">
     <div class="logo">🎒</div>
-    <h1>소니드 공부방</h1>
+    <h1>운희정 스터디 플래너</h1>
     <div class="crumb" id="crumb">시작</div>
   </div>
 
@@ -1456,14 +1456,40 @@
 
   // ---------- 학교생활 플래너 ----------
   const PLDAYS=["월","화","수","목","금"];
+  // 학교 시간표 기본값(2026-08-30 대표 제공 캡처). 저장된 게 없으면 이 값으로 미리 채움 — 수정하면 이 기기에 저장됨.
+  const DEFAULT_PLAN = {
+    "태운": { tt:{
+      "월-1":"국어","월-2":"도덕","월-3":"수학","월-4":"동아리활동","월-5":"생활 중국어","월-6":"역사",
+      "화-1":"기술·가정","화-2":"생활 중국어","화-3":"과학","화-4":"음악","화-5":"체육","화-6":"국어","화-7":"영어",
+      "수-1":"체육","수-2":"영어","수-3":"도덕","수-4":"역사","수-5":"과학","수-6":"수학",
+      "목-1":"도덕","목-2":"기술·가정","목-3":"영어","목-4":"국어","목-5":"체육","목-6":"과학","목-7":"수학",
+      "금-1":"미술","금-2":"수학","금-3":"역사","금-4":"과학","금-5":"국어","금-6":"자율·자치활동"
+    }, academy:{}, supplies:{}, notice:"석우중학교 2-9" },
+    "태희": { tt:{
+      "월-1":"도덕","월-2":"자율","월-3":"국어","월-4":"수학","월-5":"영어","월-6":"음악",
+      "화-1":"국어","화-2":"국어","화-3":"과학","화-4":"과학","화-5":"사회","화-6":"수학",
+      "수-1":"수학","수-2":"국어","수-3":"체육","수-4":"영어","수-5":"사회",
+      "목-1":"체육","목-2":"체육","목-3":"음악","목-4":"실과","목-5":"미술","목-6":"미술",
+      "금-1":"수학","금-2":"영어","금-3":"실과","금-4":"과학","금-5":"사회","금-6":"음악"
+    }, academy:{}, supplies:{"목":"소금(악기)"}, notice:"학동초 5학년 4반 · 국악수업 매주 목요일(소금 악기 준비) · 아침 등교 8:40~55" },
+    "태정": { tt:{
+      "월-1":"체육(강당)","월-2":"창체","월-3":"국어","월-4":"수학","월-5":"수학",
+      "화-1":"과학","화-2":"과학","화-3":"음악","화-4":"국어","화-5":"국어","화-6":"동아리",
+      "수-1":"수학","수-2":"영어","수-3":"국어","수-4":"사회","수-5":"음악",
+      "목-1":"음악","목-2":"자율","목-3":"미술","목-4":"미술","목-5":"도덕",
+      "금-1":"영어","금-2":"과학","금-3":"국어","금-4":"사회","금-5":"체육"
+    }, academy:{}, supplies:{"월":"편한 복장","화":"동아리 준비물","목":"리코더","금":"독서록·편한 복장"}, notice:"학동초 4학년 3반 · 아침 등교 8:40 · 아침활동: 월 가치사전쓰기 / 화~금 아침독서 · 아트파크 공연 9/3 1~2교시" }
+  };
   function plKey(){ return "study_planner_"+child.name; }
-  function getPlan(){ return LS.get(plKey(),{tt:{},academy:{},supplies:{},notice:""}); }
+  function defaultPlan(name){ const d=DEFAULT_PLAN[name]; if(!d) return {tt:{},academy:{},supplies:{},notice:""}; return { tt:Object.assign({},d.tt), academy:Object.assign({},d.academy), supplies:Object.assign({},d.supplies), notice:d.notice||"" }; }
+  function getPlan(){ const saved=LS.get(plKey(),null); return saved || defaultPlan(child.name); }
   function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
   function openPlanner(){ renderPlanner(); show("planner"); }
   function renderPlanner(){
     const pl=getPlan(); $("plTitle").textContent="📅 "+child.name+" 플래너";
     let th='<thead><tr><th>교시</th>'+PLDAYS.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr></thead><tbody>';
-    for(var pr=1;pr<=6;pr++){ th+='<tr><td>'+pr+'</td>'+PLDAYS.map(function(d){ var v=(pl.tt[d+'-'+pr]||''); return '<td><input class="pl-in" data-tt="'+d+'-'+pr+'" value="'+escAttr(v)+'"></td>'; }).join('')+'</tr>'; }
+    var mpx=6; Object.keys(pl.tt).forEach(function(k){ var p=parseInt((k.split('-')[1]||'0'),10); if(p>mpx)mpx=p; });
+    for(var pr=1;pr<=mpx;pr++){ th+='<tr><td>'+pr+'</td>'+PLDAYS.map(function(d){ var v=(pl.tt[d+'-'+pr]||''); return '<td><input class="pl-in" data-tt="'+d+'-'+pr+'" value="'+escAttr(v)+'"></td>'; }).join('')+'</tr>'; }
     th+='</tbody>'; $("ttTable").innerHTML=th;
     $("acList").innerHTML=PLDAYS.map(function(d){ return '<div class="plrow"><span class="pld">'+d+'</span><input class="pl-in" data-ac="'+d+'" placeholder="예: 영어학원 5시, 수학 7시" value="'+escAttr(pl.academy[d]||'')+'"></div>'; }).join('');
     $("supList").innerHTML=PLDAYS.map(function(d){ return '<div class="plrow"><span class="pld">'+d+'</span><input class="pl-in" data-sup="'+d+'" placeholder="예: 실내화, 리코더" value="'+escAttr(pl.supplies[d]||'')+'"></div>'; }).join('');
