@@ -291,6 +291,7 @@
       <div class="tracks">
         <button class="track kr" data-track="kr"><div class="temo">🇰🇷</div><div><div class="tname">한국 학교 공부</div><div class="tdesc" id="krDesc">지금 학교 진도 · 수학·국어·영어</div></div><div class="tarr">›</div></button>
         <button class="track intl" data-track="intl"><div class="temo">🌍</div><div><div class="tname">국제학교 준비</div><div class="tdesc" id="intlDesc">영어로 · 입학시험 대비</div></div><div class="tarr">›</div></button>
+        <button class="track" data-curric="1"><div class="temo" style="background:var(--good-soft)">📚</div><div><div class="tname">이번 주 학교 진도</div><div class="tdesc">수업 전 예습 요약 · 배운 단원 복습 문제</div></div><div class="tarr">›</div></button>
         <button class="track" data-planner="1"><div class="temo" style="background:var(--accent-soft)">📅</div><div><div class="tname">학교생활 플래너</div><div class="tdesc">시간표 · 학원 · 준비물 · 공지</div></div><div class="tarr">›</div></button>
       </div>
     </div>
@@ -493,6 +494,13 @@
     </div>
     <div id="vietQuiz" class="hidden"></div>
   </div>
+
+  <!-- CURRICULUM (이번 주 학교 진도) -->
+  <div id="curric" class="hidden">
+    <div class="qtop"><button class="back" id="curBack" aria-label="뒤로">←</button><div class="qcount" id="curTitle" style="flex:1">📚 이번 주 학교 진도</div></div>
+    <div id="curBody"></div>
+    <div id="curQuiz" class="hidden"></div>
+  </div>
 </div>
 
 <script>
@@ -500,9 +508,9 @@
   "use strict";
 
   const CHILDREN = [
-    {name:"태운", emo:"👦", g:8,  kGrade:"중2 (2학기)",  intlG:"G8", intlNote:"TAS 대비"},
-    {name:"태희", emo:"👧", g:5,  kGrade:"초5 (2학기)", intlG:"G7", intlNote:"2027.8 입학시험"},
-    {name:"태정", emo:"🧒", g:4,  kGrade:"초4 (2학기)", intlG:"G6", intlNote:"2027.8 입학시험"},
+    {name:"태운", emo:"👦", g:8,  kGrade:"중2 (2학기)",  intlG:"G8", intlNote:"TAS 대비", intlSchool:"TAS"},
+    {name:"태희", emo:"👧", g:5,  kGrade:"초5 (2학기)", intlG:"G7", intlNote:"안힐 대비 (2027.8)", intlSchool:"안힐"},
+    {name:"태정", emo:"🧒", g:4,  kGrade:"초4 (2학기)", intlG:"G6", intlNote:"안힐 대비 (2027.8)", intlSchool:"안힐"},
     {name:"이소니", emo:"👩", adult:true},
     {name:"장지환", emo:"👨", adult:true}
   ];
@@ -744,138 +752,138 @@
     },
     enmath: {
       4: [
-        {u:1, q:"What is 3/5 + 1/5?", c:["4/5","4/10","3/25","2/5"], a:0, e:"📘 '3/5 더하기 1/5은?' 분모가 같으면 분자끼리 더해요: 3+1=4 → 4/5"},
-        {u:1, q:"What is 0.3 + 0.4?", c:["0.7","0.07","7","0.12"], a:0, e:"📘 '0.3 더하기 0.4는?' 소수점 맞춰 더하면 0.7"},
-        {u:1, q:"Which number is the largest?", c:["9,990","9,099","8,999","9,090"], a:0, e:"📘 '어느 수가 가장 큰가요?' 자릿값 비교 → 9,990 (largest=가장 큰)"},
-        {u:1, q:"A triangle with three 60° angles is a(n)…", c:["equilateral triangle","right triangle","obtuse triangle","isosceles triangle"], a:0, e:"📘 '세 각이 모두 60°인 삼각형은?' equilateral triangle = 정삼각형"},
-        {u:1, q:"How many sides does a pentagon have?", c:["5","6","4","8"], a:0, e:"📘 'pentagon(오각형)의 변(side)은 몇 개?' 5개"},
-        {u:1, q:"What is 6 × 7?", c:["42","36","48","13"], a:0, e:"📘 '6 곱하기 7은?' 42"},
-        {u:1, q:"What is 8 × 9?", c:["72","64","81","17"], a:0, e:"📘 '8 곱하기 9는?' 72"},
-        {u:1, q:"What is 45 ÷ 9?", c:["5","6","4","7"], a:0, e:"📘 '45 나누기 9는?' 5"},
-        {u:1, q:"What is 2/7 + 3/7?", c:["5/7","5/14","6/7","1/7"], a:0, e:"📘 분모가 같으면 분자끼리 → 5/7"},
-        {u:1, q:"How many sides does a hexagon have?", c:["6","5","7","8"], a:0, e:"📘 'hexagon(육각형)의 변(side)은?' 6"},
-        {u:1, q:"The sum of the angles in a triangle is…", c:["180°","360°","90°","120°"], a:0, e:"📘 '삼각형 세 각의 합은?' 180°"},
-        {u:1, q:"What is 0.5 + 0.5?", c:["1","0.10","0.55","0.1"], a:0, e:"📘 '0.5 더하기 0.5는?' 1"},
-        {u:1, q:"What is 12 ÷ 4?", c:["3","4","6","8"], a:0, e:"📘 '12 나누기 4는?' 3"},
-        {u:1, q:"How many minutes are in one hour?", c:["60","100","30","24"], a:0, e:"📘 '1시간은 몇 분(minute)?' 60분"},
-        {u:1, q:"What is 1/2 of 10?", c:["5","2","10","20"], a:0, e:"📘 '10의 1/2(절반, half)은?' 5"},
-        {u:1, q:"Which is an even number?", c:["8","7","5","9"], a:0, e:"📘 '짝수(even number)는?' 8"},
-        {u:1, q:"What is 100 − 37?", c:["63","73","67","53"], a:0, e:"📘 '100 빼기 37은?' 63"},
-        {u:1, q:"A square has how many equal sides?", c:["4","3","5","2"], a:0, e:"📘 '정사각형(square)의 같은 변(side)은 몇 개?' 4"},
-        {u:1, q:"What is 25 + 25?", c:["50","40","55","45"], a:0, e:"📘 '25 더하기 25는?' 50"},
-        {u:1, q:"Which is greater, 3/4 or 1/4?", c:["3/4","1/4","equal","cannot tell"], a:0, e:"📘 '3/4과 1/4 중 더 큰(greater) 것은?' 3/4"}
+        {u:1, q:"What is 3/5 + 1/5?", c:["4/5","4/10","3/25","2/5"], a:0, e:"📘 뜻: '3/5 + 1/5?' 분모(아래) 같으면 분자(위)끼리 더해요. | ✅ 3+1=4 → 4/5 | ✗ 4/10=분모까지 더한 실수 / 3/25=분모끼리 곱함 / 2/5=뺀 실수"},
+        {u:1, q:"What is 0.3 + 0.4?", c:["0.7","0.07","7","0.12"], a:0, e:"📘 뜻: '0.3 + 0.4?' 소수점 맞춰 더해요. | ✅ 0.7 | ✗ 0.07=자리 밀림 / 7=소수점 무시 / 0.12=곱한 값(0.3×0.4)"},
+        {u:1, q:"Which number is the largest?", c:["9,990","9,099","8,999","9,090"], a:0, e:"📘 뜻: '가장 큰 수는?' 앞자리부터 비교. | ✅ 9,990(백의 자리 9) | ✗ 9,090·9,099(백의 자리 0) / 8,999(천의 자리 8로 제일 작음)"},
+        {u:1, q:"A triangle with three 60° angles is a(n)…", c:["equilateral triangle","right triangle","obtuse triangle","isosceles triangle"], a:0, e:"📘 뜻: '세 각이 모두 60°인 삼각형은?' | ✅ equilateral=정삼각형(세 각·세 변 같음) | ✗ right=직각(90°) / obtuse=둔각(90°↑) / isosceles=이등변(두 각만 같음)"},
+        {u:1, q:"How many sides does a pentagon have?", c:["5","6","4","8"], a:0, e:"📘 뜻: 'pentagon(오각형)의 변은?' penta=5 | ✅ 5 | ✗ 6=육각형 / 4=사각형 / 8=팔각형"},
+        {u:1, q:"What is 6 × 7?", c:["42","36","48","13"], a:0, e:"📘 뜻: '6×7?' | ✅ 42 | ✗ 36=6×6 / 48=6×8 / 13=6+7(더한 실수)"},
+        {u:1, q:"What is 8 × 9?", c:["72","64","81","17"], a:0, e:"📘 뜻: '8×9?' | ✅ 72 | ✗ 64=8×8 / 81=9×9 / 17=8+9"},
+        {u:1, q:"What is 45 ÷ 9?", c:["5","6","4","7"], a:0, e:"📘 뜻: '45÷9?' 9×5=45 | ✅ 5 | ✗ 6=9×6=54 / 4=9×4=36 / 7=9×7=63"},
+        {u:1, q:"What is 2/7 + 3/7?", c:["5/7","5/14","6/7","1/7"], a:0, e:"📘 뜻: 분모 같으면 분자끼리. | ✅ 2+3=5 → 5/7 | ✗ 5/14=분모까지 더함 / 6/7=분자 곱(2×3) / 1/7=뺀 값"},
+        {u:1, q:"How many sides does a hexagon have?", c:["6","5","7","8"], a:0, e:"📘 뜻: 'hexagon(육각형)' hexa=6 | ✅ 6 | ✗ 5=오각형 / 7=칠각형 / 8=팔각형"},
+        {u:1, q:"The sum of the angles in a triangle is…", c:["180°","360°","90°","120°"], a:0, e:"📘 뜻: '삼각형 세 각의 합은?' | ✅ 180° | ✗ 360°=사각형 / 90°=직각 하나 / 120°=정삼각형 한 각의 2배"},
+        {u:1, q:"What is 0.5 + 0.5?", c:["1","0.10","0.55","0.1"], a:0, e:"📘 뜻: '0.5+0.5?' | ✅ 1 | ✗ 0.10=자리 실수 / 0.55=이어붙임 / 0.1=뺀 느낌"},
+        {u:1, q:"What is 12 ÷ 4?", c:["3","4","6","8"], a:0, e:"📘 뜻: '12÷4?' 4×3=12 | ✅ 3 | ✗ 4=12÷3 / 6=12÷2 / 8=12−4"},
+        {u:1, q:"How many minutes are in one hour?", c:["60","100","30","24"], a:0, e:"📘 뜻: '1시간은 몇 분?' | ✅ 60분 | ✗ 100=십진 착각 / 30=반 시간 / 24=하루 시간 수"},
+        {u:1, q:"What is 1/2 of 10?", c:["5","2","10","20"], a:0, e:"📘 뜻: '10의 1/2(절반)?' 10÷2 | ✅ 5 | ✗ 2=분모만 봄 / 10=그대로 / 20=2배(×2)"},
+        {u:1, q:"Which is an even number?", c:["8","7","5","9"], a:0, e:"📘 뜻: '짝수(2로 나눠지는 수)는?' | ✅ 8 | ✗ 7·5·9=홀수(2로 안 나눠짐)"},
+        {u:1, q:"What is 100 − 37?", c:["63","73","67","53"], a:0, e:"📘 뜻: '100−37?' 받아내림 | ✅ 63 | ✗ 73=100−27 / 67=100−33 / 53=100−47"},
+        {u:1, q:"A square has how many equal sides?", c:["4","3","5","2"], a:0, e:"📘 뜻: '정사각형의 같은 변은?' | ✅ 4(네 변 다 같음) | ✗ 3=삼각형 / 5=오각형 / 2=변 개념 아님"},
+        {u:1, q:"What is 25 + 25?", c:["50","40","55","45"], a:0, e:"📘 뜻: '25+25?' | ✅ 50 | ✗ 40·55·45=자리 더하기 실수"},
+        {u:1, q:"Which is greater, 3/4 or 1/4?", c:["3/4","1/4","equal","cannot tell"], a:0, e:"📘 뜻: '3/4과 1/4 중 큰 것?' 분모 같으면 분자 큰 게 큼 | ✅ 3/4(분자 3) | ✗ 1/4=더 작음 / equal=같지 않음 / cannot tell=비교 가능"}
       ],
       5: [
-        {u:1, q:"What is 1/2 × 1/4?", c:["1/8","2/6","1/6","4/2"], a:0, e:"📘 '1/2 곱하기 1/4은?' 분자끼리·분모끼리 곱해요 → 1/8"},
-        {u:1, q:"Round 3.7 to the nearest whole number.", c:["4","3","3.5","40"], a:0, e:"📘 '3.7을 가장 가까운 자연수로 반올림하면?' 7≥5라 올림 → 4 (round=반올림)"},
-        {u:1, q:"What is 0.6 × 0.5?", c:["0.3","0.11","3","0.35"], a:0, e:"📘 '0.6 곱하기 0.5는?' 6×5=30 → 소수 두 자리 → 0.3"},
-        {u:1, q:"How many faces does a rectangular prism have?", c:["6","8","12","4"], a:0, e:"📘 'rectangular prism(직육면체)의 면(face)은 몇 개?' 6개"},
-        {u:1, q:"The average of 80, 90, and 85 is…", c:["85","80","90","88"], a:0, e:"📘 '80, 90, 85의 평균(average)은?' (80+90+85)÷3 = 85"},
-        {u:1, q:"What is 2/3 × 6?", c:["4","9","2/18","12/3"], a:0, e:"📘 '2/3 곱하기 6은?' 12/3 = 4"},
-        {u:1, q:"What is 3/4 × 8?", c:["6","12","24","2"], a:0, e:"📘 '3/4 곱하기 8은?' 24/4 = 6"},
-        {u:1, q:"What is 0.2 × 0.3?", c:["0.06","0.6","0.5","0.006"], a:0, e:"📘 '0.2 곱하기 0.3은?' 0.06"},
-        {u:1, q:"How many edges does a cube have?", c:["12","6","8","4"], a:0, e:"📘 'cube(정육면체)의 모서리(edge)는?' 12"},
-        {u:1, q:"The average of 70, 80, and 90 is…", c:["80","70","90","240"], a:0, e:"📘 평균 (70+80+90)÷3 = 80"},
-        {u:1, q:"What is 1/3 × 1/2?", c:["1/6","2/5","1/5","3/2"], a:0, e:"📘 분자·분모끼리 곱 → 1/6"},
-        {u:1, q:"Round 4.5 to the nearest whole number.", c:["5","4","4.5","45"], a:0, e:"📘 반올림 → 5"},
-        {u:1, q:"What is 20% of 50?", c:["10","20","5","25"], a:0, e:"📘 '50의 20%는?' 50×0.2 = 10"},
-        {u:1, q:"What is the area of a rectangle 4 by 5?", c:["20","9","18","45"], a:0, e:"📘 '가로4 세로5 직사각형의 넓이(area)?' 4×5 = 20"},
-        {u:1, q:"What is 3.2 − 1.5?", c:["1.7","1.3","2.7","1.8"], a:0, e:"📘 '3.2 빼기 1.5는?' 1.7"},
-        {u:1, q:"Which fraction equals 0.5?", c:["1/2","1/3","1/4","2/3"], a:0, e:"📘 '0.5와 같은 분수(fraction)?' 1/2"},
-        {u:1, q:"What is 7²?", c:["49","14","21","64"], a:0, e:"📘 '7의 제곱(squared)?' 49"},
-        {u:1, q:"The perimeter of a square with side 6 is…", c:["24","36","12","18"], a:0, e:"📘 '한 변(side) 6인 정사각형 둘레(perimeter)?' 4×6 = 24"},
-        {u:1, q:"What is 144 ÷ 12?", c:["12","14","11","24"], a:0, e:"📘 '144 나누기 12는?' 12"},
-        {u:1, q:"Convert 1/4 to a decimal.", c:["0.25","0.4","0.14","0.5"], a:0, e:"📘 '1/4을 소수(decimal)로?' 0.25"}
+        {u:1, q:"What is 1/2 × 1/4?", c:["1/8","2/6","1/6","4/2"], a:0, e:"📘 뜻: '1/2 × 1/4?' 분수 곱은 위끼리·아래끼리. | ✅ 1×1 / 2×4 = 1/8 | ✗ 2/6=더한 느낌 / 1/6=분모만 더함(2+4) / 4/2=뒤집음"},
+        {u:1, q:"Round 3.7 to the nearest whole number.", c:["4","3","3.5","40"], a:0, e:"📘 뜻: '3.7 반올림?' 소수 첫자리 7≥5 → 올림 | ✅ 4 | ✗ 3=버림 / 3.5=반올림 아님 / 40=자리 실수"},
+        {u:1, q:"What is 0.6 × 0.5?", c:["0.3","0.11","3","0.35"], a:0, e:"📘 뜻: '0.6×0.5?' 6×5=30, 소수 두 자리 | ✅ 0.30(=0.3) | ✗ 0.11=더한 값 / 3=소수점 무시 / 0.35=자리 실수"},
+        {u:1, q:"How many faces does a rectangular prism have?", c:["6","8","12","4"], a:0, e:"📘 뜻: '직육면체(prism)의 면(face)?' | ✅ 6 | ✗ 8=꼭짓점 수 / 12=모서리 수 / 4=옆면만"},
+        {u:1, q:"The average of 80, 90, and 85 is…", c:["85","80","90","88"], a:0, e:"📘 뜻: '평균?' 합÷개수 = 255÷3 | ✅ 85 | ✗ 80·90=가운데 아님 / 88=계산 실수"},
+        {u:1, q:"What is 2/3 × 6?", c:["4","9","2/18","12/3"], a:0, e:"📘 뜻: '2/3 × 6?' 2×6/3 = 12/3 | ✅ 4 | ✗ 9=엉뚱 / 2/18=6을 분모에 / 12/3=약분 안 함(=4지만 미완성)"},
+        {u:1, q:"What is 3/4 × 8?", c:["6","12","24","2"], a:0, e:"📘 뜻: '3/4 × 8?' 3×8/4 = 24/4 | ✅ 6 | ✗ 12=반만 계산 / 24=약분 안 함 / 2=엉뚱"},
+        {u:1, q:"What is 0.2 × 0.3?", c:["0.06","0.6","0.5","0.006"], a:0, e:"📘 뜻: '0.2×0.3?' 2×3=6, 소수 두 자리 | ✅ 0.06 | ✗ 0.6=자리 하나 / 0.5=더한 값 / 0.006=자리 셋"},
+        {u:1, q:"How many edges does a cube have?", c:["12","6","8","4"], a:0, e:"📘 뜻: '정육면체(cube)의 모서리(edge)?' | ✅ 12 | ✗ 6=면 수 / 8=꼭짓점 수 / 4=한 면의 변"},
+        {u:1, q:"The average of 70, 80, and 90 is…", c:["80","70","90","240"], a:0, e:"📘 뜻: '평균?' (70+80+90)÷3 = 240÷3 | ✅ 80 | ✗ 70·90=끝값 / 240=합(안 나눔)"},
+        {u:1, q:"What is 1/3 × 1/2?", c:["1/6","2/5","1/5","3/2"], a:0, e:"📘 뜻: 위끼리·아래끼리 곱 | ✅ 1/6 | ✗ 2/5·1/5=분모 더함 / 3/2=뒤집음"},
+        {u:1, q:"Round 4.5 to the nearest whole number.", c:["5","4","4.5","45"], a:0, e:"📘 뜻: '4.5 반올림?' .5는 올림 | ✅ 5 | ✗ 4=버림 / 4.5=그대로 / 45=자리 실수"},
+        {u:1, q:"What is 20% of 50?", c:["10","20","5","25"], a:0, e:"📘 뜻: '50의 20%?' 50×0.2 | ✅ 10 | ✗ 20=%값 그대로 / 5=10% / 25=50%"},
+        {u:1, q:"What is the area of a rectangle 4 by 5?", c:["20","9","18","45"], a:0, e:"📘 뜻: '넓이=가로×세로' 4×5 | ✅ 20 | ✗ 9=4+5 / 18=둘레((4+5)×2) / 45=붙여 읽음"},
+        {u:1, q:"What is 3.2 − 1.5?", c:["1.7","1.3","2.7","1.8"], a:0, e:"📘 뜻: '3.2−1.5?' 받아내림 | ✅ 1.7 | ✗ 1.3=받아내림 실수 / 2.7=3.2−0.5 / 1.8=반올림 실수"},
+        {u:1, q:"Which fraction equals 0.5?", c:["1/2","1/3","1/4","2/3"], a:0, e:"📘 뜻: '0.5와 같은 분수?' 반=1/2 | ✅ 1/2 | ✗ 1/3≈0.33 / 1/4=0.25 / 2/3≈0.67"},
+        {u:1, q:"What is 7²?", c:["49","14","21","64"], a:0, e:"📘 뜻: '7²=7×7' | ✅ 49 | ✗ 14=7×2(제곱 아님) / 21=7×3 / 64=8²"},
+        {u:1, q:"The perimeter of a square with side 6 is…", c:["24","36","12","18"], a:0, e:"📘 뜻: '정사각형 둘레=변×4' 6×4 | ✅ 24 | ✗ 36=6²(넓이) / 12=6×2 / 18=6×3"},
+        {u:1, q:"What is 144 ÷ 12?", c:["12","14","11","24"], a:0, e:"📘 뜻: '144÷12?' 12×12=144 | ✅ 12 | ✗ 14·11=근처 오답 / 24=144÷6"},
+        {u:1, q:"Convert 1/4 to a decimal.", c:["0.25","0.4","0.14","0.5"], a:0, e:"📘 뜻: '1/4을 소수로?' 1÷4 | ✅ 0.25 | ✗ 0.4=엉뚱 / 0.14=자리 실수 / 0.5=1/2"}
       ],
       8: [
-        {u:1, q:"Solve: 2x + 3 = 11. x = ?", c:["4","7","3","5"], a:0, e:"📘 '2x+3=11을 풀면(solve) x는?' 2x=8 → x=4"},
-        {u:1, q:"What is 2³ × 2² ?", c:["32","64","16","8"], a:0, e:"📘 '2의 세제곱 × 2의 제곱은?' 지수를 더해요 → 2⁵=32"},
-        {u:1, q:"A right triangle has a 90° angle. If another angle is 30°, the third is…", c:["60°","30°","90°","45°"], a:0, e:"📘 '직각삼각형(right triangle)에 90°와 30°가 있으면 나머지 각은?' 180−90−30 = 60°"},
-        {u:1, q:"Simplify: 3(x + 2) = ?", c:["3x + 6","3x + 2","x + 6","3x"], a:0, e:"📘 '3(x+2)를 전개(simplify)하면?' 분배법칙 → 3x+6"},
-        {u:1, q:"What is 15% of 200?", c:["30","15","20","45"], a:0, e:"📘 '200의 15%는?' 200×0.15 = 30 (percent=백분율)"},
-        {u:1, q:"The perimeter of a square with side 5 is…", c:["20","25","10","15"], a:0, e:"📘 '한 변(side)이 5인 정사각형의 둘레(perimeter)는?' 4×5 = 20"},
-        {u:1, q:"Solve: 3x = 12. x = ?", c:["4","3","6","9"], a:0, e:"📘 x = 12÷3 = 4"},
-        {u:1, q:"What is 3² + 4²?", c:["25","49","12","7"], a:0, e:"📘 9+16 = 25"},
-        {u:1, q:"What is 10% of 50?", c:["5","10","15","50"], a:0, e:"📘 '50의 10%는?' 5"},
-        {u:1, q:"A cube has ___ faces.", c:["6","8","12","4"], a:0, e:"📘 정육면체(cube)의 면(face)은 6"},
-        {u:1, q:"If y = 3x and x = 5, then y = ?", c:["15","8","35","53"], a:0, e:"📘 3×5 = 15"},
-        {u:1, q:"The perimeter of a rectangle 4 by 6 is…", c:["20","24","10","12"], a:0, e:"📘 둘레 (4+6)×2 = 20"},
-        {u:1, q:"Solve: x/2 = 6. x = ?", c:["12","3","8","4"], a:0, e:"📘 'x를 2로 나눈 값이 6이면 x는?' x = 12"},
-        {u:1, q:"What is the slope of y = 2x + 1?", c:["2","1","3","0"], a:0, e:"📘 '기울기(slope)는?' x의 계수 → 2"},
-        {u:1, q:"Simplify: 2x + 3x = ?", c:["5x","6x","5","x"], a:0, e:"📘 '동류항끼리 더하면?' 5x"},
-        {u:1, q:"What is √64?", c:["8","6","16","32"], a:0, e:"📘 '64의 제곱근(square root)?' 8"},
-        {u:1, q:"20 is what percent of 80?", c:["25%","20%","40%","30%"], a:0, e:"📘 '20은 80의 몇 %?' 20÷80 = 0.25 → 25%"},
-        {u:1, q:"The area of a triangle with base 6, height 4 is…", c:["12","24","10","18"], a:0, e:"📘 '삼각형 넓이 = 밑변×높이÷2' = 6×4÷2 = 12"},
-        {u:1, q:"Solve: 5x − 2 = 13. x = ?", c:["3","5","2","4"], a:0, e:"📘 5x = 15 → x = 3"},
-        {u:1, q:"What is (−3)²?", c:["9","-9","6","-6"], a:0, e:"📘 '음수의 제곱' (−3)×(−3) = 9"}
+        {u:1, q:"Solve: 2x + 3 = 11. x = ?", c:["4","7","3","5"], a:0, e:"📘 뜻: '2x+3=11 풀기' 양변−3 → 2x=8 → ÷2 | ✅ x=4 | ✗ 7=11−4 / 3=엉뚱 / 5=계산 실수"},
+        {u:1, q:"What is 2³ × 2² ?", c:["32","64","16","8"], a:0, e:"📘 뜻: '2³×2²' 밑 같으면 지수 더함(3+2=5) → 2⁵ | ✅ 32 | ✗ 64=2⁶(지수 곱함) / 16=2⁴ / 8=2³"},
+        {u:1, q:"A right triangle has a 90° angle. If another angle is 30°, the third is…", c:["60°","30°","90°","45°"], a:0, e:"📘 뜻: 세 각 합 180. 180−90−30 | ✅ 60° | ✗ 30=같은 각 반복 / 90=직각 반복 / 45=엉뚱"},
+        {u:1, q:"Simplify: 3(x + 2) = ?", c:["3x + 6","3x + 2","x + 6","3x"], a:0, e:"📘 뜻: '3(x+2) 전개' 분배법칙 3×x + 3×2 | ✅ 3x+6 | ✗ 3x+2=2에 안 곱함 / x+6=x에 안 곱함 / 3x=+6 빠짐"},
+        {u:1, q:"What is 15% of 200?", c:["30","15","20","45"], a:0, e:"📘 뜻: '200의 15%?' 200×0.15 | ✅ 30 | ✗ 15=%값 그대로 / 20=10% / 45=엉뚱"},
+        {u:1, q:"The perimeter of a square with side 5 is…", c:["20","25","10","15"], a:0, e:"📘 뜻: '정사각형 둘레=변×4' 5×4 | ✅ 20 | ✗ 25=5²(넓이) / 10=5×2 / 15=5×3"},
+        {u:1, q:"Solve: 3x = 12. x = ?", c:["4","3","6","9"], a:0, e:"📘 뜻: 'x=12÷3' | ✅ 4 | ✗ 3=12÷4 / 6=12÷2 / 9=12−3"},
+        {u:1, q:"What is 3² + 4²?", c:["25","49","12","7"], a:0, e:"📘 뜻: '3²+4²' 9+16 | ✅ 25 | ✗ 49=(3+4)² / 12=3×4 / 7=3+4"},
+        {u:1, q:"What is 10% of 50?", c:["5","10","15","50"], a:0, e:"📘 뜻: '50의 10%?' 50×0.1 | ✅ 5 | ✗ 10=%값 / 15=엉뚱 / 50=그대로"},
+        {u:1, q:"A cube has ___ faces.", c:["6","8","12","4"], a:0, e:"📘 뜻: '정육면체(cube)의 면?' | ✅ 6 | ✗ 8=꼭짓점 / 12=모서리 / 4=옆면"},
+        {u:1, q:"If y = 3x and x = 5, then y = ?", c:["15","8","35","53"], a:0, e:"📘 뜻: 'y=3×5' | ✅ 15 | ✗ 8=3+5 / 35·53=붙여 읽음"},
+        {u:1, q:"The perimeter of a rectangle 4 by 6 is…", c:["20","24","10","12"], a:0, e:"📘 뜻: '둘레=(가로+세로)×2' (4+6)×2 | ✅ 20 | ✗ 24=4×6(넓이) / 10=한 번만 더함 / 12=6×2"},
+        {u:1, q:"Solve: x/2 = 6. x = ?", c:["12","3","8","4"], a:0, e:"📘 뜻: 'x÷2=6' 양변×2 | ✅ x=12 | ✗ 3=6÷2 / 8·4=엉뚱"},
+        {u:1, q:"What is the slope of y = 2x + 1?", c:["2","1","3","0"], a:0, e:"📘 뜻: 'y=ax+b'에서 기울기=a(x의 계수) | ✅ 2 | ✗ 1=y절편(b) / 3=2+1 / 0=상수 아님"},
+        {u:1, q:"Simplify: 2x + 3x = ?", c:["5x","6x","5","x"], a:0, e:"📘 뜻: '같은 문자끼리(동류항)' 2+3 | ✅ 5x | ✗ 6x=곱함(2×3) / 5=x 빠짐 / x=엉뚱"},
+        {u:1, q:"What is √64?", c:["8","6","16","32"], a:0, e:"📘 뜻: '제곱해서 64 되는 수' 8×8=64 | ✅ 8 | ✗ 6=6²=36 / 16=64÷4 / 32=64÷2"},
+        {u:1, q:"20 is what percent of 80?", c:["25%","20%","40%","30%"], a:0, e:"📘 뜻: '20은 80의 몇 %?' 20÷80=0.25 | ✅ 25% | ✗ 20%=값 그대로 / 40%=32÷80 / 30%=24÷80"},
+        {u:1, q:"The area of a triangle with base 6, height 4 is…", c:["12","24","10","18"], a:0, e:"📘 뜻: '삼각형 넓이=밑변×높이÷2' 6×4÷2 | ✅ 12 | ✗ 24=÷2 빠짐 / 10=6+4 / 18=엉뚱"},
+        {u:1, q:"Solve: 5x − 2 = 13. x = ?", c:["3","5","2","4"], a:0, e:"📘 뜻: 양변+2 → 5x=15 → ÷5 | ✅ x=3 | ✗ 5=엉뚱 / 2=엉뚱 / 4=계산 실수"},
+        {u:1, q:"What is (−3)²?", c:["9","-9","6","-6"], a:0, e:"📘 뜻: '(−3)²=(−3)×(−3)' 음수×음수=양수 | ✅ 9 | ✗ −9=부호 실수 / 6=−3×−2 / −6=−3×2"}
       ]
     },
     enread: {
       4: [
-        {u:1, q:"I ___ a book every night.", c:["read","reads","reading","readed"], a:0, e:"📘 '나는 매일 밤 책을 ___.' 주어 I 뒤엔 read(읽다)"},
-        {u:1, q:"What is the opposite of 'big'?", c:["small","tall","long","fast"], a:0, e:"📘 ''big(큰)'의 반대말은?' small(작은)"},
-        {u:1, q:"one cat, two ___ .", c:["cats","cat","cates","cat's"], a:0, e:"📘 '고양이 한 마리, 두 ___.' 복수형 cats"},
-        {u:1, q:"Which word is a color?", c:["yellow","apple","run","happy"], a:0, e:"📘 '색깔을 나타내는 단어는?' yellow(노랑)"},
-        {u:1, q:"She ___ to school every day.", c:["goes","go","going","gone"], a:0, e:"📘 '그녀는 매일 학교에 ___.' She 뒤엔 goes(간다)"},
-        {u:1, q:"Read: 'Tom has a red ball.' What color is the ball?", c:["red","blue","green","yellow"], a:0, e:"📘 지문: '톰은 빨간 공을 가지고 있다.' 공의 색은? red(빨강)"},
-        {u:1, q:"I ___ happy today.", c:["am","is","are","be"], a:0, e:"📘 'I 뒤엔 am'"},
-        {u:1, q:"What is the opposite of 'hot'?", c:["cold","warm","cool","fire"], a:0, e:"📘 hot(뜨거운) ↔ cold(차가운)"},
-        {u:1, q:"one dog, two ___ .", c:["dogs","dog","doges","dog's"], a:0, e:"📘 복수형 dogs"},
-        {u:1, q:"Which word is an animal?", c:["cat","apple","red","run"], a:0, e:"📘 cat = 고양이(동물)"},
-        {u:1, q:"He ___ a book. (읽다)", c:["reads","read","reading","readed"], a:0, e:"📘 He 뒤엔 reads"},
-        {u:1, q:"Read: 'The sky is blue.' What color is the sky?", c:["blue","red","green","pink"], a:0, e:"📘 지문: '하늘은 파랗다' → blue"},
-        {u:1, q:"What is the opposite of 'up'?", c:["down","top","high","over"], a:0, e:"📘 up(위) ↔ down(아래)"},
-        {u:1, q:"Which word means a place to learn?", c:["school","car","apple","dog"], a:0, e:"📘 'school = 배우는 곳(학교)'"},
-        {u:1, q:"We ___ friends.", c:["are","is","am","be"], a:0, e:"📘 'We 뒤엔 are'"},
-        {u:1, q:"one box, two ___ .", c:["boxes","boxs","box","boxies"], a:0, e:"📘 '-x로 끝나면 -es → boxes'"},
-        {u:1, q:"Read: 'Ann has a big dog.' Is the dog big or small?", c:["big","small","tall","fast"], a:0, e:"📘 지문: '앤은 큰 개가 있다' → big"},
-        {u:1, q:"Which is a number word?", c:["three","green","run","cat"], a:0, e:"📘 three = 숫자 3"},
-        {u:1, q:"The opposite of 'day' is…", c:["night","sun","morning","noon"], a:0, e:"📘 day(낮) ↔ night(밤)"},
-        {u:1, q:"I like ___ apple.", c:["an","a","two","much"], a:0, e:"📘 '모음 소리 앞엔 an → an apple'"}
+        {u:1, q:"I ___ a book every night.", c:["read","reads","reading","readed"], a:0, e:"📘 뜻: '나는 매일 밤 책을 읽어요.' | ✅ read: I·you·we·they 뒤엔 동사원형 | ✗ reads=he/she(3인칭)일 때 / reading=진행형(am reading처럼 be동사 필요) / readed=없는 단어(read의 과거도 read)"},
+        {u:1, q:"What is the opposite of 'big'?", c:["small","tall","long","fast"], a:0, e:"📘 뜻: 'big(큰)의 반대말은?' | ✅ small=작은 | ✗ tall=키 큰 / long=긴 / fast=빠른 (크기의 반대가 아님)"},
+        {u:1, q:"one cat, two ___ .", c:["cats","cat","cates","cat's"], a:0, e:"📘 뜻: '고양이 한 마리, 두 ___.' 둘이라 복수 | ✅ cats=규칙복수(-s) | ✗ cat=단수 / cates=틀린 철자 / cat's=소유격('고양이의')"},
+        {u:1, q:"Which word is a color?", c:["yellow","apple","run","happy"], a:0, e:"📘 뜻: '색깔 단어는?' | ✅ yellow=노랑 | ✗ apple=사과(과일) / run=달리다(동사) / happy=행복한(기분)"},
+        {u:1, q:"She ___ to school every day.", c:["goes","go","going","gone"], a:0, e:"📘 뜻: '그녀는 매일 학교에 가요.' 주어 She(3인칭) | ✅ goes=go+es | ✗ go=I/you/we용 / going=진행형(be 필요) / gone=과거분사(has gone)"},
+        {u:1, q:"Read: 'Tom has a red ball.' What color is the ball?", c:["red","blue","green","yellow"], a:0, e:"📘 지문 뜻: '톰은 빨간 공을 가지고 있다.' | ✅ red=지문에 나온 색 | ✗ blue·green·yellow=지문에 없는 색"},
+        {u:1, q:"I ___ happy today.", c:["am","is","are","be"], a:0, e:"📘 뜻: '나는 오늘 행복해요.' | ✅ am=주어 I 전용 be동사 | ✗ is=he/she/it용 / are=you/we/they용 / be=원형(그대로 못 씀)"},
+        {u:1, q:"What is the opposite of 'hot'?", c:["cold","warm","cool","fire"], a:0, e:"📘 뜻: 'hot(뜨거운)의 반대말은?' | ✅ cold=차가운 | ✗ warm=따뜻한 / cool=시원한(둘 다 중간) / fire=불(명사)"},
+        {u:1, q:"one dog, two ___ .", c:["dogs","dog","doges","dog's"], a:0, e:"📘 뜻: '개 한 마리, 두 ___.' 복수 | ✅ dogs=-s 복수 | ✗ dog=단수 / doges=틀린 철자 / dog's=소유격"},
+        {u:1, q:"Which word is an animal?", c:["cat","apple","red","run"], a:0, e:"📘 뜻: '동물 단어는?' | ✅ cat=고양이 | ✗ apple=과일 / red=색 / run=동사"},
+        {u:1, q:"He ___ a book. (읽다)", c:["reads","read","reading","readed"], a:0, e:"📘 뜻: '그는 책을 읽어요.' 주어 He(3인칭) | ✅ reads=read+s | ✗ read=I/you용 / reading=진행형 / readed=없는 단어"},
+        {u:1, q:"Read: 'The sky is blue.' What color is the sky?", c:["blue","red","green","pink"], a:0, e:"📘 지문 뜻: '하늘은 파랗다.' | ✅ blue=파랑 | ✗ red·green·pink=지문에 없는 색"},
+        {u:1, q:"What is the opposite of 'up'?", c:["down","top","high","over"], a:0, e:"📘 뜻: 'up(위)의 반대말은?' | ✅ down=아래 | ✗ top=꼭대기 / high=높은 / over=위로/넘어(방향 반대 아님)"},
+        {u:1, q:"Which word means a place to learn?", c:["school","car","apple","dog"], a:0, e:"📘 뜻: '배우는 장소는?' | ✅ school=학교 | ✗ car=차 / apple=사과 / dog=개(장소가 아님)"},
+        {u:1, q:"We ___ friends.", c:["are","is","am","be"], a:0, e:"📘 뜻: '우리는 친구예요.' 주어 We | ✅ are=we/you/they용 | ✗ is=단수 he/she용 / am=I 전용 / be=원형"},
+        {u:1, q:"one box, two ___ .", c:["boxes","boxs","box","boxies"], a:0, e:"📘 뜻: '상자 한 개, 두 ___.' | ✅ boxes=-x로 끝나면 -es | ✗ boxs=틀린 철자 / box=단수 / boxies=없는 단어"},
+        {u:1, q:"Read: 'Ann has a big dog.' Is the dog big or small?", c:["big","small","tall","fast"], a:0, e:"📘 지문 뜻: '앤은 큰 개가 있다.' | ✅ big=큰 | ✗ small=작은(반대) / tall·fast=지문에 없음"},
+        {u:1, q:"Which is a number word?", c:["three","green","run","cat"], a:0, e:"📘 뜻: '숫자 단어는?' | ✅ three=3 | ✗ green=색 / run=동사 / cat=동물"},
+        {u:1, q:"The opposite of 'day' is…", c:["night","sun","morning","noon"], a:0, e:"📘 뜻: 'day(낮)의 반대말은?' | ✅ night=밤 | ✗ sun=해 / morning=아침 / noon=정오(낮의 일부, 반대 아님)"},
+        {u:1, q:"I like ___ apple.", c:["an","a","two","much"], a:0, e:"📘 뜻: '나는 사과를 좋아해요.' | ✅ an=모음 소리(a·e·i·o·u) 앞엔 an | ✗ a=자음 앞에(a book) / two=두 개(뜻 바뀜) / much=셀 수 없는 것에(much water)"}
       ],
       5: [
-        {u:1, q:"Yesterday I ___ to the park.", c:["went","go","goes","going"], a:0, e:"📘 '어제 나는 공원에 ___.' 과거형 went(갔다)"},
-        {u:1, q:"What is the opposite of 'begin'?", c:["end","start","open","run"], a:0, e:"📘 ''begin(시작하다)'의 반대말은?' end(끝나다)"},
-        {u:1, q:"They ___ playing soccer now.", c:["are","is","am","be"], a:0, e:"📘 '그들은 지금 축구를 하고 있다.' They 뒤엔 are"},
-        {u:1, q:"Which sentence is correct?", c:["He is my friend.","He are my friend.","He am my friend.","He be my friend."], a:0, e:"📘 '올바른 문장은?' He 뒤엔 is → 'He is my friend.'(그는 내 친구다)"},
-        {u:1, q:"What does 'happy' mean?", c:["기쁜","슬픈","화난","피곤한"], a:0, e:"📘 ''happy'의 뜻은?' 기쁜·행복한"},
-        {u:1, q:"Read: 'Mia likes apples and bananas.' What does Mia like?", c:["fruit","cars","books","shoes"], a:0, e:"📘 지문: '미아는 사과와 바나나를 좋아한다.' 좋아하는 것은? fruit(과일)"},
-        {u:1, q:"Yesterday she ___ home. (오다)", c:["came","come","comes","coming"], a:0, e:"📘 과거형 came"},
-        {u:1, q:"What is the opposite of 'fast'?", c:["slow","quick","run","speed"], a:0, e:"📘 fast(빠른) ↔ slow(느린)"},
-        {u:1, q:"He ___ playing now.", c:["is","are","am","be"], a:0, e:"📘 He 뒤엔 is"},
-        {u:1, q:"Which sentence is correct?", c:["I am a student.","I are a student.","I is a student.","I be a student."], a:0, e:"📘 I 뒤엔 am → 'I am a student.'"},
-        {u:1, q:"What does 'sad' mean?", c:["슬픈","기쁜","화난","배고픈"], a:0, e:"📘 sad = 슬픈"},
-        {u:1, q:"Read: 'Sam has three pens.' How many pens?", c:["three","two","one","four"], a:0, e:"📘 지문: '샘은 펜 세 개가 있다' → three"},
-        {u:1, q:"Choose the past tense: I ___ my lunch.", c:["ate","eat","eats","eaten"], a:0, e:"📘 '과거형: 먹었다 → ate'"},
-        {u:1, q:"What does 'quickly' mean?", c:["빠르게","천천히","조용히","크게"], a:0, e:"📘 quickly = 빠르게"},
-        {u:1, q:"Read: 'The cat sat under the table.' Where is the cat?", c:["under the table","on the table","in the box","near the door"], a:0, e:"📘 지문: '고양이가 탁자 아래 앉았다' → under the table(아래에)"},
-        {u:1, q:"Which sentence is correct?", c:["She has a pen.","She have a pen.","She having a pen.","She haves a pen."], a:0, e:"📘 'She 뒤엔 has → She has a pen.'"},
-        {u:1, q:"The opposite of 'open' is…", c:["close","start","push","turn"], a:0, e:"📘 open(열다) ↔ close(닫다)"},
-        {u:1, q:"We ___ to music yesterday.", c:["listened","listen","listens","listening"], a:0, e:"📘 '과거형: 들었다 → listened'"},
-        {u:1, q:"What does 'brave' mean?", c:["용감한","친절한","슬픈","배고픈"], a:0, e:"📘 brave = 용감한"},
-        {u:1, q:"Read: 'Ben runs faster than Tom.' Who is faster?", c:["Ben","Tom","both","neither"], a:0, e:"📘 지문: '벤이 톰보다 빠르다' → Ben (faster=더 빠른)"}
+        {u:1, q:"Yesterday I ___ to the park.", c:["went","go","goes","going"], a:0, e:"📘 뜻: '어제 나는 공원에 갔어요.' yesterday=과거 신호 | ✅ went=go의 과거형 | ✗ go=현재원형 / goes=3인칭 현재 / going=진행형(be 필요)"},
+        {u:1, q:"What is the opposite of 'begin'?", c:["end","start","open","run"], a:0, e:"📘 뜻: 'begin(시작하다)의 반대말은?' | ✅ end=끝나다 | ✗ start=시작하다(같은 뜻!) / open=열다 / run=달리다"},
+        {u:1, q:"They ___ playing soccer now.", c:["are","is","am","be"], a:0, e:"📘 뜻: '그들은 지금 축구를 하고 있다.' now+진행 | ✅ are=They용 be동사 | ✗ is=단수 / am=I 전용 / be=원형"},
+        {u:1, q:"Which sentence is correct?", c:["He is my friend.","He are my friend.","He am my friend.","He be my friend."], a:0, e:"📘 뜻: '그는 내 친구다.' He=단수 3인칭 | ✅ He is | ✗ He are(are는 복수) / He am(am은 I만) / He be(원형은 못 씀)"},
+        {u:1, q:"What does 'happy' mean?", c:["기쁜","슬픈","화난","피곤한"], a:0, e:"📘 뜻: 'happy'는? | ✅ 기쁜·행복한 | ✗ 슬픈=sad / 화난=angry / 피곤한=tired"},
+        {u:1, q:"Read: 'Mia likes apples and bananas.' What does Mia like?", c:["fruit","cars","books","shoes"], a:0, e:"📘 지문 뜻: '미아는 사과와 바나나를 좋아한다.' 둘 다 과일 | ✅ fruit=과일 | ✗ cars·books·shoes=지문에 없음"},
+        {u:1, q:"Yesterday she ___ home. (오다)", c:["came","come","comes","coming"], a:0, e:"📘 뜻: '어제 그녀는 집에 왔어요.' yesterday=과거 | ✅ came=come의 과거 | ✗ come=원형 / comes=3인칭 현재 / coming=진행형"},
+        {u:1, q:"What is the opposite of 'fast'?", c:["slow","quick","run","speed"], a:0, e:"📘 뜻: 'fast(빠른)의 반대말은?' | ✅ slow=느린 | ✗ quick=빠른(같은 뜻) / run=달리다 / speed=속도(명사)"},
+        {u:1, q:"He ___ playing now.", c:["is","are","am","be"], a:0, e:"📘 뜻: '그는 지금 놀고 있다.' He=단수+진행 | ✅ is | ✗ are=복수 / am=I 전용 / be=원형"},
+        {u:1, q:"Which sentence is correct?", c:["I am a student.","I are a student.","I is a student.","I be a student."], a:0, e:"📘 뜻: '나는 학생이다.' 주어 I | ✅ I am | ✗ I are·I is·I be = I에는 am만 써요"},
+        {u:1, q:"What does 'sad' mean?", c:["슬픈","기쁜","화난","배고픈"], a:0, e:"📘 뜻: 'sad'는? | ✅ 슬픈 | ✗ 기쁜=happy / 화난=angry / 배고픈=hungry"},
+        {u:1, q:"Read: 'Sam has three pens.' How many pens?", c:["three","two","one","four"], a:0, e:"📘 지문 뜻: '샘은 펜 세 개가 있다.' | ✅ three=3 | ✗ two·one·four=지문 숫자와 다름"},
+        {u:1, q:"Choose the past tense: I ___ my lunch.", c:["ate","eat","eats","eaten"], a:0, e:"📘 뜻: '나는 점심을 먹었다.'(과거) | ✅ ate=eat의 과거 | ✗ eat=현재원형 / eats=3인칭 현재 / eaten=과거분사(have eaten)"},
+        {u:1, q:"What does 'quickly' mean?", c:["빠르게","천천히","조용히","크게"], a:0, e:"📘 뜻: 'quickly'는?(부사) | ✅ 빠르게 | ✗ 천천히=slowly / 조용히=quietly / 크게=loudly"},
+        {u:1, q:"Read: 'The cat sat under the table.' Where is the cat?", c:["under the table","on the table","in the box","near the door"], a:0, e:"📘 지문 뜻: '고양이가 탁자 아래 앉았다.' under=아래 | ✅ under the table | ✗ on the table=위(반대) / in the box·near the door=지문에 없음"},
+        {u:1, q:"Which sentence is correct?", c:["She has a pen.","She have a pen.","She having a pen.","She haves a pen."], a:0, e:"📘 뜻: '그녀는 펜이 있다.' She=3인칭 | ✅ She has | ✗ have=I/you/we용 / having=진행형 / haves=없는 단어"},
+        {u:1, q:"The opposite of 'open' is…", c:["close","start","push","turn"], a:0, e:"📘 뜻: 'open(열다)의 반대말은?' | ✅ close=닫다 | ✗ start=시작하다 / push=밀다 / turn=돌다"},
+        {u:1, q:"We ___ to music yesterday.", c:["listened","listen","listens","listening"], a:0, e:"📘 뜻: '우리는 어제 음악을 들었다.' yesterday=과거 | ✅ listened=규칙과거(-ed) | ✗ listen=현재 / listens=3인칭 / listening=진행형"},
+        {u:1, q:"What does 'brave' mean?", c:["용감한","친절한","슬픈","배고픈"], a:0, e:"📘 뜻: 'brave'는? | ✅ 용감한 | ✗ 친절한=kind / 슬픈=sad / 배고픈=hungry"},
+        {u:1, q:"Read: 'Ben runs faster than Tom.' Who is faster?", c:["Ben","Tom","both","neither"], a:0, e:"📘 지문 뜻: '벤이 톰보다 더 빠르다.' faster than=~보다 빠른 | ✅ Ben=더 빠름 | ✗ Tom=더 느림 / both=둘 다 아님 / neither=둘 다 아닌 것도 아님"}
       ],
       8: [
-        {u:1, q:"Choose the best word: The plan was a great ___.", c:["success","successful","succeed","successfully"], a:0, e:"📘 '그 계획은 큰 ___였다.' 명사 자리 → success(성공)"},
-        {u:1, q:"What is the opposite of 'ancient'?", c:["modern","old","past","history"], a:0, e:"📘 ''ancient(고대의)'의 반대말은?' modern(현대의)"},
-        {u:1, q:"Read: 'Despite the rain, they finished the game.' They finished the game…", c:["even though it rained","because of the rain","before the rain","without a game"], a:0, e:"📘 지문: '비에도 불구하고 그들은 경기를 끝냈다.' → even though it rained. despite=~에도 불구하고"},
-        {u:1, q:"Choose the correct: She is the girl ___ won the prize.", c:["who","which","what","whom"], a:0, e:"📘 '그녀는 상을 탄 소녀다.' 사람 주격 관계대명사 who"},
-        {u:1, q:"'generous' means…", c:["관대한, 잘 베푸는","이기적인","화난","조용한"], a:0, e:"📘 ''generous'의 뜻은?' 너그러운·잘 베푸는"},
-        {u:1, q:"Pick the correctly spelled word:", c:["beautiful","beatiful","beutiful","beautifull"], a:0, e:"📘 '철자가 맞는 단어는?' beautiful(아름다운)"},
-        {u:1, q:"What is the opposite of 'increase'?", c:["decrease","grow","rise","add"], a:0, e:"📘 increase(증가) ↔ decrease(감소)"},
-        {u:1, q:"The man ___ car is red is my dad.", c:["whose","who","which","whom"], a:0, e:"📘 소유 관계대명사 whose"},
-        {u:1, q:"'brave' means…", c:["용감한","겁많은","조용한","게으른"], a:0, e:"📘 brave = 용감한"},
-        {u:1, q:"Choose the correctly spelled word:", c:["necessary","neccessary","necesary","necessery"], a:0, e:"📘 necessary(필요한)"},
-        {u:1, q:"Read: 'Although he was tired, he kept working.' He kept working…", c:["even though he was tired","because he was tired","before working","without working"], a:0, e:"📘 지문: '피곤했지만 계속 일했다' — although = ~이지만"},
-        {u:1, q:"What is the opposite of 'buy'?", c:["sell","pay","cost","shop"], a:0, e:"📘 buy(사다) ↔ sell(팔다)"},
-        {u:1, q:"Choose the best word: He spoke ___ so everyone understood.", c:["clearly","clear","clearness","cleared"], a:0, e:"📘 '동사를 꾸미는 부사 자리 → clearly(명확하게)'"},
-        {u:1, q:"'reluctant' means…", c:["꺼리는, 마지못한","기꺼이 하는","용감한","친절한"], a:0, e:"📘 reluctant = 마지못해 하는"},
-        {u:1, q:"Read: 'The experiment failed because of a small error.' Why did it fail?", c:["a small error","the weather","no reason","it succeeded"], a:0, e:"📘 지문: '작은 실수 때문에 실험이 실패했다' → a small error"},
-        {u:1, q:"Choose the correct: This is the book ___ I bought.", c:["that","who","whose","where"], a:0, e:"📘 '사물 목적격 관계대명사 → that'"},
-        {u:1, q:"'ambitious' means…", c:["야심 있는","게으른","조용한","슬픈"], a:0, e:"📘 ambitious = 포부·야망이 큰"},
-        {u:1, q:"Pick the correctly spelled word:", c:["definitely","definately","definetly","definitly"], a:0, e:"📘 definitely(분명히)"},
-        {u:1, q:"What is the opposite of 'accept'?", c:["reject","take","agree","receive"], a:0, e:"📘 accept(받아들이다) ↔ reject(거절하다)"},
-        {u:1, q:"Read: 'While she was cooking, the phone rang.' What happened during cooking?", c:["the phone rang","she ate","she slept","she left"], a:0, e:"📘 지문: '요리하는 동안 전화가 울렸다' → the phone rang. while = ~하는 동안"}
+        {u:1, q:"Choose the best word: The plan was a great ___.", c:["success","successful","succeed","successfully"], a:0, e:"📘 뜻: '그 계획은 큰 ___였다.' a great 뒤 명사 자리 | ✅ success=성공(명사) | ✗ successful=형용사 / succeed=동사 / successfully=부사"},
+        {u:1, q:"What is the opposite of 'ancient'?", c:["modern","old","past","history"], a:0, e:"📘 뜻: 'ancient(고대의)의 반대말?' | ✅ modern=현대의 | ✗ old=오래된(비슷) / past=과거(비슷) / history=역사(명사)"},
+        {u:1, q:"Read: 'Despite the rain, they finished the game.' They finished the game…", c:["even though it rained","because of the rain","before the rain","without a game"], a:0, e:"📘 지문 뜻: '비에도 불구하고 그들은 경기를 끝냈다.' despite=~에도 불구하고 | ✅ even though it rained(비가 왔지만) | ✗ because of the rain=비 때문에(이유, 반대) / before the rain=비 전 / without a game=틀린 내용"},
+        {u:1, q:"Choose the correct: She is the girl ___ won the prize.", c:["who","which","what","whom"], a:0, e:"📘 뜻: '그녀는 상을 탄 소녀다.' 사람+주어 자리 | ✅ who | ✗ which=사물용 / what=선행사 없이 / whom=목적격(여긴 주어)"},
+        {u:1, q:"'generous' means…", c:["관대한, 잘 베푸는","이기적인","화난","조용한"], a:0, e:"📘 뜻: 'generous'? | ✅ 너그러운·잘 베푸는 | ✗ 이기적인=selfish / 화난=angry / 조용한=quiet"},
+        {u:1, q:"Pick the correctly spelled word:", c:["beautiful","beatiful","beutiful","beautifull"], a:0, e:"📘 뜻: '아름다운' 바른 철자 | ✅ beautiful | ✗ beatiful·beutiful=철자 빠짐 / beautifull=l 하나 더"},
+        {u:1, q:"What is the opposite of 'increase'?", c:["decrease","grow","rise","add"], a:0, e:"📘 뜻: 'increase(증가)의 반대?' | ✅ decrease=감소 | ✗ grow·rise=늘다(비슷) / add=더하다"},
+        {u:1, q:"The man ___ car is red is my dad.", c:["whose","who","which","whom"], a:0, e:"📘 뜻: '차가 빨간 그 남자가 우리 아빠다.' 소유(~의 차) | ✅ whose | ✗ who=주격 / which=사물 / whom=목적격"},
+        {u:1, q:"'brave' means…", c:["용감한","겁많은","조용한","게으른"], a:0, e:"📘 뜻: 'brave'? | ✅ 용감한 | ✗ 겁많은=timid(반대) / 조용한=quiet / 게으른=lazy"},
+        {u:1, q:"Choose the correctly spelled word:", c:["necessary","neccessary","necesary","necessery"], a:0, e:"📘 뜻: '필요한' 바른 철자(c 하나·s 둘) | ✅ necessary | ✗ neccessary=c 둘 / necesary=s 하나 / necessery=끝 철자 틀림"},
+        {u:1, q:"Read: 'Although he was tired, he kept working.' He kept working…", c:["even though he was tired","because he was tired","before working","without working"], a:0, e:"📘 지문 뜻: '피곤했지만 계속 일했다.' although=~이지만 | ✅ even though he was tired | ✗ because=피곤해서(이유, 반대) / before working=일 전 / without working=일 안 하고"},
+        {u:1, q:"What is the opposite of 'buy'?", c:["sell","pay","cost","shop"], a:0, e:"📘 뜻: 'buy(사다)의 반대?' | ✅ sell=팔다 | ✗ pay=지불하다 / cost=(값이) 들다 / shop=쇼핑하다"},
+        {u:1, q:"Choose the best word: He spoke ___ so everyone understood.", c:["clearly","clear","clearness","cleared"], a:0, e:"📘 뜻: '그는 ___ 말해서 다 이해했다.' 동사(spoke) 꾸미는 부사 자리 | ✅ clearly=명확하게(부사) | ✗ clear=형용사 / clearness=명사 / cleared=과거동사"},
+        {u:1, q:"'reluctant' means…", c:["꺼리는, 마지못한","기꺼이 하는","용감한","친절한"], a:0, e:"📘 뜻: 'reluctant'? | ✅ 꺼리는·마지못한 | ✗ 기꺼이 하는=willing(반대) / 용감한=brave / 친절한=kind"},
+        {u:1, q:"Read: 'The experiment failed because of a small error.' Why did it fail?", c:["a small error","the weather","no reason","it succeeded"], a:0, e:"📘 지문 뜻: '작은 실수 때문에 실험이 실패했다.' because of=~때문에 | ✅ a small error | ✗ the weather=언급 없음 / no reason=이유 있음 / it succeeded=실패했음(반대)"},
+        {u:1, q:"Choose the correct: This is the book ___ I bought.", c:["that","who","whose","where"], a:0, e:"📘 뜻: '이건 내가 산 책이다.' 사물+목적어 자리 | ✅ that(=which) | ✗ who=사람용 / whose=소유 / where=장소"},
+        {u:1, q:"'ambitious' means…", c:["야심 있는","게으른","조용한","슬픈"], a:0, e:"📘 뜻: 'ambitious'? | ✅ 야심·포부가 큰 | ✗ 게으른=lazy / 조용한=quiet / 슬픈=sad"},
+        {u:1, q:"Pick the correctly spelled word:", c:["definitely","definately","definetly","definitly"], a:0, e:"📘 뜻: '분명히' 바른 철자(defin-i-tely) | ✅ definitely | ✗ definately=a 실수 / definetly·definitly=철자 빠짐"},
+        {u:1, q:"What is the opposite of 'accept'?", c:["reject","take","agree","receive"], a:0, e:"📘 뜻: 'accept(받아들이다)의 반대?' | ✅ reject=거절하다 | ✗ take·receive=받다 / agree=동의(비슷)"},
+        {u:1, q:"Read: 'While she was cooking, the phone rang.' What happened during cooking?", c:["the phone rang","she ate","she slept","she left"], a:0, e:"📘 지문 뜻: '그녀가 요리하는 동안 전화가 울렸다.' while=~하는 동안 | ✅ the phone rang | ✗ she ate·slept·left=지문에 없음"}
       ]
     }
   };
@@ -889,6 +897,14 @@
     {q:"Why do you want to come to this school?", ko:"왜 이 학교에 오고 싶나요?", model:"I want to come to this school because I want to learn ___ and make new friends.", tip:"배우고 싶은 것 + 친구"},
     {q:"What is your favorite book or movie?", ko:"좋아하는 책이나 영화는?", model:"My favorite ___ is ___. I like it because ___.", tip:"제목 + 좋아하는 이유"},
     {q:"What do you want to be when you grow up?", ko:"커서 무엇이 되고 싶나요?", model:"When I grow up, I want to be a ___ because ___.", tip:"장래희망 + 이유"},
+    {q:"How old are you and what grade are you in?", ko:"몇 살이고 몇 학년이에요?", model:"I am ___ years old and I am in grade ___.", tip:"나이 + 학년을 한 문장으로"},
+    {q:"Where do you live?", ko:"어디에 사나요?", model:"I live in ___ with my family.", tip:"사는 곳 + with my family"},
+    {q:"Tell me about your best friend.", ko:"가장 친한 친구를 소개해줄래요?", model:"My best friend is ___. We like to ___ together.", tip:"이름 + 함께 하는 것"},
+    {q:"What did you do yesterday?", ko:"어제 뭐 했어요? (과거형으로!)", model:"Yesterday, I ___ and I ___.", tip:"went·played·ate 처럼 과거형으로 말해요"},
+    {q:"What is your favorite food?", ko:"가장 좋아하는 음식은?", model:"My favorite food is ___. It is delicious.", tip:"음식 + 느낌 한마디"},
+    {q:"What do you do after school?", ko:"학교 끝나고 뭐 하나요?", model:"After school, I ___.", tip:"방과 후 활동 한두 가지"},
+    {q:"What are you good at?", ko:"무엇을 잘하나요?", model:"I am good at ___.", tip:"be good at + 잘하는 것"},
+    {q:"How do you feel today?", ko:"오늘 기분이 어때요?", model:"I feel ___ today because ___.", tip:"기분(happy·excited 등) + 이유"},
     {q:"Do you have any questions for us?", ko:"우리에게 질문이 있나요?", model:"Yes. Can you tell me more about the clubs at this school?", tip:"질문 하나 준비하면 적극적으로 보여요!"}
   ];
 
@@ -974,7 +990,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet","curric"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); const cb=$("crumb"); if(cb) cb.textContent=(s==="admin")?"관리":((typeof child!=="undefined"&&child)?child.name:"시작"); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -1211,27 +1227,27 @@
   $("btnStatus").addEventListener("click",openStatus);
 
   const GLOSSARY=[
-    {cat:"연산 Operations", items:[["add","더하다 (+)",4],["subtract","빼다 (−)",4],["multiply","곱하다 (×)",4],["divide","나누다 (÷)",4],["sum","합",4],["difference","차",4],["product","곱",4],["quotient","몫",4],["remainder","나머지",4],["equals","같다 (=)",4]]},
-    {cat:"수 Numbers", items:[["fraction","분수",4],["decimal","소수",4],["numerator","분자",4],["denominator","분모",4],["whole number","자연수·정수",4],["place value","자릿값",4],["round","반올림하다",4],["average / mean","평균",5],["ratio","비(比)",8],["percent","백분율 (%)",8]]},
-    {cat:"도형 Shapes", items:[["triangle","삼각형",4],["square","정사각형",4],["rectangle","직사각형",4],["circle","원",4],["angle","각",4],["right angle","직각 (90°)",4],["side","변",4],["vertex","꼭짓점",4],["parallel","평행한",4],["perimeter","둘레",5],["area","넓이",5],["volume","부피",5]]},
-    {cat:"자주 나오는 표현", items:[["how many","몇 개",4],["how much","얼마",4],["greater than","~보다 큰 (>)",4],["less than","~보다 작은 (<)",4],["total","전체·합계",4],["value","값",5],["equation","방정식",8],["solve","풀다·구하다",8],["at least","적어도",8],["increase / decrease","증가·감소",8]]}
+    {cat:"연산 Operations", items:[["add","더하다 (+)",4,"'애드(add)'해서 더해! 풍선 하나 애드하면 하나 더."],["subtract","빼다 (−)",4,"'섭트랙트' → 섭섭하게 빼 간다."],["multiply","곱하다 (×)",4,"'멀티(multi=여러)' → 여러 번 곱하기."],["divide","나누다 (÷)",4,"'디바이드' → 둘로(di) 나누다."],["sum","합",4,"'썸(sum)' → 썸 타는 둘을 합치다."],["difference","차",4,"'디퍼런스' → 다른(different) 정도 = 차이."],["product","곱",4,"'프로덕트=생산물' → 곱해서 나온 결과물."],["quotient","몫",4,"'쿼션트' → 나눠 가진 내 '몫'."],["remainder","나머지",4,"remain(남다)+er → 남은 것 = 나머지."],["equals","같다 (=)",4,"'이퀄' → 이 값 저 값이 같다."]]},
+    {cat:"수 Numbers", items:[["fraction","분수",4,"'프랙션=부서진 조각' → 하나를 쪼갠 것. fracture(골절)과 친척!"],["decimal","소수",4,"'데시멀' → 뎃(dot·점) 찍는 소수점."],["numerator","분자",4,"number(수) 위에 얹힌 놈 = 분자(위)."],["denominator","분모",4,"D=Down(아래) → 분모는 아래! 디노미네이터."],["whole number","자연수·정수",4,"whole(온전한) 통째 수 = 자연수."],["place value","자릿값",4,"place(자리)+value(값) = 자릿값."],["round","반올림하다",4,"round=둥글게 → 가까운 쪽으로 둥글려 처리."],["average / mean","평균",5,"'애버리지' → 여럿을 고르게 나눈 값."],["ratio","비(比)",8,"'레이시오' → 레이스(경주) 1:2 비율."],["percent","백분율 (%)",8,"per(마다)+cent(백=100) → 100당 몇."]]},
+    {cat:"도형 Shapes", items:[["triangle","삼각형",4,"tri(3)+angle(각) = 3각형. 악기 트라이앵글도 세모!"],["square","정사각형",4,"'스퀘어' → 네모 반듯한 광장(square)."],["rectangle","직사각형",4,"rect(곧은)+angle → 직각들의 사각형."],["circle","원",4,"'써클' → 동그란 서클(동아리)."],["angle","각",4,"'앵글' → 카메라 앵글(각도) = 각."],["right angle","직각 (90°)",4,"right(딱 맞는) 90도 각."],["side","변",4,"'사이드' → 옆면 = 변."],["vertex","꼭짓점",4,"뾰족 꼭대기 점. vertical(수직)과 친척."],["parallel","평행한",4,"parallel의 'll'이 딱 평행선처럼 생겼죠!"],["perimeter","둘레",5,"peri(주위)+meter(재기) → 둘레를 잼."],["area","넓이",5,"'에어리어' → 넓은 지역(area) = 넓이."],["volume","부피",5,"볼륨 크다 = 부피 크다 (빵빵!)."]]},
+    {cat:"자주 나오는 표현", items:[["how many","몇 개",4,"many(많은) → 몇 개?"],["how much","얼마",4,"much(양) → 얼마?"],["greater than","~보다 큰 (>)",4,"greater=더 큰. 악어 입(>)이 큰 쪽으로 쩍!"],["less than","~보다 작은 (<)",4,"less=덜/적은. 작은 쪽(<)."],["total","전체·합계",4,"'토탈' → 토탈(전체) 합계."],["value","값",5,"'밸류' → 값어치(value)."],["equation","방정식",8,"equal(=)이 들어간 식 = 방정식."],["solve","풀다·구하다",8,"'솔브' → 문제를 솔~솔 풀다."],["at least","적어도",8,"least(가장 적은) → 적어도."],["increase / decrease","증가·감소",8,"in↑ 늘고(increase) / de↓ 줄고(decrease)."]]}
   ];
   function openGlossary(){ renderGlossary(); show("glossary"); }
   function renderGlossary(){
     let html='<div class="glnote">📕 '+child.name+' · '+(child.g===8?"중2":child.g+"학년")+' 수준 단어예요</div>';
-    GLOSSARY.forEach(g=>{ const its=g.items.filter(it=>it[2]<=child.g); if(!its.length) return; html+='<div class="glcat">'+escapeHtml(g.cat)+'</div>'; its.forEach(it=>{ html+='<div class="glitem"><button class="glspk" data-w="'+escapeHtml(it[0])+'">🔊</button><span class="glen">'+escapeHtml(it[0])+'</span><span class="glko">'+escapeHtml(it[1])+'</span></div>'; }); });
+    GLOSSARY.forEach(g=>{ const its=g.items.filter(it=>it[2]<=child.g); if(!its.length) return; html+='<div class="glcat">'+escapeHtml(g.cat)+'</div>'; its.forEach(it=>{ html+='<div class="glitem"><button class="glspk" data-w="'+escapeHtml(it[0])+'">🔊</button><span class="glen">'+escapeHtml(it[0])+'</span><span class="glko">'+escapeHtml(it[1])+'</span></div>'+(it[3]?'<div style="font-size:.82rem;color:var(--text-2);background:var(--accent-soft);border-radius:8px;padding:6px 10px;margin:-2px 0 10px;line-height:1.5">💡 '+escapeHtml(it[3])+'</div>':''); }); });
     $("glList").innerHTML=html; $("glList").querySelectorAll(".glspk").forEach(b=>b.addEventListener("click",()=>speak(b.dataset.w)));
   }
   $("glBack").addEventListener("click",gotoSubject);
   function startVocabQuiz(){
-    const pool=[]; GLOSSARY.forEach(function(g){ g.items.forEach(function(it){ if(it[2]<=child.g) pool.push({en:it[0],ko:it[1]}); }); });
+    const pool=[]; GLOSSARY.forEach(function(g){ g.items.forEach(function(it){ if(it[2]<=child.g) pool.push({en:it[0],ko:it[1],mn:it[3]||""}); }); });
     if(pool.length<4){ alert("단어가 아직 부족해요."); return; }
     const picked=shuffle(pool).slice(0, Math.min(10,pool.length));
     vocabMode=true; retryMode=false; subject="mathvocab";
     quizList=picked.map(function(w){
       const others=shuffle(pool.filter(function(x){return x.ko!==w.ko;})).slice(0,3).map(function(x){return x.ko;});
       const opts=shuffle([w.ko].concat(others));
-      return {q:"'"+w.en+"' 의 뜻은?", c:opts, a:opts.indexOf(w.ko), e:w.en+" = "+w.ko, subj:"mathvocab", grade:child.g, retry:0};
+      return {q:"'"+w.en+"' 의 뜻은?", c:opts, a:opts.indexOf(w.ko), e:w.en+" = "+w.ko+(w.mn?"  💡 "+w.mn:""), subj:"mathvocab", grade:child.g, retry:0};
     });
     qi=0; score=0; renderQ(); show("quiz");
   }
@@ -1330,6 +1346,17 @@
       var btn=$("pushOnBtn"), stat=$("pushStat");
       pushStatus().then(function(on){ stat.textContent = on ? "✅ 이 기기는 알림이 켜져 있어요." : "⚪ 아직 이 기기엔 알림이 꺼져 있어요."; });
       btn.addEventListener("click", async function(){ btn.disabled=true; var ok=await enablePush("공부방기기"); btn.disabled=false; stat.textContent = ok ? "✅ 이 기기는 알림이 켜져 있어요." : "⚪ 켜기에 실패했어요. 위 안내를 확인해주세요."; });
+    })();
+    // 📄 주간학습안내 원본 (부모용)
+    (function(){
+      var any=false, card=document.createElement("div"); card.className="stcard";
+      var gh=document.createElement("div"); gh.className="stname"; gh.textContent="📄 주간학습안내 (원본 이미지)"; card.appendChild(gh);
+      CHILDREN.forEach(function(c){ if(!GUIDE_IMG[c.name]) return; any=true;
+        var lab=document.createElement("div"); lab.className="note-inline"; lab.style.margin="10px 0 4px"; lab.textContent=c.emo+" "+c.name;
+        var img=document.createElement("img"); img.src=GUIDE_IMG[c.name]; img.alt=c.name+" 주간안내"; img.style.cssText="width:100%;border-radius:10px;border:1px solid var(--border);cursor:zoom-in"; img.addEventListener("click",function(){ window.open(GUIDE_IMG[c.name],"_blank"); });
+        card.appendChild(lab); card.appendChild(img);
+      });
+      if(any) $("adminList").appendChild(card);
     })();
     // 🧪 아이 화면 연습 입장 (부모 점검용 · 기록 안 함)
     (function(){
@@ -1670,6 +1697,17 @@
       {vi:"Ngày mai tôi sẽ đến.", pron:"응아이 마이 또이 새↓ 덴↗", ko:"내일 저는 갈 거예요.", w:[["ngày mai","내일"],["sẽ","미래"]], gr:"sẽ + 동사 = ~할 거예요."},
       {vi:"Tôi muốn đặt bàn.", pron:"또이 무온↗ 닷↓ 반↓", ko:"저는 예약하고 싶어요.", w:[["đặt","예약하다"],["bàn","테이블"]], gr:"식당 예약할 때."},
       {vi:"Mấy giờ?", pron:"머이↗ 여↓", ko:"몇 시예요?", w:[["mấy","몇"],["giờ","시"]], gr:"시간 물을 때."}
+    ]},
+    { key:"build", emo:"✍️", name:"문장 만들기 (주어+동사+시제)", cards:[
+      {vi:"Hôm nay tôi đi làm.", pron:"홈 나이 또이 디 람↓", ko:"오늘 저는 일하러 가요.", w:[["hôm nay","오늘 (시간 단어)"],["tôi","나 (주어)"],["đi","가다 (동사)"],["làm","일하다 (동사)"]], gr:"시제 표시가 없으면 현재/일반. 시간은 문장 맨 앞 hôm nay로 나타내요. 어순: 시간 + 주어 + 동사."},
+      {vi:"Hôm qua tôi đã đi làm.", pron:"홈 꽈 또이 다↓ 디 람↓", ko:"어제 저는 일하러 갔어요.", w:[["hôm qua","어제"],["đã","이미 (과거 표시)"],["đi làm","일하러 가다"]], gr:"★과거 = 동사 앞에 đã. '어제(hôm qua)'라서 đã로 '~했다'. 동사 모양은 안 변해요."},
+      {vi:"Ngày mai tôi sẽ đi làm.", pron:"응아이 마이 또이 새↓ 디 람↓", ko:"내일 저는 일하러 갈 거예요.", w:[["ngày mai","내일"],["sẽ","~할 것 (미래 표시)"],["đi làm","일하러 가다"]], gr:"★미래 = 동사 앞에 sẽ. '내일'이라서 sẽ로 '~할 거예요'."},
+      {vi:"Bây giờ tôi đang ăn.", pron:"버이 여↓ 또이 당 안", ko:"지금 저는 먹고 있어요.", w:[["bây giờ","지금"],["đang","~하는 중 (진행 표시)"],["ăn","먹다"]], gr:"★진행 = 동사 앞에 đang. '지금(bây giờ)'과 자주 같이 써요."},
+      {vi:"Hôm qua tôi đã gặp bạn.", pron:"홈 꽈 또이 다↓ 갑↓ 반↓", ko:"어제 저는 친구를 만났어요.", w:[["đã","과거 표시"],["gặp","만나다 (동사)"],["bạn","친구 (목적어)"]], gr:"어순: 시간 + 주어 + đã + 동사 + 목적어. 뼈대는 항상 주어+동사, 앞뒤로 시간·목적어를 붙여요."},
+      {vi:"Ngày mai tôi sẽ mua cà phê.", pron:"응아이 마이 또이 새↓ 무어 까페↘", ko:"내일 저는 커피를 살 거예요.", w:[["sẽ","미래 표시"],["mua","사다"],["cà phê","커피 (목적어)"]], gr:"미래 문장도 같은 뼈대: 시간 + 주어 + sẽ + 동사 + 목적어."},
+      {vi:"Tôi đã ăn rồi.", pron:"또이 다↓ 안 조이↓", ko:"저는 (벌써) 먹었어요.", w:[["đã","과거"],["ăn","먹다"],["rồi","이미·완료 강조"]], gr:"đã … rồi = '벌써 ~했다'. rồi가 '완료' 느낌을 더해줘요."},
+      {vi:"Tôi chưa ăn.", pron:"또이 쯔어 안", ko:"저는 아직 안 먹었어요.", w:[["chưa","아직 ~안 함"],["ăn","먹다"]], gr:"chưa = '아직 안 ~했다'. (không은 그냥 '안 한다', chưa는 '아직 안 했지만 할 수도')"},
+      {vi:"Hôm nay bạn có đi làm không?", pron:"홈 나이 반↓ 꺼↗ 디 람↓ 콩", ko:"오늘 당신은 일하러 가요?", w:[["bạn","너 (주어)"],["có…không?","~해요? (의문)"],["đi làm","일하러 가다"]], gr:"의문문 = 동사를 có … không?으로 감싸요. 시간(hôm nay)은 그대로 앞에."}
     ]}
   ]};
   let vietTopic="greet", viVoice=null;
@@ -1723,6 +1761,120 @@
   $("vietBack").addEventListener("click",gotoChild);
   $("vmLearn").addEventListener("click",()=>vietSetMode("learn"));
   $("vmQuiz").addEventListener("click",()=>vietSetMode("quiz"));
+
+  // ===== 이번 주 학교 진도 (주간학습안내 기반 · 예습 요약 + 배운 뒤 복습 문제) =====
+  // 날짜(date)가 오늘 이후면 '예습 요약', 오늘까지면 '복습 문제'로 자동 전환.
+  const CURRICULUM = {
+    "태정": [
+      {emo:"➗",subj:"수학",unit:"분수·대분수의 덧셈과 뺄셈",date:"2026-08-31",day:"월",summary:"분모가 같은 분수끼리는 <b>분자(위)끼리</b> 더하거나 빼요. 분모는 그대로! 대분수는 자연수는 자연수끼리, 분수는 분수끼리 계산해요. 예) 1과 2/5 + 1/5 = 1과 3/5.",problems:[
+        {q:"2/6 + 3/6 = ?",c:["5/6","5/12","6/6","1/6"],a:0,e:"분모 같으면 분자끼리: 2+3=5 → 5/6 · ✗5/12=분모까지 더함 / 6/6=엉뚱 / 1/6=뺀 값"},
+        {q:"4/7 − 1/7 = ?",c:["3/7","5/7","3/14","2/7"],a:0,e:"4−1=3 → 3/7 · ✗5/7=더함 / 3/14=분모까지 뺌"},
+        {q:"1과 2/5 + 1/5 = ?",c:["1과 3/5","2와 3/5","1과 3/10","3/5"],a:0,e:"자연수 1 그대로, 2/5+1/5=3/5 → 1과 3/5 · ✗2와 3/5=자연수 잘못 더함"},
+        {q:"3/8 + 4/8 = ?",c:["7/8","7/16","12/8","1"],a:0,e:"3+4=7 → 7/8 · ✗7/16=분모까지 더함"}
+      ]},
+      {emo:"🧪",subj:"과학",unit:"태양계 구성원",date:"2026-09-01",day:"화",summary:"태양계에는 <b>태양</b>과 <b>8개의 행성</b>이 있어요. 가까운 순서: 수성·금성·지구·화성·목성·토성·천왕성·해왕성. 태양은 스스로 빛을 내는 <b>별</b>, 행성은 태양 둘레를 돌아요. 지구는 생명이 사는 행성이에요.",problems:[
+        {q:"태양계에서 스스로 빛을 내는 것은?",c:["태양","지구","달","화성"],a:0,e:"태양=스스로 빛내는 별 · ✗지구·화성=행성(빛 반사) / 달=위성"},
+        {q:"태양에서 가장 가까운 행성은?",c:["수성","지구","목성","해왕성"],a:0,e:"수성(첫째) · ✗지구=셋째 / 목성=다섯째 / 해왕성=가장 멂"},
+        {q:"태양계 행성은 모두 몇 개?",c:["8개","7개","9개","10개"],a:0,e:"8개 · ✗9개=예전엔 명왕성 포함(지금은 행성 아님)"},
+        {q:"생명체가 사는 행성은?",c:["지구","금성","화성","토성"],a:0,e:"지구 · ✗나머지는 생명체 확인 안 됨"}
+      ]},
+      {emo:"📖",subj:"국어",unit:"글쓴이의 의견 비교·평가하며 읽기",date:"2026-08-31",day:"월",summary:"글을 읽을 땐 <b>글쓴이의 의견(주장)</b>과 그 <b>까닭(근거)</b>을 찾아요. 서로 다른 글을 읽고 어느 의견이 더 타당한지 <b>비교·평가</b>해요.",problems:[
+        {q:"글쓴이가 말하려는 생각을 뭐라 하나요?",c:["의견(주장)","근거","제목","글자 수"],a:0,e:"의견=글쓴이의 생각 · ✗근거=까닭 / 제목=글 이름"},
+        {q:"의견을 뒷받침하는 '까닭'은?",c:["근거","의견","낱말","문단"],a:0,e:"근거=이유·까닭 · ✗의견=주장 자체"},
+        {q:"두 글의 의견을 '비교·평가'한다는 것은?",c:["어느 의견이 더 타당한지 따져 봄","글자 수를 셈","제목을 바꿈","그림을 그림"],a:0,e:"타당성을 따져 봄 · ✗나머지는 관계없음"}
+      ]},
+      {emo:"🏫",subj:"사회",unit:"학교생활 속 민주주의(학급회의)",date:"2026-09-02",day:"수",summary:"민주주의는 여러 사람이 함께 결정에 <b>참여</b>하는 거예요. 학교에선 <b>학급회의</b>로 의견을 나누고 <b>다수결</b>로 정해요. 서로 존중하고 <b>소수 의견</b>도 듣는 게 중요해요.",problems:[
+        {q:"학급 일을 함께 의논해 정하는 회의는?",c:["학급회의","조회","급식","청소"],a:0,e:"학급회의 · ✗나머지는 회의가 아님"},
+        {q:"많은 사람의 뜻으로 정하는 방법은?",c:["다수결","가위바위보","제비뽑기","혼자 결정"],a:0,e:"다수결 · ✗혼자 결정=민주주의 아님"},
+        {q:"민주적 회의에서 중요한 태도는?",c:["다른 의견도 존중하기","큰 소리로 이기기","내 맘대로 하기","무시하기"],a:0,e:"존중·경청 · ✗나머지는 어긋남"}
+      ]},
+      {emo:"⚖️",subj:"도덕",unit:"디지털 사회의 예절",date:"2026-09-03",day:"목",summary:"인터넷·스마트폰을 쓸 때도 <b>예절(디지털 에티켓)</b>이 필요해요. 존중하는 말 쓰기, <b>개인정보</b> 지키기, 악성 댓글 안 쓰기, 저작권 지키기. 얼굴이 안 보여도 예의는 똑같아요!",problems:[
+        {q:"온라인에서 바른 태도는?",c:["존중하는 말 쓰기","악성 댓글 달기","남 정보 퍼뜨리기","욕하기"],a:0,e:"존중하는 말 · ✗나머지는 나쁜 예절"},
+        {q:"함부로 공유하면 안 되는 것은?",c:["친구의 개인정보","공개된 뉴스","날씨","숙제 안내"],a:0,e:"개인정보(이름·주소·사진) · ✗나머지는 공개 정보"}
+      ]}
+    ],
+    "태희": [
+      {emo:"⚖️",subj:"도덕",unit:"인권 존중",date:"2026-08-31",day:"월",summary:"<b>인권</b>은 사람이면 누구나 태어날 때부터 갖는 소중한 권리예요. 나이·성별·피부색과 상관없이 모두 존중받아야 해요. 내 권리만큼 <b>남의 권리</b>도 소중히 여겨요.",problems:[
+        {q:"인권이란?",c:["사람이면 누구나 갖는 권리","돈으로 사는 것","어른만 갖는 것","시험 점수"],a:0,e:"태어날 때부터 모두가 가진 권리 · ✗나머지 틀림"},
+        {q:"인권 존중에 맞는 행동은?",c:["차별하지 않기","놀리기","무시하기","따돌리기"],a:0,e:"차별 없이 존중 · ✗나머지는 인권 침해"},
+        {q:"인권은 누구에게 있나요?",c:["모든 사람","어른만","부자만","선생님만"],a:0,e:"모든 사람 · ✗일부만이 아님"}
+      ]},
+      {emo:"📖",subj:"국어",unit:"시 감상과 의견 나누기",date:"2026-08-31",day:"월",summary:"시를 읽고 <b>인상적인 부분</b>과 그렇게 느낀 <b>까닭</b>을 말해요. 같은 시라도 사람마다 느낌이 달라요. 친구의 의견을 듣고 생각을 나누며 시를 더 깊이 이해해요.",problems:[
+        {q:"시에서 '인상적인 부분'이란?",c:["마음에 강하게 남은 부분","가장 긴 줄","제목","쪽수"],a:0,e:"특별히 마음에 남은 곳 · ✗나머지 관계없음"},
+        {q:"시를 감상할 때 알맞은 태도는?",c:["친구의 다른 느낌도 존중","내 생각만 옳다 함","안 듣기","비웃기"],a:0,e:"서로 다른 느낌 존중 · ✗나머지 부적절"},
+        {q:"'까닭을 들어 말하기'는?",c:["그렇게 느낀 이유와 함께 말함","이유 없이 말함","크게 말함","빨리 말함"],a:0,e:"이유(근거)와 함께 · ✗나머지 아님"}
+      ]},
+      {emo:"➗",subj:"수학",unit:"수의 범위와 어림하기",date:"2026-08-31",day:"월",summary:"<b>어림하기</b>는 수를 대략 나타내는 방법이에요. ▪<b>올림</b>: 아래를 무조건 올림 ▪<b>버림</b>: 아래를 무조건 버림 ▪<b>반올림</b>: 아래 수가 5 이상이면 올리고 4 이하면 버림.",problems:[
+        {q:"37을 십의 자리로 반올림하면?",c:["40","30","37","300"],a:0,e:"일의 자리 7≥5 → 올림 → 40 · ✗30=버림 / 37=그대로"},
+        {q:"52를 십의 자리로 버림하면?",c:["50","60","52","500"],a:0,e:"버림 → 50 · ✗60=올림"},
+        {q:"23을 십의 자리로 올림하면?",c:["30","20","23","300"],a:0,e:"올림=무조건 올림 → 30 · ✗20=버림"},
+        {q:"48을 십의 자리로 반올림하면?",c:["50","40","48","400"],a:0,e:"8≥5 → 올림 → 50 · ✗40=버림"}
+      ]},
+      {emo:"🧪",subj:"과학",unit:"혼합물의 분리",date:"2026-09-01",day:"화",summary:"<b>혼합물</b>은 여러 물질이 섞인 것. 성질 차이로 분리해요. ▪물·기름은 안 섞여 <b>층</b>으로 분리 ▪소금·모래는 '물에 녹는 성질' 차이로 분리(소금은 녹고 모래는 안 녹음 → <b>거름</b> → <b>증발</b>).",problems:[
+        {q:"소금과 모래에 물을 부으면?",c:["소금은 녹고 모래는 안 녹음","둘 다 녹음","둘 다 안 녹음","모래만 녹음"],a:0,e:"소금=녹음, 모래=안 녹음 · ✗나머지 틀림"},
+        {q:"안 녹은 모래를 걸러내는 방법은?",c:["거름","끓이기","얼리기","빛 비추기"],a:0,e:"거름=안 녹은 것 걸러냄 · ✗나머지 아님"},
+        {q:"물에 녹은 소금을 다시 얻으려면?",c:["물을 증발시킴","얼림","거름","섞음"],a:0,e:"증발=물 날리면 소금 남음 · ✗거름은 녹은 건 못 거름"},
+        {q:"물과 기름을 섞으면?",c:["섞이지 않고 층이 생김","완전히 섞임","둘 다 사라짐","얼음이 됨"],a:0,e:"안 섞여 위아래 층 · ✗나머지 틀림"}
+      ]},
+      {emo:"🏫",subj:"사회",unit:"청동기 시대와 고조선",date:"2026-09-01",day:"화",summary:"<b>청동기 시대</b>엔 청동(구리+주석)으로 도구를 만들고 농사가 발달해 사람들이 모여 살며 <b>계급</b>이 생겼어요. 이때 우리나라 <b>최초의 국가 고조선</b>이 세워졌어요(단군왕검).",problems:[
+        {q:"우리나라 최초의 국가는?",c:["고조선","신라","고구려","조선"],a:0,e:"고조선=최초 · ✗신라·고구려=이후 삼국 / 조선=훨씬 뒤"},
+        {q:"청동기 시대 도구의 재료는?",c:["청동(구리+주석)","플라스틱","철","금"],a:0,e:"청동 · ✗철기는 다음 시대 / 플라스틱은 현대"},
+        {q:"고조선을 세웠다고 전해지는 인물은?",c:["단군왕검","세종대왕","이순신","광개토대왕"],a:0,e:"단군왕검 · ✗나머지는 훨씬 후대"}
+      ]},
+      {emo:"🔤",subj:"영어",unit:"Look and Listen (단원 표현)",date:"2026-09-04",day:"금",summary:"이번 영어 단원 표현을 미리 익혀요. 듣고 리듬 맞춰 말하기(<b>Chant</b>), 듣고 행동하기(<b>Listen and Do</b>) 중심. 새 단어를 소리 내어 읽고 뜻을 익혀 두면 수업이 쉬워요.",problems:[
+        {q:"'Listen and Do'는 무슨 활동?",c:["듣고 행동하기","읽고 쓰기","노래만 하기","그림만 그리기"],a:0,e:"듣고 그대로 행동 · ✗나머지 아님"},
+        {q:"'Chant'는?",c:["리듬에 맞춰 따라 말하기","조용히 읽기","숙제","시험"],a:0,e:"리듬 챈트 · ✗나머지 아님"}
+      ]}
+    ]
+  };
+  // 주간학습안내 원본 이미지(가정통신문 캡처). family 리포에 함께 업로드 필요.
+  const GUIDE_IMG = { "태정":"guide-taejeong.jpg", "태희":"guide-taehee.jpg", "태운":"guide-taeun.jpg" };
+  let curQ=[], curQi=0, curQScore=0, curQAns=false, curQUnit=null;
+  function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function curDL(dstr){ const p=dstr.split("-"); return Number(p[1])+"/"+Number(p[2]); }
+  function openCurric(){ $("curTitle").textContent="📚 "+child.name+" · 이번 주 학교 진도"; $("curQuiz").classList.add("hidden"); $("curBody").classList.remove("hidden"); renderCurric(); show("curric"); }
+  function renderCurric(){
+    const body=$("curBody"); body.innerHTML="";
+    // 주간안내 원본 이미지
+    if(GUIDE_IMG[child.name]){ const gc=document.createElement("div"); gc.className="stcard"; gc.innerHTML='<div class="stname">📄 이번 주 주간학습안내 (원본)</div><div class="note-inline" style="margin:2px 0 8px">탭하면 크게 볼 수 있어요</div>'; const img=document.createElement("img"); img.src=GUIDE_IMG[child.name]; img.alt="주간학습안내"; img.style.cssText="width:100%;border-radius:10px;cursor:zoom-in;border:1px solid var(--border)"; img.addEventListener("click",()=>window.open(GUIDE_IMG[child.name],"_blank")); gc.appendChild(img); body.appendChild(gc); }
+    const list=CURRICULUM[child.name]||[];
+    if(!list.length){ const e=document.createElement("div"); e.className="note-inline"; e.style.marginTop="10px"; e.textContent="이 아이의 단원별 예습·복습 문제는 아직 없어요. 주간안내를 보내주시면 채워드려요."; body.appendChild(e); return; }
+    const t=todayStr();
+    const learned=list.filter(u=>u.date<=t), upcoming=list.filter(u=>u.date>t);
+    const h1=document.createElement("div"); h1.className="section-t"; h1.textContent="📖 수업 전 예습 (곧 배울 단원)"; body.appendChild(h1);
+    if(!upcoming.length){ const e=document.createElement("div"); e.className="note-inline"; e.textContent="이번 주 예습할 새 단원이 없어요."; body.appendChild(e); }
+    upcoming.forEach(u=>{
+      const d=document.createElement("div"); d.className="stcard"; d.style.textAlign="left";
+      d.innerHTML='<div class="stname">'+u.emo+' '+u.subj+' · '+u.unit+'</div><div class="note-inline" style="margin:2px 0 8px">'+curDL(u.date)+'('+u.day+') 수업 예정 · 미리 읽어보기</div><div style="line-height:1.75">'+u.summary+'</div>';
+      body.appendChild(d);
+    });
+    const h2=document.createElement("div"); h2.className="section-t"; h2.style.marginTop="18px"; h2.textContent="📝 복습 문제 (배운 단원)"; body.appendChild(h2);
+    if(!learned.length){ const e=document.createElement("div"); e.className="note-inline"; e.textContent="아직 배운 단원이 없어요. 학교에서 배우면 여기에 복습 문제가 자동으로 생겨요!"; body.appendChild(e); }
+    learned.forEach(u=>{
+      const d=document.createElement("div"); d.className="stcard";
+      d.innerHTML='<div class="stname">'+u.emo+' '+u.subj+' · '+u.unit+'</div><div class="note-inline">'+curDL(u.date)+' 배움 · 문제 '+u.problems.length+'개</div>';
+      const b=document.createElement("button"); b.className="bigbtn"; b.style.marginTop="8px"; b.textContent="📝 복습 문제 풀기"; b.addEventListener("click",()=>startCurricQuiz(u)); d.appendChild(b);
+      body.appendChild(d);
+    });
+  }
+  function startCurricQuiz(u){ curQUnit=u; curQ=u.problems.map(p=>shuffleChoices(p)); curQi=0; curQScore=0; $("curBody").classList.add("hidden"); $("curQuiz").classList.remove("hidden"); renderCurQ(); }
+  function renderCurQ(){
+    const box=$("curQuiz");
+    if(curQi>=curQ.length){ box.innerHTML='<div class="stcard" style="text-align:center"><div class="stname">🎉 '+curQUnit.unit+' 끝!</div><div>'+curQ.length+'개 중 '+curQScore+'개 정답</div></div>'; const b=document.createElement("button"); b.className="bigbtn"; b.style.marginTop="10px"; b.textContent="← 진도로 돌아가기"; b.addEventListener("click",()=>{ $("curQuiz").classList.add("hidden"); $("curBody").classList.remove("hidden"); renderCurric(); }); box.appendChild(b); return; }
+    const it=curQ[curQi]; curQAns=false;
+    box.innerHTML='<div class="qcount" style="margin-bottom:8px">'+(curQi+1)+'/'+curQ.length+' · '+curQUnit.emo+' '+curQUnit.subj+'</div><div class="stcard"><div style="font-size:1.1rem;font-weight:800;line-height:1.4">'+escapeHtml(it.q)+'</div></div><div id="cqC" style="margin-top:10px"></div><div id="cqF"></div>';
+    const cc=$("cqC");
+    it.c.forEach((ch,i)=>{ const b=document.createElement("button"); b.className="backbtn"; b.style.cssText="margin:0 0 8px;text-align:left;width:100%"; b.textContent=ch; b.addEventListener("click",()=>chooseCur(i,b)); cc.appendChild(b); });
+  }
+  function chooseCur(i,btn){
+    if(curQAns) return; curQAns=true;
+    const it=curQ[curQi]; const ok=(i===it.a); if(ok){ curQScore++; try{ markToday(); addXP(10); }catch(e){} }
+    btn.style.background=ok?"var(--good-soft)":"var(--bad-soft)";
+    const fb=$("cqF"); fb.innerHTML='<div class="stcard" style="margin-top:10px"><div style="font-weight:800;margin-bottom:4px">'+(ok?"⭕ 정답!":"❌ 정답: "+escapeHtml(it.c[it.a]))+'</div><div style="line-height:1.6">📘 '+escapeHtml(it.e)+'</div></div>';
+    const nx=document.createElement("button"); nx.className="bigbtn"; nx.style.marginTop="10px"; nx.textContent=(curQi+1>=curQ.length)?"결과 보기":"다음 ▶"; nx.addEventListener("click",()=>{ curQi++; renderCurQ(); }); fb.appendChild(nx);
+  }
+  $("curBack").addEventListener("click",gotoTrack);
+  document.querySelectorAll('[data-curric]').forEach(b=>b.addEventListener("click",openCurric));
 
   // init
   renderKids(); gotoChild();
