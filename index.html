@@ -1144,8 +1144,24 @@
   function getUnitName(subj,g,u){ const U=UNITS[subj]; const arr=(U&&(U[g]||U[5]||U[4]))||[]; return arr[u-1]||arr[0]||""; }
 
   function wrongKey(){ return "study_wrong_"+child.name+"_"+track; }
-  function getWrongs(){ return LS.get(wrongKey(),[]); }
+  function wid(){ return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36); }
+  function getWrongs(){ var l=LS.get(wrongKey(),[]); var changed=false; l.forEach(function(x){ if(!x.id){ x.id=wid(); changed=true; } }); if(changed) LS.set(wrongKey(),l); return l; }
   function saveWrongs(l){ LS.set(wrongKey(),l); }
+  // 지난 오답 중 같은 과목 것 n개를 복습용으로 뽑아 문제화 (졸업추적용 _wid 태그)
+  function reviewItems(subj,n){
+    var w=getWrongs().filter(function(x){ return x.subj===subj; }); if(!w.length) return [];
+    var pool=shuffle(w.slice()), out=[];
+    for(var i=0;i<pool.length && out.length<n;i++){ var x=pool[i];
+      var base=(x.gen && GEN[x.gen]) ? Object.assign(GEN[x.gen](),{gen:x.gen,u:x.u,subj:x.subj,grade:x.grade,retry:0}) : Object.assign({},x,{retry:0});
+      base._wid=x.id; base._review=true; delete base.id; out.push(shuffleChoices(base)); }
+    return out;
+  }
+  // 만든 퀴즈에 지난 오답 복습 3개를 사이사이 끼워넣기
+  function injectReviews(subj){
+    if(retryMode) return; var rev=reviewItems(subj,3); if(!rev.length) return;
+    var step=Math.max(1,Math.floor(quizList.length/(rev.length+1)));
+    rev.forEach(function(r,i){ var pos=Math.min(quizList.length,(i+1)*step+i); quizList.splice(pos,0,r); });
+  }
 
   // 진도(초등 한국 공부만)
   const SEM_START = new Date(2026,7,18); const TOTAL_WEEKS=18;
@@ -1230,11 +1246,12 @@
     } else { pool=getPool(subj,grade).slice(); }
     if(!pool.length){ alert("이 과목은 아직 문제 준비 중이에요."); return; }
     quizList = expandPool(pool, subj, grade).map(q=>shuffleChoices(q));
+    injectReviews(subj);
     qi=0; score=0; renderQ(); show("quiz");
   }
   function startRetryFromNote(){
     const w=getWrongs(); if(!w.length) return; retryMode=true;
-    quizList = shuffle(w).map(x=> shuffleChoices((x.gen && GEN[x.gen]) ? Object.assign(GEN[x.gen](),{gen:x.gen,u:x.u,subj:x.subj,grade:x.grade,retry:0}) : Object.assign({},x,{retry:0})) );
+    quizList = shuffle(w).map(function(x){ var base=(x.gen && GEN[x.gen]) ? Object.assign(GEN[x.gen](),{gen:x.gen,u:x.u,subj:x.subj,grade:x.grade,retry:0}) : Object.assign({},x,{retry:0}); base._wid=x.id; delete base.id; return shuffleChoices(base); });
     qi=0; score=0; renderQ(); show("quiz");
   }
   function makeSimilar(item){
@@ -1245,8 +1262,8 @@
   }
   function renderQ(){
     answered=false; const item=quizList[qi]; const rt=item.retry>0; const intl=(item.subj==="enmath"||item.subj==="enread");
-    const tag=$("qTag"); tag.className="qtag"+(rt?" retry":(intl?" intl":""));
-    tag.textContent = rt ? "🔁 비슷한 문제 다시!" : ((SUBJ_KO[item.subj]||"")+" · "+(intl?("국제학교 "+child.intlG):getUnitName(item.subj,item.grade,item.u)));
+    const tag=$("qTag"); tag.className="qtag"+((rt||item._review)?" retry":(intl?" intl":""));
+    tag.textContent = item._review ? "📒 지난 오답 복습" : (rt ? "🔁 비슷한 문제 다시!" : ((SUBJ_KO[item.subj]||"")+" · "+(intl?("국제학교 "+child.intlG):getUnitName(item.subj,item.grade,item.u))));
     $("qText").textContent=item.q;
     $("qCount").textContent=(qi+1)+"/"+quizList.length; $("progBar").style.width=(qi/quizList.length*100)+"%";
     const box=$("choices"); box.innerHTML=""; const keys=["가","나","다","라"];
@@ -1313,14 +1330,17 @@
     if(answered) return; answered=true; const item=quizList[qi]; const correct=idx===item.a;
     if(!practiceMode){ bumpDaily(correct); markToday(); addXP(correct?10:3); bumpStat(item.subj,correct); }
     $("choices").querySelectorAll(".choice").forEach((b,i)=>{ b.disabled=true; if(i===item.a) b.classList.add("correct"); });
+    // 오답노트 졸업 추적: 복습/오답풀기 문제(_wid)를 맞히면 카운트, 2회 연속이면 노트에서 졸업
+    if(!practiceMode && item._wid){ const arr=getWrongs(); const wi=arr.findIndex(x=>x.id===item._wid);
+      if(wi>=0){ if(correct){ arr[wi].ok=(arr[wi].ok||0)+1; item._okNow=arr[wi].ok; if(arr[wi].ok>=2){ arr.splice(wi,1); item._graduated=true; } } else { arr[wi].ok=0; } saveWrongs(arr); } }
     if(correct){ score++; }
     else{
       btn.classList.add("wrong");
-      if(!practiceMode){ const w=getWrongs(); if(!w.some(x=>x.q===item.q)){ w.push({q:item.q,c:item.c,a:item.a,e:item.e,gen:item.gen,u:item.u,subj:item.subj,grade:item.grade}); saveWrongs(w); } }
+      if(!practiceMode && !item._wid){ const w=getWrongs(); if(!w.some(x=>x.q===item.q)){ w.push({id:wid(),ok:0,q:item.q,c:item.c,a:item.a,e:item.e,gen:item.gen,u:item.u,subj:item.subj,grade:item.grade}); saveWrongs(w); } }
       if((item.retry||0)<1 && quizList.length<24){ quizList.push(shuffleChoices(makeSimilar(item))); }
     }
     const fb=$("feedback"); fb.className="feedback "+(correct?"ok":"no");
-    if(correct){ fb.innerHTML='<div class="fh">🎉 정답이에요!</div><div class="exp">'+expForItem(item)+'</div>'; }
+    if(correct){ var okhead = item._graduated ? '🎓 오답 졸업! 이제 완전히 익혔어요' : (item._wid ? '🎉 정답! 복습 '+(item._okNow||1)+'/2 (한 번 더 맞히면 졸업)' : '🎉 정답이에요!'); fb.innerHTML='<div class="fh">'+okhead+'</div><div class="exp">'+expForItem(item)+'</div>'; }
     else{ const head=practiceMode?'🧪 연습 모드 · 기록 안 함':'📒 오답노트에 담았어요 · 비슷한 문제 또 나와요'; fb.innerHTML='<div class="fh">'+head+'</div><div class="exp"><b>정답: '+escapeHtml(item.c[item.a])+'</b><br>'+expForItem(item)+'</div>'; }
     fb.classList.remove("hidden");
     $("nextBtn").textContent=(qi===quizList.length-1)?"결과 보기 →":"다음 →"; $("nextBtn").classList.remove("hidden");
@@ -1349,7 +1369,7 @@
     setMission("review",true);
     $("wbWho").textContent=child.name; const w=getWrongs(); const list=$("wbList");
     if(!w.length){ list.innerHTML='<div class="empty"><span class="big">✨</span>오답노트가 비어 있어요!<br>문제를 풀면 틀린 것만 여기 모여요.</div>'; $("wbActions").classList.add("hidden"); }
-    else{ $("wbActions").classList.remove("hidden"); list.innerHTML=w.map((x,i)=>('<div class="wbitem"><button class="wbdel" data-i="'+i+'" title="삭제">✕</button><div class="wtag">'+(SUBJ_KO[x.subj]||"")+'</div><div class="wq">'+escapeHtml(x.q)+'</div><div class="wa">정답: '+escapeHtml(x.c[x.a])+'</div><div class="we">'+escapeHtml(x.e)+'</div></div>')).join("");
+    else{ $("wbActions").classList.remove("hidden"); list.innerHTML=w.map((x,i)=>('<div class="wbitem"><button class="wbdel" data-i="'+i+'" title="삭제">✕</button><div class="wtag">'+(SUBJ_KO[x.subj]||"")+((x.ok>=1)?' · <span style="color:var(--good)">복습 '+x.ok+'/2</span>':'')+'</div><div class="wq">'+escapeHtml(x.q)+'</div><div class="wa">정답: '+escapeHtml(x.c[x.a])+'</div><div class="we">'+escapeHtml(x.e)+'</div></div>')).join("");
       list.querySelectorAll(".wbdel").forEach(btn=>btn.addEventListener("click",()=>{ const arr=getWrongs(); arr.splice(+btn.dataset.i,1); saveWrongs(arr); openNote(); })); }
     show("wrongbook");
   }
@@ -1409,8 +1429,8 @@
     $("unitsList").querySelectorAll(".unitbtn").forEach(b=>b.addEventListener("click",()=>{ const u=b.dataset.u; if(u==="today") startQuiz(subj); else if(u==="all") startQuizAll(subj); else startQuizUnit(subj,+u); }));
     const eb=ebsInfo(); $("unitsEbs").href=eb.url; $("unitsEbs").textContent="▶️ 어려우면 "+eb.label+" 보러가기";
   }
-  function startQuizUnit(subj,u){ subject=subj; retryMode=false; const pool=getPool(subj,child.g).filter(p=>p.u===u); if(!pool.length){ alert("문제 준비 중이에요."); return; } quizList=expandPool(pool, subj, child.g).map(q=>shuffleChoices(q)); qi=0; score=0; renderQ(); show("quiz"); }
-  function startQuizAll(subj){ subject=subj; retryMode=false; const pool=getPool(subj,child.g).slice(); if(!pool.length){ alert("문제 준비 중이에요."); return; } quizList=expandPool(pool, subj, child.g).map(q=>shuffleChoices(q)); qi=0; score=0; renderQ(); show("quiz"); }
+  function startQuizUnit(subj,u){ subject=subj; retryMode=false; const pool=getPool(subj,child.g).filter(p=>p.u===u); if(!pool.length){ alert("문제 준비 중이에요."); return; } quizList=expandPool(pool, subj, child.g).map(q=>shuffleChoices(q)); injectReviews(subj); qi=0; score=0; renderQ(); show("quiz"); }
+  function startQuizAll(subj){ subject=subj; retryMode=false; const pool=getPool(subj,child.g).slice(); if(!pool.length){ alert("문제 준비 중이에요."); return; } quizList=expandPool(pool, subj, child.g).map(q=>shuffleChoices(q)); injectReviews(subj); qi=0; score=0; renderQ(); show("quiz"); }
   $("unitsBack").addEventListener("click",gotoSubject);
 
   function openCal(){ renderCal(); show("cal"); }
@@ -1676,14 +1696,30 @@
     const byUnit={}; wrongsKr.concat(wrongsIntl).forEach(function(w){ const nm=(getUnitName(w.subj,w.grade,w.u)||"단원 "+(w.u||1)); const key=(SUBJ_KO[w.subj]||w.subj)+" · "+nm; byUnit[key]=(byUnit[key]||0)+1; });
     const sortedU=Object.keys(byUnit).sort(function(a,b){return byUnit[b]-byUnit[a];});
     let focusHtml=""; if(sortedU.length){ sortedU.slice(0,6).forEach(function(k,i){ focusHtml+='<div class="strow"><span style="flex:1">'+(i+1)+'. '+escapeHtml(k)+'</span><span>오답 <b>'+byUnit[k]+'</b></span></div>'; }); } else focusHtml='<div class="note-inline">지금은 오답노트가 비어 있어요. 잘하고 있어요! 😊</div>';
-    const hist=LS.get("study_hist_"+name,{}); const dates=Object.keys(hist).sort().reverse().slice(0,14);
+    const hist=LS.get("study_hist_"+name,{}); const dates=Object.keys(hist).sort().reverse().slice(0,30);
     let dayHtml=""; if(dates.length){ dates.forEach(function(d){ const r=hist[d]; const p=d.split("-"); const rate=r.solved?Math.round(r.correct/r.solved*100):0; dayHtml+='<div class="strow"><span style="flex:1">'+Number(p[1])+"/"+Number(p[2])+'</span><span>푼 문제 <b>'+r.solved+'</b></span><span>정답 <b>'+r.correct+'</b> ('+rate+'%)</span></div>'; }); } else dayHtml='<div class="note-inline">아직 일별 기록이 없어요. 문제를 풀면 여기에 쌓여요!</div>';
+    // 📈 최근 30일 일별 학습량 막대그래프 (날짜순, 빈 날은 0)
+    var chartDays=[]; var today14=new Date();
+    for(var _i=29;_i>=0;_i--){ var _dt=new Date(today14.getFullYear(),today14.getMonth(),today14.getDate()-_i); var _k=dstr(_dt); var _r=hist[_k]||{solved:0,correct:0}; chartDays.push({key:_k,day:_dt.getDate(),wd:_dt.getDay(),solved:_r.solved||0,correct:_r.correct||0}); }
+    var maxS=1; chartDays.forEach(function(x){ if(x.solved>maxS)maxS=x.solved; });
+    var totalS=0,totalC=0,daysActive=0; chartDays.forEach(function(x){ totalS+=x.solved; totalC+=x.correct; if(x.solved)daysActive++; });
+    var chartBars=''; chartDays.forEach(function(x){ var hpct=Math.round(x.solved/maxS*100); var wrongPct=x.solved?Math.round((x.solved-x.correct)/x.solved*100):0; var isToday=(x.key===todayStr()); var wend=(x.wd===0||x.wd===6); var showLab=(isToday||x.day%5===0);
+      chartBars+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%" title="'+x.key+' · 푼 '+x.solved+' · 정답 '+x.correct+'">'
+        +'<div style="font-size:.5rem;color:var(--muted);margin-bottom:2px;height:.8em">'+(x.solved||'')+'</div>'
+        +'<div style="width:100%;max-width:14px;height:'+hpct+'%;min-height:'+(x.solved?5:2)+'px;border-radius:4px 4px 0 0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;background:var(--good)'+(x.solved?'':';background:var(--brand-soft);opacity:.5')+'">'
+          +(x.solved?'<div style="height:'+wrongPct+'%;background:var(--bad-soft)"></div>':'')+'</div>'
+        +'<div style="font-size:.5rem;margin-top:2px;font-weight:'+(isToday?'800':'400')+';color:'+(isToday?'var(--brand)':(wend?'var(--bad)':'var(--muted)'))+'">'+(showLab?x.day:'')+'</div></div>'; });
+    var avgRate=totalS?Math.round(totalC/totalS*100):0;
+    var chartHtml='<div style="display:flex;align-items:flex-end;gap:2px;height:120px;margin:14px 2px 4px">'+chartBars+'</div>'
+      +'<div class="strow" style="margin-top:6px"><span>30일 합계 <b>'+totalS+'</b>문제</span><span>정답 <b>'+totalC+'</b></span><span>공부한 날 <b>'+daysActive+'</b>일</span><span>평균정답률 <b>'+avgRate+'%</b></span></div>'
+      +'<div class="note-inline" style="margin-top:6px">막대 높이 = 그날 푼 문제 수 · <span style="color:var(--good);font-weight:700">초록</span>=맞은 문제 · <span style="color:var(--bad);font-weight:700">옅은 빨강</span>=틀린 문제 · 파란 숫자=오늘</div>';
     const body=$("adminChildBody");
     body.innerHTML='<div class="stcard"><div class="stname">'+c.emo+' '+escapeHtml(name)+' · Lv.'+s.lv+' '+lvEmoji(s.lv)+'</div>'
       +'<div class="strow"><span>오늘 <b>'+s.td.solved+'</b>문제</span><span>정답 <b>'+s.td.correct+'</b></span><span>연속출석 <b>'+s.streak+'</b>일</span><span>이번달 <b>'+s.monthN+'</b>일</span></div></div>'
       +'<div class="stcard"><div class="stname">📊 과목별 정답률</div><div class="arow" style="margin-top:8px">'+subjHtml+'</div><div class="strow" style="margin-top:8px"><span>오답 한국 <b>'+wrongsKr.length+'</b></span><span>오답 국제 <b>'+wrongsIntl.length+'</b></span></div></div>'
       +'<div class="stcard"><div class="stname">🎯 집중이 필요한 곳 (오답 많은 순)</div>'+focusHtml+'</div>'
-      +'<div class="stcard"><div class="stname">📅 일별 리포트 (최근 14일)</div>'+dayHtml+'</div>';
+      +'<div class="stcard"><div class="stname">📈 매일 학습량 (최근 30일)</div>'+chartHtml+'</div>'
+      +'<div class="stcard"><div class="stname">📅 일별 리포트 (최근 30일)</div>'+dayHtml+'</div>';
     var recs=LS.get("study_ivrec_"+name,{}); var rkeys=Object.keys(recs);
     if(rkeys.length){ var card=document.createElement("div"); card.className="stcard"; var h=document.createElement("div"); h.className="stname"; h.textContent="🎤 면담 녹음"; card.appendChild(h);
       rkeys.sort(function(a,b){return a-b;}).forEach(function(k){ var r=recs[k]; var row=document.createElement("div"); row.className="plrow";
