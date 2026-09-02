@@ -315,7 +315,7 @@
 
     <!-- step 3: subject -->
     <div id="vSubject" class="hidden">
-      <button class="backbtn" id="subjBack">← 트랙 다시 고르기</button>
+      <button class="backbtn" id="subjBack">← 아이 다시 고르기</button>
       <div class="weekbanner" id="weekBanner"></div>
       <div class="stcard" id="ttWrap" style="display:none;margin-bottom:12px"><div class="stname">📅 오늘 시간표</div><div id="ttCard"></div></div>
       <div class="dailystat" id="dailyStat"><span class="em">🔥</span><span>오늘 <b id="dToday">0</b>문제 · 정답 <b id="dCorrect">0</b></span></div>
@@ -1237,7 +1237,7 @@
     vocabMode=false; renderPractice(); renderLevel(); renderMissions();
     homeStep("subject"); setCrumb(); show("home");
   }
-  $("subjBack").addEventListener("click",gotoTrack);
+  $("subjBack").addEventListener("click",gotoChild);
   // 연습 모드는 아이 화면에서 제거됨(답을 미리 볼 수 있어서). 관리(부모) 화면의 '연습 입장'으로만 켬.
   function renderPractice(){ const b=$("practiceToggle"); if(!b) return; b.classList.toggle("on",practiceMode); b.querySelector(".pstate").textContent=practiceMode?"켜짐 (기록 안 함)":"꺼짐"; }
 
@@ -2510,6 +2510,13 @@
   function renderCurric(){
     const body=$("curBody"); body.innerHTML="";
     // 주간안내 원본 이미지
+    { const pc=document.createElement("div"); pc.className="stcard"; const has=getChildPin(name);
+      pc.innerHTML='<div class="stname">🔑 '+escapeHtml(name)+' 비밀번호</div><div class="note-inline" style="margin-bottom:8px">아이 화면에 들어갈 때 물어볼 4자리예요. '+(has?'지금 설정돼 있어요.':'안 정하면 바로 입장해요.')+'</div>';
+      const b1=document.createElement("button"); b1.className="bigbtn ghost"; b1.style.marginTop="2px"; b1.textContent=has?"🔑 비밀번호 변경":"🔑 비밀번호 설정";
+      b1.addEventListener("click",function(){ openPin({title:name+" 비밀번호 만들기",sub:"4자리를 정해요",mode:"create",onSuccess:function(p){ setChildPin(name,p); openAdminChild(name); },onCancel:function(){ openAdminChild(name); }}); });
+      pc.appendChild(b1);
+      if(has){ const b2=document.createElement("button"); b2.className="bigbtn ghost"; b2.style.marginTop="8px"; b2.textContent="비밀번호 없애기"; b2.addEventListener("click",function(){ if(confirm(name+"의 비밀번호를 없앨까요?")){ setChildPin(name,""); openAdminChild(name); } }); pc.appendChild(b2); }
+      body.appendChild(pc); }
     if(TIMETABLE[name]){ const ttc=document.createElement("div"); ttc.className="stcard"; ttc.innerHTML='<div class="stname">📅 '+escapeHtml(name)+' 주간 시간표</div>'+renderTimetableHTML(name); body.appendChild(ttc); }
     if(GUIDE_IMG[child.name]){ const gc=document.createElement("div"); gc.className="stcard"; gc.innerHTML='<div class="stname">📄 이번 주 '+(GUIDE_LABEL[child.name]||"주간안내")+' (원본)</div><div class="note-inline" style="margin:2px 0 8px">탭하면 크게 볼 수 있어요</div>'; const img=document.createElement("img"); img.src=GUIDE_IMG[child.name]; img.alt="주간학습안내"; img.style.cssText="width:100%;border-radius:10px;cursor:zoom-in;border:1px solid var(--border)"; img.addEventListener("click",()=>window.open(GUIDE_IMG[child.name],"_blank")); gc.appendChild(img); body.appendChild(gc); }
     const list=CURRICULUM[child.name]||[];
