@@ -1743,6 +1743,17 @@
       +'<div class="stcard"><div class="stname">🎯 집중이 필요한 곳 (오답 많은 순)</div>'+focusHtml+'</div>'
       +'<div class="stcard"><div class="stname">📈 매일 학습량 (최근 30일)</div>'+chartHtml+'</div>'
       +'<div class="stcard"><div class="stname">📅 일별 리포트 (최근 30일)</div>'+dayHtml+'</div>';
+    // 🔑 비밀번호 설정 + 📅 시간표 카드를 리포트 맨 위에 보이게 넣기
+    var _topCards=[];
+    if(TIMETABLE[name]){ var ttc=document.createElement("div"); ttc.className="stcard"; ttc.innerHTML='<div class="stname">📅 '+escapeHtml(name)+' 주간 시간표</div>'+renderTimetableHTML(name); _topCards.push(ttc); }
+    { var pc=document.createElement("div"); pc.className="stcard"; var has=getChildPin(name);
+      pc.innerHTML='<div class="stname">🔑 '+escapeHtml(name)+' 비밀번호</div><div class="note-inline" style="margin-bottom:8px">아이 화면에 들어갈 때 물어볼 4자리예요. '+(has?'지금 설정돼 있어요.':'안 정하면 바로 입장해요.')+'</div>';
+      var b1=document.createElement("button"); b1.className="bigbtn ghost"; b1.style.marginTop="2px"; b1.textContent=has?"🔑 비밀번호 변경":"🔑 비밀번호 설정";
+      b1.addEventListener("click",function(){ openPin({title:name+" 비밀번호 만들기",sub:"4자리를 정해요",mode:"create",onSuccess:function(p){ setChildPin(name,p); openAdminChild(name); },onCancel:function(){ openAdminChild(name); }}); });
+      pc.appendChild(b1);
+      if(has){ var b2=document.createElement("button"); b2.className="bigbtn ghost"; b2.style.marginTop="8px"; b2.textContent="비밀번호 없애기"; b2.addEventListener("click",function(){ if(confirm(name+"의 비밀번호를 없앨까요?")){ setChildPin(name,""); openAdminChild(name); } }); pc.appendChild(b2); }
+      _topCards.push(pc); }
+    _topCards.forEach(function(el){ body.insertBefore(el, body.firstChild); }); // 시간표→PIN 순으로 prepend되어 PIN이 맨 위
     var recs=LS.get("study_ivrec_"+name,{}); var rkeys=Object.keys(recs);
     if(rkeys.length){ var card=document.createElement("div"); card.className="stcard"; var h=document.createElement("div"); h.className="stname"; h.textContent="🎤 면담 녹음"; card.appendChild(h);
       rkeys.sort(function(a,b){return a-b;}).forEach(function(k){ var r=recs[k]; var row=document.createElement("div"); row.className="plrow";
@@ -2514,14 +2525,6 @@
   function renderCurric(){
     const body=$("curBody"); body.innerHTML="";
     // 주간안내 원본 이미지
-    { const pc=document.createElement("div"); pc.className="stcard"; const has=getChildPin(name);
-      pc.innerHTML='<div class="stname">🔑 '+escapeHtml(name)+' 비밀번호</div><div class="note-inline" style="margin-bottom:8px">아이 화면에 들어갈 때 물어볼 4자리예요. '+(has?'지금 설정돼 있어요.':'안 정하면 바로 입장해요.')+'</div>';
-      const b1=document.createElement("button"); b1.className="bigbtn ghost"; b1.style.marginTop="2px"; b1.textContent=has?"🔑 비밀번호 변경":"🔑 비밀번호 설정";
-      b1.addEventListener("click",function(){ openPin({title:name+" 비밀번호 만들기",sub:"4자리를 정해요",mode:"create",onSuccess:function(p){ setChildPin(name,p); openAdminChild(name); },onCancel:function(){ openAdminChild(name); }}); });
-      pc.appendChild(b1);
-      if(has){ const b2=document.createElement("button"); b2.className="bigbtn ghost"; b2.style.marginTop="8px"; b2.textContent="비밀번호 없애기"; b2.addEventListener("click",function(){ if(confirm(name+"의 비밀번호를 없앨까요?")){ setChildPin(name,""); openAdminChild(name); } }); pc.appendChild(b2); }
-      body.appendChild(pc); }
-    if(TIMETABLE[name]){ const ttc=document.createElement("div"); ttc.className="stcard"; ttc.innerHTML='<div class="stname">📅 '+escapeHtml(name)+' 주간 시간표</div>'+renderTimetableHTML(name); body.appendChild(ttc); }
     if(GUIDE_IMG[child.name]){ const gc=document.createElement("div"); gc.className="stcard"; gc.innerHTML='<div class="stname">📄 이번 주 '+(GUIDE_LABEL[child.name]||"주간안내")+' (원본)</div><div class="note-inline" style="margin:2px 0 8px">탭하면 크게 볼 수 있어요</div>'; const img=document.createElement("img"); img.src=GUIDE_IMG[child.name]; img.alt="주간학습안내"; img.style.cssText="width:100%;border-radius:10px;cursor:zoom-in;border:1px solid var(--border)"; img.addEventListener("click",()=>window.open(GUIDE_IMG[child.name],"_blank")); gc.appendChild(img); body.appendChild(gc); }
     const list=CURRICULUM[child.name]||[];
     if(!list.length){ const e=document.createElement("div"); e.className="note-inline"; e.style.marginTop="10px"; e.textContent="이 아이의 단원별 예습·복습 문제는 아직 없어요. 주간안내를 보내주시면 채워드려요."; body.appendChild(e); return; }

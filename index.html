@@ -1738,6 +1738,8 @@
       +'<div class="stcard"><div class="stname">🎯 집중이 필요한 곳 (오답 많은 순)</div>'+focusHtml+'</div>'
       +'<div class="stcard"><div class="stname">📈 매일 학습량 (최근 30일)</div>'+chartHtml+'</div>'
       +'<div class="stcard"><div class="stname">📅 일별 리포트 (최근 30일)</div>'+dayHtml+'</div>';
+    // 📅 주간 시간표 카드를 리포트 맨 위에
+    if(TIMETABLE[name]){ var ttc=document.createElement("div"); ttc.className="stcard"; ttc.innerHTML='<div class="stname">📅 '+escapeHtml(name)+' 주간 시간표</div>'+renderTimetableHTML(name); body.insertBefore(ttc, body.firstChild); }
     var recs=LS.get("study_ivrec_"+name,{}); var rkeys=Object.keys(recs);
     if(rkeys.length){ var card=document.createElement("div"); card.className="stcard"; var h=document.createElement("div"); h.className="stname"; h.textContent="🎤 면담 녹음"; card.appendChild(h);
       rkeys.sort(function(a,b){return a-b;}).forEach(function(k){ var r=recs[k]; var row=document.createElement("div"); row.className="plrow";
@@ -2496,7 +2498,6 @@
   function renderCurric(){
     const body=$("curBody"); body.innerHTML="";
     // 주간안내 원본 이미지
-    if(TIMETABLE[name]){ const ttc=document.createElement("div"); ttc.className="stcard"; ttc.innerHTML='<div class="stname">📅 '+escapeHtml(name)+' 주간 시간표</div>'+renderTimetableHTML(name); body.appendChild(ttc); }
     if(GUIDE_IMG[child.name]){ const gc=document.createElement("div"); gc.className="stcard"; gc.innerHTML='<div class="stname">📄 이번 주 '+(GUIDE_LABEL[child.name]||"주간안내")+' (원본)</div><div class="note-inline" style="margin:2px 0 8px">탭하면 크게 볼 수 있어요</div>'; const img=document.createElement("img"); img.src=GUIDE_IMG[child.name]; img.alt="주간학습안내"; img.style.cssText="width:100%;border-radius:10px;cursor:zoom-in;border:1px solid var(--border)"; img.addEventListener("click",()=>window.open(GUIDE_IMG[child.name],"_blank")); gc.appendChild(img); body.appendChild(gc); }
     const list=CURRICULUM[child.name]||[];
     if(!list.length){ const e=document.createElement("div"); e.className="note-inline"; e.style.marginTop="10px"; e.textContent="이 아이의 단원별 예습·복습 문제는 아직 없어요. 주간안내를 보내주시면 채워드려요."; body.appendChild(e); return; }
