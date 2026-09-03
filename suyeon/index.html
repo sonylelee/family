@@ -1248,14 +1248,20 @@
   const QUIZ_TARGET = 18;
   function expandPool(pool, subj, grade, target){
     target = target || QUIZ_TARGET;
+    const mastered = (typeof child!=="undefined"&&child) ? LS.get("study_seen_"+child.name,{}) : {};
     const genItems = pool.filter(p=>p.gen && GEN[p.gen]);
     const out = []; const seen = {}; const keyOf = function(q){ return (q.q||"")+"||"+((q.c||[]).join("~")); };
     const seeds = shuffle(pool.slice());
+    // 이미 맞힌 문제(q 기준)는 빼기
+    let fresh = seeds.filter(function(q){ return !mastered[q.q]; });
+    // 생성기도 없고 남은 새 문제가 너무 적으면 복습이라도 하게 제외 안 함
+    if(!genItems.length && fresh.length < Math.min(target,4)) fresh = seeds;
     // 생성기가 있으면 씨앗은 절반 정도만 넣고 나머지는 매번 새로 생성 → 반복 최소화
-    const seedCap = genItems.length ? Math.min(seeds.length, Math.ceil(target*0.5)) : seeds.length;
+    const seedCap = genItems.length ? Math.min(fresh.length, Math.ceil(target*0.5)) : fresh.length;
     let sc=0;
-    seeds.forEach(function(q){ if(sc>=seedCap) return; const kk=keyOf(q); if(seen[kk]) return; seen[kk]=1; out.push(Object.assign({},q,{subj:subj,grade:grade,retry:0})); sc++; });
-    if(genItems.length){ let guard=0; while(out.length<target && guard<target*12){ guard++; const src=genItems[rnd(genItems.length)]; const g=Object.assign(GEN[src.gen](),{gen:src.gen,u:src.u,subj:subj,grade:grade,retry:0}); const kk=keyOf(g); if(seen[kk]) continue; seen[kk]=1; out.push(g); } }
+    fresh.forEach(function(q){ if(sc>=seedCap) return; const kk=keyOf(q); if(seen[kk]) return; seen[kk]=1; out.push(Object.assign({},q,{subj:subj,grade:grade,retry:0})); sc++; });
+    if(genItems.length){ let guard=0; while(out.length<target && guard<target*20){ guard++; const src=genItems[rnd(genItems.length)]; const g=Object.assign(GEN[src.gen](),{gen:src.gen,u:src.u,subj:subj,grade:grade,retry:0}); if(mastered[g.q]) continue; const kk=keyOf(g); if(seen[kk]) continue; seen[kk]=1; out.push(g); } }
+    if(!out.length){ shuffle(pool.slice()).forEach(function(q){ if(out.length>=target) return; out.push(Object.assign({},q,{subj:subj,grade:grade,retry:0})); }); } // 다 맞힌 경우 복습용
     return shuffle(out);
   }
   function startQuiz(subj){
@@ -1356,7 +1362,7 @@
     // 오답노트 졸업 추적: 복습/오답풀기 문제(_wid)를 맞히면 카운트, 2회 연속이면 노트에서 졸업
     if(!practiceMode && item._wid){ const arr=getWrongs(); const wi=arr.findIndex(x=>x.id===item._wid);
       if(wi>=0){ if(correct){ arr[wi].ok=(arr[wi].ok||0)+1; item._okNow=arr[wi].ok; if(arr[wi].ok>=2){ arr.splice(wi,1); item._graduated=true; } } else { arr[wi].ok=0; } saveWrongs(arr); } }
-    if(correct){ score++; }
+    if(correct){ score++; if(!practiceMode && typeof child!=="undefined" && child){ try{ const sn=LS.get("study_seen_"+child.name,{}); if(!sn[item.q]){ sn[item.q]=1; LS.set("study_seen_"+child.name,sn); } }catch(e){} } }
     else{
       btn.classList.add("wrong");
       if(!practiceMode && !item._wid){ const w=getWrongs(); if(!w.some(x=>x.q===item.q)){ w.push({id:wid(),ok:0,q:item.q,c:item.c,a:item.a,e:item.e,gen:item.gen,u:item.u,subj:item.subj,grade:item.grade}); saveWrongs(w); } }
