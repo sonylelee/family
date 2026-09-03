@@ -325,6 +325,7 @@
       <div class="section-t" id="subjTitle">과목을 골라요</div>
       <div class="subjects" id="subjectPick"></div>
       <button class="noteopen" id="openNote">📒 오답노트 <span class="cnt" id="noteCnt">0</span></button>
+      <div class="row2" style="margin-top:10px"><button class="bigbtn ghost" id="btnPlanner" style="margin-top:0">📅 학교생활 플래너</button><button class="bigbtn ghost" id="btnCurric" style="margin-top:0">📚 이번 주 학교 진도</button></div>
     </div>
   </div>
 
@@ -2063,6 +2064,7 @@
   }
   $("plBack").addEventListener("click",gotoTrack);
   document.querySelectorAll('[data-planner]').forEach(function(b){ b.addEventListener('click',openPlanner); });
+  { var _bp=$("btnPlanner"); if(_bp) _bp.addEventListener('click',openPlanner); var _bc=$("btnCurric"); if(_bc) _bc.addEventListener('click',openCurric); }
 
   // ---------- 오늘의 미션 ----------
   const MISSIONS=[
