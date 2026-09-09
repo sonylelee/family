@@ -399,6 +399,28 @@
     </div>
   </div>
 
+  <!-- 리딩홈워크 (벤자민) -->
+  <div id="readhw" class="hidden">
+    <div class="qtop">
+      <button class="back" id="rhBack" aria-label="뒤로">←</button>
+      <div class="qcount" style="flex:1">🎙️ 리딩홈워크 · 벤자민</div>
+    </div>
+    <div class="ivcard">
+      <div style="text-align:center;font-size:2.6rem;line-height:1">🦉</div>
+      <div class="ivqko" id="rhHi" style="text-align:center;font-weight:800;margin:6px 0 2px">안녕! 나는 벤자민 선생님이야 😊</div>
+      <div class="note-inline" id="rhIntro" style="text-align:center;margin-bottom:12px">오늘 영어 리딩 숙제를 <b>또박또박</b> 읽어줘! 녹음해서 엄마가 확인할 거예요 📖</div>
+      <input type="text" id="rhTitle" placeholder="오늘 읽은 책/제목 (예: Unit 3 The Frog)" style="width:100%;box-sizing:border-box;background:var(--surface-2,#0f1319);color:inherit;border:1px solid var(--border,#ccc);border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px">
+      <button class="recbtn" id="rhRec">🎙️ 녹음 시작</button>
+      <div class="meter hidden" id="rhMeter"><i id="rhMeterFill"></i></div>
+      <button class="ivbtn" id="rhPlay" disabled style="width:100%;margin-top:10px">▶️ 방금 녹음 다시 듣기</button>
+      <div class="note-inline" id="rhNote" style="text-align:center;margin-top:8px"></div>
+    </div>
+    <div class="stcard">
+      <div class="stname">📼 오늘 낸 리딩 숙제</div>
+      <div id="rhList"><div class="note-inline">아직 녹음이 없어요. 위에서 읽어봐요!</div></div>
+    </div>
+  </div>
+
   <!-- PIN -->
   <div id="pin" class="hidden">
     <div class="pinwrap">
@@ -554,7 +576,7 @@
 
   const TRACKS = {
     kr:   { label:"한국 학교 공부", subjects:[{k:"math",emo:"🔢",n:"수학"},{k:"korean",emo:"📖",n:"국어"},{k:"english",emo:"🔤",n:"영어"}] },
-    intl: { label:"국제학교 준비", subjects:[{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"dict",emo:"📖",n:"영어사전"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"eword",emo:"💡",n:"영단어 암기"},{k:"readaloud",emo:"📢",n:"읽기 연습"},{k:"wordorder",emo:"🎮",n:"어순 게임"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
+    intl: { label:"국제학교 준비", subjects:[{k:"readhw",emo:"🎙️",n:"리딩홈워크 (벤자민)"},{k:"enmath",emo:"🧮",n:"영어 수학"},{k:"mathvocab",emo:"📕",n:"수학 단어집"},{k:"dict",emo:"📖",n:"영어사전"},{k:"enread",emo:"📚",n:"영어 읽기"},{k:"eword",emo:"💡",n:"영단어 암기"},{k:"readaloud",emo:"📢",n:"읽기 연습"},{k:"wordorder",emo:"🎮",n:"어순 게임"},{k:"interview",emo:"🗣️",n:"영어 면담"}] }
   };
 
   const UNITS = {
@@ -1150,7 +1172,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet","curric","submenu","adminchild"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); const cb=$("crumb"); if(cb) cb.textContent=(s==="admin"||s==="adminchild")?"관리":((typeof child!=="undefined"&&child)?child.name:"시작"); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","readhw","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet","curric","submenu","adminchild"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); const cb=$("crumb"); if(cb) cb.textContent=(s==="admin"||s==="adminchild")?"관리":((typeof child!=="undefined"&&child)?child.name:"시작"); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -1223,11 +1245,13 @@
     const dd=getDaily(); $("dToday").textContent=dd.solved; $("dCorrect").textContent=dd.correct;
     $("subjTitle").textContent = TRACKS[track].label+" · 과목 고르기";
     const box=$("subjectPick"); box.innerHTML="";
-    const subjList = (track==="kr" && child.g===8) ? TRACKS.kr.subjects.concat(EXTRA8) : TRACKS[track].subjects;
+    let subjList = (track==="kr" && child.g===8) ? TRACKS.kr.subjects.concat(EXTRA8) : TRACKS[track].subjects;
+    // 리딩홈워크(벤자민)는 태희·태정만
+    subjList = subjList.filter(s=> s.k!=="readhw" || child.name==="태희" || child.name==="태정");
     subjList.forEach(s=>{ const b=document.createElement("button"); b.className="subj"+(track==="intl"?" intl":"");
-      let sub = s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : s.k==="eword" ? "단어 암기법 💡" : s.k==="dict" ? "단어 찾기" : s.k==="readaloud" ? "소리내어 읽기" : s.k==="wordorder" ? "문장 순서 맞추기" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
+      let sub = s.k==="readhw" ? "벤자민이 들어줘요 🎙️" : s.k==="interview" ? "말하기 연습" : s.k==="mathvocab" ? "영어 수학 용어" : s.k==="eword" ? "단어 암기법 💡" : s.k==="dict" ? "단어 찾기" : s.k==="readaloud" ? "소리내어 읽기" : s.k==="wordorder" ? "문장 순서 맞추기" : (track==="intl"? "국제학교 "+child.intlG : getUnitName(s.k,child.g,isGated()?unlockedUnit(s.k):1));
       b.innerHTML='<span class="semo">'+s.emo+'</span><span class="sname">'+s.n+'</span><span class="scount">'+sub+'</span>';
-      b.addEventListener("click",()=>{ if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else if(s.k==="eword") openEword(); else if(s.k==="dict") openDict(); else if(s.k==="readaloud") openReadAloud(); else if(s.k==="wordorder") openWordOrder(); else if(track==="kr") openSubjMenu(s.k); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
+      b.addEventListener("click",()=>{ if(s.k==="readhw") openReadHW(); else if(s.k==="interview") openInterview(); else if(s.k==="mathvocab") openGlossary(); else if(s.k==="eword") openEword(); else if(s.k==="dict") openDict(); else if(s.k==="readaloud") openReadAloud(); else if(s.k==="wordorder") openWordOrder(); else if(track==="kr") openSubjMenu(s.k); else { const uu=(UNITS[s.k][child.g]||[]).length; if(uu>1) openUnits(s.k); else startQuizAll(s.k); } });
       box.appendChild(b); });
     $("noteCnt").textContent=getWrongs().length;
     vocabMode=false; renderPractice(); renderLevel(); renderMissions();
@@ -1651,6 +1675,49 @@
   });
   $("ivPlay").addEventListener("click",function(){ if(recURL){ try{ new Audio(recURL).play(); }catch(e){} } });
 
+  // ---------- 리딩홈워크 (벤자민) ----------
+  let bmRec=null, bmChunks=[], bmURL=null, bmActive=false, bmCtx=null, bmRaf=0, bmStream=null;
+  function rhKey(){ return "study_readhw_"+child.name; }
+  function openReadHW(){ resetBm(); $("rhTitle").value=""; $("rhNote").textContent=""; renderRhList(); show("readhw"); }
+  function renderRhList(){
+    const box=$("rhList"); const arr=LS.get(rhKey(),[]);
+    if(!arr.length){ box.innerHTML='<div class="note-inline">아직 녹음이 없어요. 위에서 읽어봐요!</div>'; return; }
+    box.innerHTML="";
+    arr.slice().reverse().forEach(function(r){ const row=document.createElement("div"); row.className="plrow";
+      const btn=document.createElement("button"); btn.className="mdo"; btn.textContent="▶️ 듣기"; btn.addEventListener("click",function(){ try{ new Audio(r.data).play(); }catch(e){} });
+      const lab=document.createElement("span"); lab.className="mlabel"; lab.style.cssText="font-size:.8rem;flex:1"; lab.innerHTML=(r.checked?"✅ ":"")+escapeHtml(r.title||"리딩 숙제")+" <span style='color:var(--muted,#999)'>("+(r.date||"")+")</span>";
+      const del=document.createElement("button"); del.className="mdo"; del.style.opacity=".6"; del.textContent="🗑"; del.addEventListener("click",function(){ if(confirm("이 녹음을 지울까요?")){ const a=LS.get(rhKey(),[]).filter(function(x){return x.id!==r.id;}); LS.set(rhKey(),a); renderRhList(); } });
+      row.appendChild(btn); row.appendChild(lab); row.appendChild(del); box.appendChild(row); });
+  }
+  function stopBmMeter(){ try{ if(bmRaf) cancelAnimationFrame(bmRaf); }catch(e){} bmRaf=0; $("rhMeter").classList.add("hidden"); $("rhMeterFill").style.width="0%"; try{ if(bmCtx) bmCtx.close(); }catch(e){} bmCtx=null; }
+  function resetBm(){ bmActive=false; try{ if(bmRec&&bmRec.state&&bmRec.state!=="inactive") bmRec.stop(); }catch(e){} stopBmMeter(); try{ if(bmStream) bmStream.getTracks().forEach(function(t){t.stop();}); }catch(e){} bmStream=null; var rb=$("rhRec"); if(rb){ rb.classList.remove("rec"); rb.textContent="🎙️ 녹음 시작"; } $("rhPlay").disabled=true; if(bmURL){ try{URL.revokeObjectURL(bmURL);}catch(e){} bmURL=null; } }
+  function saveRh(blob){ try{ var fr=new FileReader(); var title=($("rhTitle").value||"").trim()||"리딩 숙제"; fr.onload=function(){ try{ var arr=LS.get(rhKey(),[]); arr.push({id:"rh"+Date.now(), title:title, data:fr.result, date:todayStr(), checked:false}); while(arr.length>12) arr.shift(); LS.set(rhKey(),arr); renderRhList(); }catch(e){} }; fr.readAsDataURL(blob); }catch(e){} }
+  $("rhBack").addEventListener("click",function(){ resetBm(); gotoSubject(); });
+  $("rhRec").addEventListener("click", function(){
+    if(bmActive){ try{ bmRec.stop(); }catch(e){} return; }
+    if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder)){ $("rhNote").textContent="이 브라우저는 녹음을 지원하지 않아요 (Chrome/Safari 권장)"; return; }
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      bmStream=stream;
+      try{ bmRec=new MediaRecorder(stream); }catch(e){ try{ bmRec=new MediaRecorder(stream,{mimeType:"audio/mp4"}); }catch(e2){ $("rhNote").textContent="녹음을 시작할 수 없어요."; return; } }
+      bmChunks=[];
+      bmRec.ondataavailable=function(e){ if(e.data&&e.data.size) bmChunks.push(e.data); };
+      bmRec.onstop=function(){
+        bmActive=false; stopBmMeter(); try{ if(bmStream) bmStream.getTracks().forEach(function(t){t.stop();}); }catch(e){}
+        var rb=$("rhRec"); rb.classList.remove("rec"); rb.textContent="🎙️ 다시 녹음";
+        try{ if(bmURL) URL.revokeObjectURL(bmURL); var blob=new Blob(bmChunks,{type:(bmRec&&bmRec.mimeType)||"audio/webm"}); bmURL=URL.createObjectURL(blob); $("rhPlay").disabled=false; saveRh(blob); var a=new Audio(bmURL); a.play().catch(function(){}); $("rhNote").innerHTML="🦉 잘했어요! 벤자민이 저장했어요. 엄마가 들어볼 거예요 💛"; }catch(e){}
+      };
+      bmRec.start(); bmActive=true;
+      var rb=$("rhRec"); rb.classList.add("rec"); rb.textContent="⏹ 멈추기 (녹음 중…)"; $("rhMeter").classList.remove("hidden"); $("rhNote").textContent="🔴 녹음 중 — 또박또박 읽어줘!";
+      try{ bmCtx=new (window.AudioContext||window.webkitAudioContext)();
+        var startMeter=function(){ try{ var src=bmCtx.createMediaStreamSource(stream); var an=bmCtx.createAnalyser(); an.fftSize=512; var g=bmCtx.createGain(); g.gain.value=0; src.connect(an); an.connect(g); g.connect(bmCtx.destination);
+          var data=new Uint8Array(an.fftSize); (function tick(){ if(!bmActive) return; an.getByteTimeDomainData(data); var peak=0; for(var i=0;i<data.length;i++){ var v=Math.abs(data[i]-128); if(v>peak) peak=v; } $("rhMeterFill").style.width=Math.min(100,Math.round(peak/60*100))+"%"; bmRaf=requestAnimationFrame(tick); })();
+        }catch(e){} };
+        if(bmCtx.state==="suspended"){ bmCtx.resume().then(startMeter).catch(startMeter); } else startMeter();
+      }catch(e){}
+    }).catch(function(){ $("rhNote").textContent="마이크 권한을 허용해주세요."; });
+  });
+  $("rhPlay").addEventListener("click",function(){ if(bmURL){ try{ new Audio(bmURL).play(); }catch(e){} } });
+
   // ---------- 관리 (부모) ----------
   function openAdmin(){ renderAdmin(); show("admin"); syncPullAll().then(renderAdmin); }
   function renderAdmin(){
@@ -1754,6 +1821,19 @@
         var lab=document.createElement("span"); lab.className="mlabel"; lab.style.fontSize=".8rem"; lab.textContent=(r.q||("질문 "+(Number(k)+1)))+"  ("+(r.date||"")+")";
         row.appendChild(btn); row.appendChild(lab); card.appendChild(row); });
       body.appendChild(card);
+    }
+    // 🎙️ 리딩홈워크 (벤자민) — 재생 + 검사완료 체크
+    var rh=LS.get("study_readhw_"+name,[]);
+    if(rh.length){ var rc=document.createElement("div"); rc.className="stcard"; var rhh=document.createElement("div"); rhh.className="stname"; rhh.textContent="🎙️ 리딩홈워크 (벤자민)"; rc.appendChild(rhh);
+      rh.slice().reverse().forEach(function(r){ var row=document.createElement("div"); row.className="plrow";
+        var pb=document.createElement("button"); pb.className="mdo"; pb.textContent="▶️ 듣기"; pb.addEventListener("click",function(){ try{ new Audio(r.data).play(); }catch(e){} });
+        var lab=document.createElement("span"); lab.className="mlabel"; lab.style.cssText="font-size:.8rem;flex:1";
+        function relab(t){ lab.innerHTML=((t&&t.checked)?"✅ ":"")+escapeHtml(r.title||"리딩 숙제")+" <span style='color:var(--muted,#999)'>("+(r.date||"")+")</span>"; }
+        relab(r);
+        var chk=document.createElement("button"); chk.className="mdo"; chk.textContent=r.checked?"✅ 검사완료":"⬜ 검사";
+        chk.addEventListener("click",function(){ var a=LS.get("study_readhw_"+name,[]); var t=null; a.forEach(function(x){ if(x.id===r.id) t=x; }); if(t){ t.checked=!t.checked; LS.set("study_readhw_"+name,a); chk.textContent=t.checked?"✅ 검사완료":"⬜ 검사"; relab(t); try{ syncPush(SYNC_NS+name,_childKeyMap(name)); }catch(e){} } });
+        row.appendChild(pb); row.appendChild(lab); row.appendChild(chk); rc.appendChild(row); });
+      body.appendChild(rc);
     }
   }
   $("adminChildBack").addEventListener("click",openAdmin);
