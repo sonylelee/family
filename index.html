@@ -309,6 +309,7 @@
         <button class="track intl" data-track="intl"><div class="temo">🌍</div><div><div class="tname">국제학교 준비</div><div class="tdesc" id="intlDesc">영어로 · 입학시험 대비</div></div><div class="tarr">›</div></button>
         <button class="track" data-curric="1"><div class="temo" style="background:var(--good-soft)">📚</div><div><div class="tname">이번 주 학교 진도</div><div class="tdesc">수업 전 예습 요약 · 배운 단원 복습 문제</div></div><div class="tarr">›</div></button>
         <button class="track" data-planner="1"><div class="temo" style="background:var(--accent-soft)">📅</div><div><div class="tname">학교생활 플래너</div><div class="tdesc">시간표 · 학원 · 준비물 · 공지</div></div><div class="tarr">›</div></button>
+        <button class="track" id="examTrackBtn" data-exam="1" style="display:none"><div class="temo" style="background:#ffe0e6">📝</div><div><div class="tname">중간고사 준비</div><div class="tdesc">2학기 1차 · 과목별 시험범위 요약 · 예상문제</div></div><div class="tarr">›</div></button>
       </div>
     </div>
 
@@ -530,6 +531,8 @@
     <div id="acList"></div>
     <div class="section-t">🎒 준비물</div>
     <div id="supList"></div>
+    <div class="section-t" id="alrimTitle" style="display:none">📮 이번 주 알림장</div>
+    <div id="plAlrim"></div>
     <div class="section-t">📌 학교 공지 · 메모</div>
     <textarea id="plNotice" class="plnotice" placeholder="학교 공지사항이나 메모를 적어요 (붙여넣기 가능)"></textarea>
     <div class="note-inline" style="margin-top:8px">✏️ 입력하면 자동 저장돼요 (이 기기)</div>
@@ -558,6 +561,11 @@
     <div class="qtop"><button class="back" id="curBack" aria-label="뒤로">←</button><div class="qcount" id="curTitle" style="flex:1">📚 이번 주 학교 진도</div></div>
     <div id="curBody"></div>
     <div id="curQuiz" class="hidden"></div>
+  </div>
+
+  <div id="exam" class="hidden">
+    <div class="qtop"><button class="back" id="examBack" aria-label="뒤로">←</button><div class="qcount" id="examTitle" style="flex:1">📝 중간고사 준비</div></div>
+    <div id="examBody"></div>
   </div>
 </div>
 
@@ -1172,7 +1180,7 @@
   let ivIndex=0, ivRecog=null, ivRecActive=false;
   let practiceMode=false;
 
-  function show(s){ ["home","quiz","result","wrongbook","interview","readhw","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet","curric","submenu","adminchild"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); const cb=$("crumb"); if(cb) cb.textContent=(s==="admin"||s==="adminchild")?"관리":((typeof child!=="undefined"&&child)?child.name:"시작"); window.scrollTo(0,0); }
+  function show(s){ ["home","quiz","result","wrongbook","interview","readhw","pin","units","cal","status","glossary","readaloud","admin","wordorder","dict","summary","planner","viet","curric","submenu","adminchild","exam"].forEach(x=>$(x).classList.toggle("hidden", x!==s)); const cb=$("crumb"); if(cb) cb.textContent=(s==="admin"||s==="adminchild")?"관리":((typeof child!=="undefined"&&child)?child.name:"시작"); window.scrollTo(0,0); }
   function homeStep(step){ $("vChild").classList.toggle("hidden",step!=="child"); $("vTrack").classList.toggle("hidden",step!=="track"); $("vSubject").classList.toggle("hidden",step!=="subject"); }
   function setCrumb(){ let t=child?child.name:"시작"; if(!$("vTrack").classList.contains("hidden")) t=child.name; if(!$("vSubject").classList.contains("hidden")) t=child.name+" · "+TRACKS[track].label; $("crumb").textContent=t; }
 
@@ -1227,6 +1235,7 @@
       $("krDesc").textContent = (child.g===8?"중2 과정":child.kGrade)+" · 수학·국어·영어";
       $("intlDesc").textContent = "영어로 · "+child.intlG+" "+child.intlNote;
     }
+    var eb=$("examTrackBtn"); if(eb) eb.style.display=(!adult && child.name==="태운")?"":"none";  // 중간고사: 태운 전용
     homeStep("track"); setCrumb(); show("home");
   }
   $("trackBack").addEventListener("click",gotoChild);
@@ -2090,8 +2099,29 @@
   function getPlan(){ const saved=LS.get(plKey(),null); return saved || defaultPlan(child.name); }
   function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
   function openPlanner(){ renderPlanner(); show("planner"); }
+  // 담임 알림장 (실제 알림장 기반 · 주간)
+  const ALRIM = {
+    "태희": { when:"9월 11일(금) · 설운경 선생님", items:[
+      "다음 주 읽을 책 정하기 (주말에도 40쪽 분량 읽고 오기)",
+      "소금 '도라지' 연습하기 (소금 악보로)",
+      "사회 배운 내용 교과서·공책 읽으며 복습하기",
+      "체육대회 — 화요일(9/15): 반티, 긴팔 상하의, 모자, 물, 운동화",
+      "안전하고 즐거운 주말 보내고 오기" ] },
+    "태정": { when:"이번 주 알림 · 4학년 3반", items:[
+      "안전: 독감 주의(손씻기·마스크), 일교차 큼 → 얇은 겉옷 챙기기",
+      "숙제(이번 주 많음!): 수학 수행평가지 부모님 확인받아 오기(7·13·19번)",
+      "실과 54~55쪽 정리하기",
+      "배움공책에 '한글' 주제로 새로운 사실 1가지 조사(4~5줄)",
+      "독서감상문 — 독서기록장에 쓰기",
+      "월요일: 줄넘기 챙기기 · 준비물/과제 스스로 챙기기",
+      "※ 2학기엔 숙제 당일 제출 안 되면 남아서 해요 — 미리미리!" ] }
+  };
   function renderPlanner(){
     const pl=getPlan(); $("plTitle").textContent="📅 "+child.name+" 플래너";
+    // 알림장 카드
+    var al=ALRIM[child.name], aw=$("plAlrim"), at=$("alrimTitle");
+    if(al){ at.style.display=""; aw.innerHTML='<div class="card" style="margin-bottom:6px"><div class="note-inline" style="margin-bottom:8px">'+al.when+'</div><ul style="margin:0;padding-left:18px;line-height:1.8;font-size:.9rem">'+al.items.map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul></div>'; }
+    else { at.style.display="none"; aw.innerHTML=""; }
     let th='<thead><tr><th>교시</th>'+PLDAYS.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr></thead><tbody>';
     var mpx=6; Object.keys(pl.tt).forEach(function(k){ var p=parseInt((k.split('-')[1]||'0'),10); if(p>mpx)mpx=p; });
     for(var pr=1;pr<=mpx;pr++){ th+='<tr><td>'+pr+'</td>'+PLDAYS.map(function(d){ var v=(pl.tt[d+'-'+pr]||''); return '<td><input class="pl-in" data-tt="'+d+'-'+pr+'" value="'+escAttr(v)+'"></td>'; }).join('')+'</tr>'; }
@@ -2637,6 +2667,87 @@
   }
   $("curBack").addEventListener("click",gotoTrack);
   document.querySelectorAll('[data-curric]').forEach(b=>b.addEventListener("click",openCurric));
+
+  // ============ 태운 중간고사 준비 (석우중 2학년 · 2학기 1차) ============
+  const EXAM_TAEUN = [
+    { emo:"📐", subj:"수학", badges:["IV. 삼각형과 사각형의 성질","교과서 p.136~179 (프린트·학습지 포함)","총 22문항 (선택 19 + 논술 3)"],
+      sum:["이등변삼각형: 두 밑각의 크기가 같다. 꼭지각의 이등분선은 밑변을 수직이등분한다.",
+           "삼각형의 외심 = 세 변의 수직이등분선의 교점 → 세 꼭짓점까지 거리가 같다(외접원 반지름).",
+           "삼각형의 내심 = 세 내각의 이등분선의 교점 → 세 변까지 거리가 같다(내접원 반지름).",
+           "평행사변형의 성질: 두 쌍의 대변·대각이 각각 같고, 두 대각선은 서로 이등분한다.",
+           "직사각형(대각선 길이 같음)·마름모(대각선이 수직이등분)·정사각형·등변사다리꼴의 성질 구분.",
+           "평행선 사이 넓이: 밑변과 높이가 같으면 넓이가 같다."],
+      ex:[["이등변삼각형 ABC(AB=AC)에서 꼭지각 ∠A=40°일 때 ∠B의 크기는?","∠B=∠C=(180−40)/2 = 70°"],
+          ["평행사변형 ABCD에서 ∠A=110°이면 이웃한 ∠B는?","대각의 합 180° → ∠B = 70°"],
+          ["삼각형의 외심에서 세 꼭짓점까지의 거리가 같은 이유를 서술하시오. (논술)","외심은 세 변의 수직이등분선의 교점이고, 수직이등분선 위의 점은 양 끝점까지 거리가 같으므로 세 꼭짓점까지의 거리가 모두 같다."],
+          ["마름모의 두 대각선이 갖는 성질 2가지를 쓰시오.","① 서로 다른 것을 수직이등분한다 ② 각 대각선이 마름모의 대각을 이등분한다."]] },
+    { emo:"📖", subj:"국어", badges:["1단원(2) 문학 속의 삶","2단원(1)(2) 읽기·글쓰기","4단원(2) 매체 자료","선택 22 + 논술 2 · 연계 학습지 필수"],
+      sum:["작품: 「수난이대」, 「가난한 사랑 노래」, 시 3편(학습지) — 연계 학습지 전부 꼼꼼히!",
+           "「수난이대」(하근찬): 만도(아버지)-진수(아들) 2대에 걸친 수난(일제 강제징용·6·25). '외나무다리'는 고난 극복과 부자의 화해·협력을 상징.",
+           "「가난한 사랑 노래」(신경림): 가난 때문에 포기하는 것들. 설의법·반어 등 표현법과 그 효과.",
+           "글과 자료 평가하며 읽기: 내용의 타당성·신뢰성·공정성을 판단하며 읽기.",
+           "복합양식(글+그림+도표) 자료를 활용한 글쓰기, 매체가 현실을 재현하는 방식(관점·의도) 파악."],
+      ex:[["「수난이대」에서 '외나무다리'가 상징하는 바는?","2대에 걸친 수난의 극복, 그리고 아버지와 아들의 화해·협력."],
+          ["「가난한 사랑 노래」에 쓰인 표현법 1가지와 효과를 서술하시오. (논술)","설의법('왜 모르겠는가') — 가난 때문에 감정마저 포기해야 하는 현실을 강조하고 독자의 공감을 이끈다."],
+          ["글의 신뢰성을 판단하는 기준은?","출처가 분명하고 근거(자료·통계)가 정확하며 최신인지, 전문성이 있는지 확인한다."]] },
+    { emo:"🔬", subj:"과학", badges:["과학A: Ⅰ.물질의 특성 (p.12~31, 45~47)","과학B: Ⅶ.전기와 자기 (p.234~249, 267~269)","선택 22(90점)+논술 2(10점) = 24문항"],
+      sum:["순물질(한 종류)과 혼합물(둘 이상), 균일/불균일 혼합물 구분.",
+           "물질의 특성 = 끓는점·녹는점·어는점·밀도·용해도 (물질마다 고유한 값).",
+           "밀도 = 질량/부피. 밀도가 크면 가라앉고 작으면 뜬다.",
+           "용해도 = 일정 온도에서 용매 100g에 녹는 용질의 최대 g수.",
+           "혼합물 분리: 끓는점 차(증류), 밀도 차, 용해도 차(재결정), 거름.",
+           "전류·전압·저항, 옴의 법칙 V=I×R. 저항의 직렬·병렬 연결.",
+           "전류의 자기 작용(도선 주위 자기장), 자기장 속 전류가 받는 힘(전동기), 전자기 유도(발전기)."],
+      ex:[["저항 5Ω 양끝에 10V를 걸면 흐르는 전류의 세기는?","I = V/R = 10/5 = 2A"],
+          ["밀도가 물(1g/㎤)보다 큰 물질은 물에 뜰까 가라앉을까?","가라앉는다."],
+          ["순물질과 혼합물의 차이를 예를 들어 서술하시오. (논술)","순물질은 한 종류의 물질로 이루어져 끓는점 등이 일정하다(예: 물, 소금). 혼합물은 두 종류 이상이 섞여 성분비에 따라 성질이 달라진다(예: 소금물, 공기)."]] },
+    { emo:"📜", subj:"역사", badges:["교과서 108~121 · 130~134 · 172~174쪽","객관식 5지선다 20문항(100점)","전 범위 고르게 출제"],
+      sum:["시험범위가 3개 구간으로 나뉘어 있어요 → 각 구간 페이지를 빠짐없이 정리!",
+           "교과서 본문뿐 아니라 읽기 자료·사진·지도·연표까지 꼼꼼히 (사진/지도 보고 시대·사건 맞히는 문제 대비).",
+           "5지선다 20문항이 전 범위에 고르게 나오니, 특정 단원만 보지 말고 전체를 얕고 넓게 훑기.",
+           "💡 정확한 단원명을 알려주면(교과서 108·130·172쪽 소제목) 내가 단원별 핵심 요약·예상문제를 딱 맞게 채워줄게요!"],
+      ex:[["시험 유형 예시","「다음 지도가 나타내는 시기의 정치 상황으로 옳은 것은?」처럼 지도·사진 자료 해석형이 자주 나와요."],
+          ["공부 팁","페이지마다 ①핵심 사건 ②연도 ③관련 인물·문화재 사진을 카드로 정리하면 5지선다에 강해져요."]] },
+    { emo:"🛠️", subj:"기술·가정 (논술)", badges:["재료의 특성에 따른 활용 논술","평가일 9월 2~3주초"],
+      sum:["1. 목재의 특성(2가지): 가볍고 가공이 쉽다 / 열·전기를 잘 전달하지 않는다(단열) / 무늬가 아름답다 / 단, 습기에 약해 변형·부패가 될 수 있다.",
+           "2. 목재 침대용 가공재: 집성목(작은 목재를 접착 → 변형이 적고 큰 판 제작) 또는 합판(얇은 판을 엇결로 붙여 뒤틀림이 적음).",
+           "3. 철금속: 철에 탄소를 넣으면 단단해진다. 탄소강(탄소 약 0.035~2.11%)은 강도·경도가 크다. 주철(탄소 2.11% 이상)은 잘 부서지지만 녹여 틀에 붓는 주조에 적합.",
+           "4. 열가소성 플라스틱: 열을 가하면 물러지고 식으면 굳어 재가공·재활용 가능(폴리에틸렌PE, 폴리프로필렌PP). 열경화성 플라스틱: 한 번 굳으면 열을 가해도 다시 물러지지 않음(페놀수지, 멜라민수지).",
+           "5. 실생활 제품 소개(95~105자): 재료 명칭·특성·가공 방법을 넣어 한 단락으로."],
+      ex:[["실생활 제품 소개 예시문 (95~105자)","스테인리스 텀블러는 철에 크롬을 섞은 스테인리스강으로 만든다. 녹이 잘 슬지 않고 보온이 잘돼, 판을 둥글게 말고 용접해 이중벽을 만든 뒤 진공 처리해 완성한다."]] },
+    { emo:"⚖️", subj:"도덕 (수행)", badges:["환경보호 게시물 만들기 25점","평가일 9/10 (완료)"],
+      sum:["사상가 1명 선택 → 시각자료(인물 사진) + 자연을 바라보는 관점 서술 + 자연 개발 찬반 글 + 관련 해시태그 2개(#0000 형식) + 인간·자연의 바람직한 관계를 4컷 만화로.",
+           "답안은 검정 볼펜, 교과서·학습지 내용으로 정확히, 40분."] , ex:[] },
+    { emo:"🇨🇳", subj:"중국어 (수행)", badges:["한어병음 말하기 구술 25점(25%)","반별 9/28~9/30"],
+      sum:["성조 4개: 1성(ā 높고 평평)·2성(á 올림)·3성(ǎ 내렸다 올림)·4성(à 내림).",
+           "성조·성모·운모를 정확히, 연속 성조(3성+3성 → 2성+3성 변조)에 유의해 읽기.",
+           "간단한 문장으로 대답하기 + 한어병음 보고 소리 내어 읽기. 1인당 제한 시간 1분(시작 전 학번·이름 말하기).",
+           "💡 매일 병음 5개씩 큰 소리로 또박또박 읽기 연습 추천."], ex:[] },
+    { emo:"🎵", subj:"음악 (수행)", badges:["2학기 수행평가 일정 진행","소금·국악 등"],
+      sum:["소금 '도라지' 등 실기 곡 연습 + 국악/가창 수행평가 일정 확인.",
+           "학교 배부 '수행평가 일정(2학기)' 캘린더대로 준비."], ex:[] }
+  ];
+  function openExam(){
+    $("examTitle").textContent="📝 태운 · 중간고사 준비 (2학기 1차)";
+    var wrap=$("examBody"); wrap.innerHTML="";
+    var intro=document.createElement("div"); intro.className="note-inline"; intro.style.margin="4px 0 12px";
+    intro.innerHTML="석우중학교 2학년 · 2학기 1차 정기시험 대비예요. 과목을 눌러 시험범위 요약과 예상문제를 확인하세요. 예상문제는 <b>「답·해설」</b>을 눌러 확인해요.";
+    wrap.appendChild(intro);
+    EXAM_TAEUN.forEach(function(s){
+      var card=document.createElement("div"); card.className="card"; card.style.marginBottom="12px";
+      var h="<div style='font-size:1.05rem;font-weight:800;margin-bottom:6px'>"+s.emo+" "+s.subj+"</div>";
+      h+="<div style='display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px'>"+s.badges.map(function(b){return "<span style='font-size:.72rem;background:var(--accent-soft);color:var(--accent-2,#c0392b);border-radius:20px;padding:3px 9px'>"+b+"</span>";}).join("")+"</div>";
+      h+="<div style='font-weight:700;font-size:.86rem;margin:4px 0 4px'>📌 핵심 요약</div><ul style='margin:0 0 6px;padding-left:18px;font-size:.86rem;line-height:1.7'>"+s.sum.map(function(x){return "<li>"+x+"</li>";}).join("")+"</ul>";
+      if(s.ex && s.ex.length){
+        h+="<div style='font-weight:700;font-size:.86rem;margin:10px 0 4px'>✏️ 예상문제</div>";
+        s.ex.forEach(function(q,i){ h+="<div style='background:var(--surface,#faf7f3);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:6px;font-size:.86rem'><b>Q"+(i+1)+".</b> "+q[0]+"<details style='margin-top:5px'><summary style='color:var(--accent-2,#c0392b);font-weight:700;cursor:pointer;font-size:.82rem'>답·해설 보기</summary><div style='margin-top:5px;color:var(--text-2,#555)'>"+q[1]+"</div></details></div>"; });
+      }
+      card.innerHTML=h; wrap.appendChild(card);
+    });
+    show("exam");
+  }
+  $("examBack").addEventListener("click",gotoTrack);
+  document.querySelectorAll('[data-exam]').forEach(function(b){ b.addEventListener("click",openExam); });
 
   // init
   renderKids(); gotoChild();
